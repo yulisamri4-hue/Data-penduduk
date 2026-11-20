@@ -144,11 +144,11 @@
       </div>
     </section>
 
-    <!-- 1. Ringkasan KPI Otomatis (Beracuan NAMA WARGA Unik & Mengecualikan NO KK NON-AKTIF Beserta Anggotanya) -->
+    <!-- 1. Ringkasan KPI Otomatis (Beracuan NAMA WARGA Unik, Status Warga Aktif, & Mengecualikan NO KK NON-AKTIF) -->
     <section id="kpiSection" aria-label="Ringkasan Statistik Kependudukan" class="space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Penduduk Terhitung (KK Aktif)</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Penduduk Terhitung (Aktif)</p>
           <p id="kpiTotalResidents" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">0</p>
           <p id="kpiTotalResidentsSub" class="text-xs text-slate-500 mt-1">0 Laki-Laki · 0 Perempuan</p>
         </div>
@@ -160,13 +160,13 @@
         </div>
 
         <div class="bg-white rounded-2xl border border-sky-200 p-4 shadow-2xs">
-          <p class="text-xs font-bold uppercase tracking-wider text-sky-700">Laki-Laki (KK Aktif)</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-sky-700">Laki-Laki (Aktif)</p>
           <p id="kpiMaleCount" class="text-2xl sm:text-3xl font-extrabold text-sky-900 mt-1">0</p>
           <p id="kpiMaleShare" class="text-xs text-slate-500 mt-1">0,0% dari penduduk terhitung</p>
         </div>
 
         <div class="bg-white rounded-2xl border border-rose-200 p-4 shadow-2xs">
-          <p class="text-xs font-bold uppercase tracking-wider text-rose-700">Perempuan (KK Aktif)</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-rose-700">Perempuan (Aktif)</p>
           <p id="kpiFemaleCount" class="text-2xl sm:text-3xl font-extrabold text-rose-900 mt-1">0</p>
           <p id="kpiFemaleShare" class="text-xs text-slate-500 mt-1">0,0% dari penduduk terhitung</p>
         </div>
@@ -176,7 +176,7 @@
         <div class="bg-white rounded-2xl border border-amber-200 p-4 shadow-2xs flex items-center justify-between gap-3">
           <div>
             <p class="text-xs font-bold uppercase tracking-wider text-amber-800">Pengusaha UMKM</p>
-            <p class="text-xs text-slate-500 mt-0.5">Terdata YA (KK Aktif)</p>
+            <p class="text-xs text-slate-500 mt-0.5">Terdata YA (Warga &amp; KK Aktif)</p>
           </div>
           <span id="kpiUmkmCount" class="text-2xl font-extrabold text-amber-800">0</span>
         </div>
@@ -184,7 +184,7 @@
         <div class="bg-white rounded-2xl border border-purple-200 p-4 shadow-2xs flex items-center justify-between gap-3">
           <div>
             <p class="text-xs font-bold uppercase tracking-wider text-purple-800">Disabilitas</p>
-            <p class="text-xs text-slate-500 mt-0.5">Terdata YA (KK Aktif)</p>
+            <p class="text-xs text-slate-500 mt-0.5">Terdata YA (Warga &amp; KK Aktif)</p>
           </div>
           <span id="kpiDisabilityCount" class="text-2xl font-extrabold text-purple-800">0</span>
         </div>
@@ -192,18 +192,18 @@
         <div class="bg-white rounded-2xl border border-teal-200 p-4 shadow-2xs flex items-center justify-between gap-3">
           <div>
             <p class="text-xs font-bold uppercase tracking-wider text-teal-800">Anak Yatim ≤ 12 Th</p>
-            <p class="text-xs text-slate-500 mt-0.5">Usia ≤ 12 th (KK Aktif)</p>
+            <p class="text-xs text-slate-500 mt-0.5">Usia ≤ 12 th (Warga &amp; KK Aktif)</p>
           </div>
           <span id="kpiOrphanCount" class="text-2xl font-extrabold text-teal-800">0</span>
         </div>
 
         <div class="bg-white rounded-2xl border border-rose-300 p-4 shadow-2xs">
           <div class="flex items-center justify-between gap-2">
-            <p class="text-xs font-bold uppercase tracking-wider text-rose-700">KK Non-Aktif</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-rose-700">Non-Aktif Dikecualikan</p>
             <span id="kpiInactiveKkCount" class="text-xl font-extrabold text-rose-700">0 KK</span>
           </div>
           <p id="kpiInactiveMembersSub" class="text-xs text-rose-700 font-semibold mt-1">
-            0 anggota dikecualikan dari perhitungan
+            0 warga dikecualikan (0 non-aktif · 0 KK non-aktif)
           </p>
           <p id="kpiInactiveKkListSub" class="text-[11px] text-slate-500 mt-0.5 truncate">
             Daftar KK non-aktif: tidak ada
@@ -223,7 +223,7 @@
             PENDATAAN PENDUDUK 2026 RT05/RW04 JREBENG WETAN
           </h2>
           <p class="text-xs text-slate-500">
-            Pengisian pendataan warga menggunakan formulir responden <strong>PENDATAAN PENDUDUK 2026 RT05/RW04 JREBENG WETAN</strong> yang dibuka di tab baru aman (<code class="font-mono">target="_blank" rel="noopener noreferrer"</code>), sedangkan seluruh perhitungan otomatis beracuan <strong>NAMA WARGA</strong> unik dari <strong>DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)</strong> dan mengecualikan <strong>NO KK NON-AKTIF</strong> beserta seluruh anggotanya.
+            Pengisian pendataan warga menggunakan formulir responden <strong>PENDATAAN PENDUDUK 2026 RT05/RW04 JREBENG WETAN</strong> yang dibuka di tab baru aman (<code class="font-mono">target="_blank" rel="noopener noreferrer"</code>), sedangkan seluruh perhitungan otomatis beracuan <strong>NAMA WARGA</strong> unik dengan status <strong>Aktif</strong> dari <strong>DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)</strong> dan mengecualikan warga <strong>Non-Aktif</strong> serta <strong>NO KK NON-AKTIF</strong> beserta seluruh anggotanya.
           </p>
         </div>
 
@@ -312,10 +312,10 @@
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3.5">
         <div>
           <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
-            Rentang Umur per Jenis Kelamin (Penduduk KK Aktif)
+            Rentang Umur per Jenis Kelamin (Warga Aktif &amp; KK Aktif)
           </h2>
           <p class="text-xs text-slate-500 mt-0.5">
-            Dihitung otomatis beracuan NAMA WARGA unik pada NO KK aktif. Anggota pada NO KK NON-AKTIF dikecualikan.
+            Dihitung otomatis beracuan NAMA WARGA unik berstatus Aktif pada NO KK aktif. Warga Non-Aktif dan anggota pada NO KK NON-AKTIF dikecualikan.
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -351,13 +351,13 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
-          <h3 class="text-sm font-bold text-slate-800 mb-3">Grafik Batang Rentang Umur (L / P · KK Aktif)</h3>
+          <h3 class="text-sm font-bold text-slate-800 mb-3">Grafik Batang Rentang Umur (L / P · Aktif)</h3>
           <div class="chart-box">
             <canvas id="ageBarChartCanvas"></canvas>
           </div>
         </div>
         <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
-          <h3 class="text-sm font-bold text-slate-800 mb-3">Proporsi Kelompok Umur (KK Aktif)</h3>
+          <h3 class="text-sm font-bold text-slate-800 mb-3">Proporsi Kelompok Umur (Aktif)</h3>
           <div class="chart-box">
             <canvas id="ageShareChartCanvas"></canvas>
           </div>
@@ -365,19 +365,22 @@
       </div>
     </section>
 
-    <!-- 4. Matrik Warga dengan Pencarian, Filter, Toggle Status KK & Ekspor CSV -->
+    <!-- 4. Matrik Warga dengan Pencarian, Filter, Toggle Status Warga & Status KK, serta Ekspor CSV -->
     <section id="residentMatrixSection" aria-label="Matrik Warga" class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 sm:p-5 space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3.5">
-        <div>
+        <div class="space-y-1">
           <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
             Matrik Warga
           </h2>
-          <p class="text-xs text-slate-500 mt-0.5">
-            Acuan perhitungan otomatis: NAMA WARGA unik. Menandai NO KK sebagai NON-AKTIF otomatis mengecualikan NO KK beserta seluruh anggotanya dari seluruh perhitungan.
+          <p class="text-xs text-slate-500">
+            Acuan perhitungan otomatis: NAMA WARGA unik berstatus Aktif. Anda dapat mengubah status <strong>Aktif / Non-Aktif</strong> langsung pada tiap <strong>Nama Warga</strong> atau <strong>NO KK</strong>.
           </p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
+          <button id="btnActivateAllVisibleResidents" type="button" class="px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold transition cursor-pointer">
+            Aktifkan Warga Tersaring
+          </button>
           <button id="btnExportCsv" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition cursor-pointer">
             Ekspor CSV
           </button>
@@ -387,12 +390,42 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+      <!-- Ringkasan Cepat Status Warga (Aktif vs Non-Aktif) -->
+      <div id="residentStatusQuickBar" class="flex flex-wrap items-center justify-between gap-2 bg-indigo-50/50 border border-indigo-100 rounded-xl px-3.5 py-2.5 text-xs">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="font-bold text-slate-700">Ringkasan Nama Warga:</span>
+          <span id="quickBadgeActiveResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-indigo-100 text-indigo-900 border border-indigo-200">
+            0 Warga Aktif
+          </span>
+          <span id="quickBadgeInactiveResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-200">
+            0 Warga Non-Aktif
+          </span>
+          <span id="quickBadgeCountedResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-900 border border-emerald-200">
+            0 Terhitung (Warga &amp; KK Aktif)
+          </span>
+        </div>
+        <span class="text-[11px] text-slate-500">
+          Klik tombol pada kolom <strong>Aksi Warga &amp; KK</strong> untuk beralih Aktif / Non-Aktif.
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
         <div class="lg:col-span-2">
           <label for="searchResidentInput" class="block text-xs font-bold text-slate-700 mb-1">
             Cari Nama Warga / NIK / NO KK / Alamat
           </label>
           <input id="searchResidentInput" type="search" placeholder="Ketik nama warga, NIK, NO KK, atau alamat..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div>
+          <label for="filterResidentStatusSelect" class="block text-xs font-bold text-slate-700 mb-1">
+            Status Warga
+          </label>
+          <select id="filterResidentStatusSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="ALL">Semua Status Warga</option>
+            <option value="AKTIF">Warga Aktif</option>
+            <option value="NONAKTIF">Warga Non-Aktif</option>
+          </select>
         </div>
 
         <div>
@@ -412,8 +445,8 @@
           </label>
           <select id="filterKkStatusSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             <option value="ALL">Semua Status KK</option>
-            <option value="AKTIF">KK Aktif (Terhitung)</option>
-            <option value="NONAKTIF">KK Non-Aktif (Dikecualikan)</option>
+            <option value="AKTIF">KK Aktif</option>
+            <option value="NONAKTIF">KK Non-Aktif</option>
           </select>
         </div>
 
@@ -449,10 +482,11 @@
               <th class="px-3 py-3 text-left">Status KK</th>
               <th class="px-3 py-3 text-left">NIK</th>
               <th class="px-3 py-3 text-left">Nama Warga</th>
+              <th class="px-3 py-3 text-left">Status Warga</th>
               <th class="px-3 py-3 text-left">JK</th>
               <th class="px-3 py-3 text-right">Umur</th>
               <th class="px-3 py-3 text-left">Alamat</th>
-              <th class="px-3 py-3 text-right">Aksi NO KK</th>
+              <th class="px-3 py-3 text-right">Aksi Warga &amp; KK</th>
             </tr>
           </thead>
           <tbody id="residentsMatrixBody" class="divide-y divide-slate-100 bg-white"></tbody>
@@ -474,7 +508,7 @@
   </main>
 
   <footer class="bg-white border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500">
-    Dashboard Kependudukan RT05/RW04 Jrebeng Wetan · Sumber Tunggal: DATA KEPENDUDUKAN 2006 EXCEL (Jawaban) · Acuan: NAMA WARGA · NO KK NON-AKTIF dikecualikan beserta seluruh anggotanya.
+    Dashboard Kependudukan RT05/RW04 Jrebeng Wetan · Sumber Tunggal: DATA KEPENDUDUKAN 2006 EXCEL (Jawaban) · Acuan: NAMA WARGA · Warga Non-Aktif &amp; NO KK NON-AKTIF dikecualikan.
   </footer>
 
   <!-- Bottom Navigation Bar Tetap (Ringkasan, Sumber Data, Rentang Umur, Matrik Warga) -->
@@ -564,50 +598,53 @@
 
     // Snapshot awal dari database tunggal "DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)"
     const REFERENCE_SPREADSHEET_SNAPSHOT = [
-      { no_kk: '12346789007', kkActive: true, nik: '123456789909000', nama: 'YULIS', jk: 'LAKI-LAKI', tanggal_lahir: '15/07/1978', umur: '48 TAHUN,4 BULAN,19 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051209180005', kkActive: true, nik: '3513223107870002', nama: 'RIKHO TRI YULIADMOKO', jk: 'LAKI-LAKI', tanggal_lahir: '31/07/1987', umur: '39 TAHUN,3 BULAN,14 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051209180005', kkActive: true, nik: '3513224503880001', nama: 'VEGA BATHARI R. TYAS', jk: 'PEREMPUAN', tanggal_lahir: '05/03/1988', umur: '38 TAHUN,8 BULAN,12 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051209180005', kkActive: true, nik: '3513224702130001', nama: 'VANYA AZZAHRA PUTRIADMOKO', jk: 'PEREMPUAN', tanggal_lahir: '07/02/2013', umur: '13 TAHUN,9 BULAN,17 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051403230007', kkActive: true, nik: '3513194204930001', nama: 'Titianna Zakiah Ambarwati', jk: 'PEREMPUAN', tanggal_lahir: '02/04/1993', umur: '33 TAHUN,7 BULAN,16 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051209180005', kkActive: true, nik: '3513224305160001', nama: 'REISHA INARA PUTRIADMOKO', jk: 'PEREMPUAN', tanggal_lahir: '03/05/2016', umur: '10 TAHUN,6 BULAN,24 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3508040808220002', kkActive: true, nik: '350804260100001', nama: 'RIENDI PRATAMA', jk: 'LAKI-LAKI', tanggal_lahir: '26/01/1990', umur: '36 TAHUN,9 BULAN,9 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574053006100006', kkActive: true, nik: '3574051012540002', nama: 'Budi hari santoso', jk: 'LAKI-LAKI', tanggal_lahir: '10/12/1954', umur: '71 TAHUN,11 BULAN,12 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574053006100006', kkActive: true, nik: '3574054712660001', nama: 'Anny indarwati', jk: 'PEREMPUAN', tanggal_lahir: '07/12/1966', umur: '59 TAHUN,11 BULAN,16 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051304120002', kkActive: true, nik: '3574054311860001', nama: 'NOVITA HERMA PURNAMASARI', jk: 'PEREMPUAN', tanggal_lahir: '03/11/1986', umur: '40 TAHUN,0 BULAN,10 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051304120002', kkActive: true, nik: '3574050908820002', nama: 'ERDIANTO SETYO ADI', jk: 'LAKI-LAKI', tanggal_lahir: '09/08/1982', umur: '44 TAHUN,3 BULAN,25 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051304120002', kkActive: true, nik: '3574056505080002', nama: 'CLEARESTA NARA FAUZIYYAH', jk: 'PEREMPUAN', tanggal_lahir: '25/05/2008', umur: '18 TAHUN,5 BULAN,20 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051011100131', kkActive: true, nik: '3574054304550001', nama: 'ENDANG RAHAYU', jk: 'PEREMPUAN', tanggal_lahir: '03/04/1955', umur: '71 TAHUN,7 BULAN,7 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574051304120002', kkActive: true, nik: '3574051202140002', nama: 'AZKA NABHAN CHALIEF', jk: 'LAKI-LAKI', tanggal_lahir: '12/02/2014', umur: '12 TAHUN,9 BULAN,27 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3513121404210005', kkActive: true, nik: '3513126308710002', nama: 'Nurul Qomariyah', jk: 'PEREMPUAN', tanggal_lahir: '23/08/1971', umur: 55, alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010002', kkActive: true, nik: '3574041403790004', nama: 'Indra Ardianta', jk: 'LAKI-LAKI', umur: 47, alamat: 'Gg. Melati RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010003', kkActive: true, nik: '3574042207730005', nama: 'Tri Sujarwanto', jk: 'LAKI-LAKI', umur: 53, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010003', kkActive: true, nik: '3574040905050006', nama: 'Muhammad Thoriq', jk: 'LAKI-LAKI', umur: 21, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010004', kkActive: true, nik: '3574041802680007', nama: 'BUDIONO', jk: 'LAKI-LAKI', umur: 58, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'YA', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010004', kkActive: true, nik: '3574045504720008', nama: 'Helmiatun Hasanah', jk: 'PEREMPUAN', umur: 54, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010004', kkActive: true, nik: '3574041010960009', nama: 'LUKMAN HAKIM ADITYA FIRMANSYAH', jk: 'LAKI-LAKI', umur: 30, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010004', kkActive: true, nik: '3574044712010010', nama: 'Dhea Putri Shalsya Nabila', jk: 'PEREMPUAN', umur: 24, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010005', kkActive: true, nik: '3574044507850011', nama: 'Hilmiyati', jk: 'PEREMPUAN', umur: 41, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010005', kkActive: true, nik: '3574045211080012', nama: "Nanda Dewi Rohma Nur'Aini", jk: 'PEREMPUAN', umur: 18, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
-      { no_kk: '3574041201010006', kkActive: true, nik: '3574041103640013', nama: 'Drs. TRI JOKO DHUTO', jk: 'LAKI-LAKI', tanggal_lahir: '11/03/1964', umur: 62, alamat: 'Gg. Mawar RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' }
+      { no_kk: '12346789007', kkActive: true, residentActive: true, nik: '123456789909000', nama: 'YULIS', jk: 'LAKI-LAKI', tanggal_lahir: '15/07/1978', umur: '48 TAHUN,4 BULAN,19 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051209180005', kkActive: true, residentActive: true, nik: '3513223107870002', nama: 'RIKHO TRI YULIADMOKO', jk: 'LAKI-LAKI', tanggal_lahir: '31/07/1987', umur: '39 TAHUN,3 BULAN,14 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051209180005', kkActive: true, residentActive: true, nik: '3513224503880001', nama: 'VEGA BATHARI R. TYAS', jk: 'PEREMPUAN', tanggal_lahir: '05/03/1988', umur: '38 TAHUN,8 BULAN,12 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051209180005', kkActive: true, residentActive: true, nik: '3513224702130001', nama: 'VANYA AZZAHRA PUTRIADMOKO', jk: 'PEREMPUAN', tanggal_lahir: '07/02/2013', umur: '13 TAHUN,9 BULAN,17 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051403230007', kkActive: true, residentActive: true, nik: '3513194204930001', nama: 'Titianna Zakiah Ambarwati', jk: 'PEREMPUAN', tanggal_lahir: '02/04/1993', umur: '33 TAHUN,7 BULAN,16 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051209180005', kkActive: true, residentActive: true, nik: '3513224305160001', nama: 'REISHA INARA PUTRIADMOKO', jk: 'PEREMPUAN', tanggal_lahir: '03/05/2016', umur: '10 TAHUN,6 BULAN,24 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3508040808220002', kkActive: true, residentActive: true, nik: '350804260100001', nama: 'RIENDI PRATAMA', jk: 'LAKI-LAKI', tanggal_lahir: '26/01/1990', umur: '36 TAHUN,9 BULAN,9 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574053006100006', kkActive: true, residentActive: true, nik: '3574051012540002', nama: 'Budi hari santoso', jk: 'LAKI-LAKI', tanggal_lahir: '10/12/1954', umur: '71 TAHUN,11 BULAN,12 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574053006100006', kkActive: true, residentActive: true, nik: '3574054712660001', nama: 'Anny indarwati', jk: 'PEREMPUAN', tanggal_lahir: '07/12/1966', umur: '59 TAHUN,11 BULAN,16 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051304120002', kkActive: true, residentActive: true, nik: '3574054311860001', nama: 'NOVITA HERMA PURNAMASARI', jk: 'PEREMPUAN', tanggal_lahir: '03/11/1986', umur: '40 TAHUN,0 BULAN,10 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051304120002', kkActive: true, residentActive: true, nik: '3574050908820002', nama: 'ERDIANTO SETYO ADI', jk: 'LAKI-LAKI', tanggal_lahir: '09/08/1982', umur: '44 TAHUN,3 BULAN,25 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051304120002', kkActive: true, residentActive: true, nik: '3574056505080002', nama: 'CLEARESTA NARA FAUZIYYAH', jk: 'PEREMPUAN', tanggal_lahir: '25/05/2008', umur: '18 TAHUN,5 BULAN,20 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051011100131', kkActive: true, residentActive: true, nik: '3574054304550001', nama: 'ENDANG RAHAYU', jk: 'PEREMPUAN', tanggal_lahir: '03/04/1955', umur: '71 TAHUN,7 BULAN,7 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051304120002', kkActive: true, residentActive: true, nik: '3574051202140002', nama: 'AZKA NABHAN CHALIEF', jk: 'LAKI-LAKI', tanggal_lahir: '12/02/2014', umur: '12 TAHUN,9 BULAN,27 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3513121404210005', kkActive: true, residentActive: true, nik: '3513126308710002', nama: 'Nurul Qomariyah', jk: 'PEREMPUAN', tanggal_lahir: '23/08/1971', umur: 55, alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010002', kkActive: true, residentActive: true, nik: '3574041403790004', nama: 'Indra Ardianta', jk: 'LAKI-LAKI', umur: 47, alamat: 'Gg. Melati RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010003', kkActive: true, residentActive: true, nik: '3574042207730005', nama: 'Tri Sujarwanto', jk: 'LAKI-LAKI', umur: 53, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010003', kkActive: true, residentActive: true, nik: '3574040905050006', nama: 'Muhammad Thoriq', jk: 'LAKI-LAKI', umur: 21, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010004', kkActive: true, residentActive: true, nik: '3574041802680007', nama: 'BUDIONO', jk: 'LAKI-LAKI', umur: 58, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'YA', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010004', kkActive: true, residentActive: true, nik: '3574045504720008', nama: 'Helmiatun Hasanah', jk: 'PEREMPUAN', umur: 54, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010004', kkActive: true, residentActive: true, nik: '3574041010960009', nama: 'LUKMAN HAKIM ADITYA FIRMANSYAH', jk: 'LAKI-LAKI', umur: 30, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010004', kkActive: true, residentActive: true, nik: '3574044712010010', nama: 'Dhea Putri Shalsya Nabila', jk: 'PEREMPUAN', umur: 24, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010005', kkActive: true, residentActive: true, nik: '3574044507850011', nama: 'Hilmiyati', jk: 'PEREMPUAN', umur: 41, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010005', kkActive: true, residentActive: true, nik: '3574045211080012', nama: "Nanda Dewi Rohma Nur'Aini", jk: 'PEREMPUAN', umur: 18, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010006', kkActive: true, residentActive: true, nik: '3574041103640013', nama: 'Drs. TRI JOKO DHUTO', jk: 'LAKI-LAKI', tanggal_lahir: '11/03/1964', umur: 62, alamat: 'Gg. Mawar RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' }
     ];
 
     const STORAGE_KEYS = {
-      residents: 'rt05_rw04_jrebeng_wetan_residents_v3',
-      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v3',
-      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v3',
-      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v3',
-      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v3',
-      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v3'
+      residents: 'rt05_rw04_jrebeng_wetan_residents_v4',
+      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v4',
+      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v4',
+      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v4',
+      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v4',
+      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v4',
+      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v4'
     };
 
     let state = {
       residents: [],
       kkStatusMap: {},
+      residentStatusMap: {},
       ageRanges: [],
       csvUrl: DEFAULT_SPREADSHEET_CSV_URL,
       formUrl: DEFAULT_GOOGLE_FORM_URL,
       sourceLabel: 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)',
       searchQuery: '',
+      residentStatusFilter: 'ALL',
       genderFilter: 'ALL',
       kkStatusFilter: 'ALL',
       ageRangeFilter: 'ALL',
@@ -877,15 +914,9 @@
       );
     }
 
-    function parseKkActiveFlag(row) {
-      if (typeof row?.kkActive === 'boolean') return row.kkActive;
-      const statusText = String(
-        row?.kkStatus ??
-        row?.status_kk ??
-        row?.['STATUS KK'] ??
-        row?.['STATUS NO KK'] ??
-        ''
-      ).trim().toUpperCase();
+    function parseInactiveFlagFromText(rawText, defaultValue = true) {
+      const statusText = String(rawText ?? '').trim().toUpperCase();
+      if (!statusText) return defaultValue;
       if (
         statusText === 'NONAKTIF' ||
         statusText === 'NON-AKTIF' ||
@@ -897,7 +928,38 @@
       ) {
         return false;
       }
-      return true;
+      if (
+        statusText === 'AKTIF' ||
+        statusText === 'ACTIVE' ||
+        statusText === 'TRUE' ||
+        statusText === '1'
+      ) {
+        return true;
+      }
+      return defaultValue;
+    }
+
+    function parseKkActiveFlag(row) {
+      if (typeof row?.kkActive === 'boolean') return row.kkActive;
+      const statusText =
+        row?.kkStatus ??
+        row?.status_kk ??
+        row?.['STATUS KK'] ??
+        row?.['STATUS NO KK'] ??
+        '';
+      return parseInactiveFlagFromText(statusText, true);
+    }
+
+    function parseResidentActiveFlag(row) {
+      if (typeof row?.residentActive === 'boolean') return row.residentActive;
+      if (typeof row?.isActive === 'boolean') return row.isActive;
+      const statusText =
+        row?.residentStatus ??
+        row?.status_warga ??
+        row?.['STATUS WARGA'] ??
+        row?.['STATUS PENDUDUK'] ??
+        '';
+      return parseInactiveFlagFromText(statusText, true);
     }
 
     function normalizeYesNo(rawVal) {
@@ -919,13 +981,19 @@
     }
 
     // Membersihkan dan menormalkan seluruh baris tanpa batas jumlah baris (anti-terpotong)
-    function cleanResidents(rawList, externalKkStatusMap = {}) {
+    function cleanResidents(rawList, externalKkStatusMap = {}, externalResidentStatusMap = {}) {
       if (!Array.isArray(rawList)) return [];
 
       const kkActiveLookup = new Map();
       Object.entries(externalKkStatusMap || {}).forEach(([kk, active]) => {
         const cleanKk = normalizeIdNumber(kk);
         if (cleanKk) kkActiveLookup.set(cleanKk, Boolean(active));
+      });
+
+      const residentActiveLookup = new Map();
+      Object.entries(externalResidentStatusMap || {}).forEach(([nameKey, active]) => {
+        const cleanKey = normalizeName(nameKey);
+        if (cleanKey) residentActiveLookup.set(cleanKey, Boolean(active));
       });
 
       const seenNameKeys = new Set();
@@ -988,6 +1056,11 @@
           kkActiveLookup.set(noKk, rowKkActive);
         }
 
+        const rowResidentActive = parseResidentActiveFlag(item);
+        if (!residentActiveLookup.has(nameKey)) {
+          residentActiveLookup.set(nameKey, rowResidentActive);
+        }
+
         normalizedRows.push({
           id: `res-${idx + 1}-${nameKey}`,
           nameKey,
@@ -1001,7 +1074,8 @@
           umkm,
           disabilitas,
           anak_yatim: anakYatim,
-          kkActive: noKk && kkActiveLookup.has(noKk) ? kkActiveLookup.get(noKk) : rowKkActive
+          kkActive: noKk && kkActiveLookup.has(noKk) ? kkActiveLookup.get(noKk) : rowKkActive,
+          residentActive: residentActiveLookup.has(nameKey) ? residentActiveLookup.get(nameKey) : rowResidentActive
         });
       });
 
@@ -1009,11 +1083,14 @@
         ...rec,
         kkActive: rec.no_kk && kkActiveLookup.has(rec.no_kk)
           ? kkActiveLookup.get(rec.no_kk)
-          : rec.kkActive
+          : rec.kkActive,
+        residentActive: residentActiveLookup.has(rec.nameKey)
+          ? residentActiveLookup.get(rec.nameKey)
+          : rec.residentActive !== false
       }));
     }
 
-    // Perhitungan otomatis beracuan NAMA WARGA unik & mengecualikan NO KK NON-AKTIF beserta anggotanya
+    // Perhitungan otomatis beracuan NAMA WARGA unik berstatus Aktif & mengecualikan warga Non-Aktif serta NO KK NON-AKTIF beserta anggotanya
     function summarizeResidents(list) {
       const items = Array.isArray(list) ? list : [];
 
@@ -1036,14 +1113,25 @@
 
       const activeResidentsByName = new Map();
       const excludedResidentsByName = new Map();
+      let totalResidentActiveFlagCount = 0;
+      let totalResidentInactiveFlagCount = 0;
+      let inactiveResidentOnlyCount = 0;
+      let inactiveKkMemberCount = 0;
 
       items.forEach(r => {
         const key = buildResidentNameKey(r);
         if (!key) return;
         const isInactiveByKk = (r.no_kk && inactiveKkSet.has(r.no_kk)) || r.kkActive === false;
-        if (isInactiveByKk) {
+        const isResidentInactive = r.residentActive === false;
+
+        if (isResidentInactive) totalResidentInactiveFlagCount += 1;
+        else totalResidentActiveFlagCount += 1;
+
+        if (isInactiveByKk || isResidentInactive) {
           if (!excludedResidentsByName.has(key)) {
             excludedResidentsByName.set(key, r);
+            if (isInactiveByKk) inactiveKkMemberCount += 1;
+            else inactiveResidentOnlyCount += 1;
           }
         } else if (!activeResidentsByName.has(key)) {
           activeResidentsByName.set(key, r);
@@ -1076,10 +1164,14 @@
 
       return {
         totalPenduduk,
+        totalResidentActiveFlagCount,
+        totalResidentInactiveFlagCount,
         totalKkAktif,
         totalKkNonAktif,
         inactiveKkList: Array.from(inactiveKkSet),
         inactiveResidentsCount,
+        inactiveResidentOnlyCount,
+        inactiveKkMemberCount,
         lakiLaki,
         perempuan,
         umkmCount,
@@ -1204,6 +1296,7 @@
       try {
         localStorage.setItem(STORAGE_KEYS.residents, JSON.stringify(state.residents));
         localStorage.setItem(STORAGE_KEYS.kkStatusMap, JSON.stringify(state.kkStatusMap));
+        localStorage.setItem(STORAGE_KEYS.residentStatusMap, JSON.stringify(state.residentStatusMap));
         localStorage.setItem(STORAGE_KEYS.ranges, JSON.stringify(state.ageRanges));
         localStorage.setItem(STORAGE_KEYS.csvUrl, state.csvUrl);
         localStorage.setItem(STORAGE_KEYS.formUrl, state.formUrl);
@@ -1232,6 +1325,14 @@
           }
         }
 
+        const savedResidentMap = localStorage.getItem(STORAGE_KEYS.residentStatusMap);
+        if (savedResidentMap) {
+          const parsedResMap = JSON.parse(savedResidentMap);
+          if (parsedResMap && typeof parsedResMap === 'object') {
+            state.residentStatusMap = parsedResMap;
+          }
+        }
+
         const savedRanges = localStorage.getItem(STORAGE_KEYS.ranges);
         if (savedRanges) {
           const parsedRanges = JSON.parse(savedRanges);
@@ -1251,7 +1352,7 @@
         const savedResidents = localStorage.getItem(STORAGE_KEYS.residents);
         if (savedResidents) {
           const parsedResidents = JSON.parse(savedResidents);
-          const cleaned = cleanResidents(parsedResidents, state.kkStatusMap);
+          const cleaned = cleanResidents(parsedResidents, state.kkStatusMap, state.residentStatusMap);
           if (cleaned.length > 0) {
             state.residents = cleaned;
             return;
@@ -1261,7 +1362,11 @@
         console.error('Gagal memuat state dari localStorage:', err);
       }
 
-      state.residents = cleanResidents(REFERENCE_SPREADSHEET_SNAPSHOT, state.kkStatusMap);
+      state.residents = cleanResidents(
+        REFERENCE_SPREADSHEET_SNAPSHOT,
+        state.kkStatusMap,
+        state.residentStatusMap
+      );
       state.sourceLabel = 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)';
       saveStateToStorage();
     }
@@ -1283,6 +1388,58 @@
       if (previewEl) {
         previewEl.textContent = safeUrl;
       }
+    }
+
+    function toggleResidentActiveStatus(nameKey) {
+      const cleanKey = normalizeName(nameKey);
+      if (!cleanKey) return;
+
+      const target = state.residents.find(r => r.nameKey === cleanKey);
+      if (!target) return;
+
+      const currentlyActive = target.residentActive !== false;
+      const nextActive = !currentlyActive;
+      state.residentStatusMap[cleanKey] = nextActive;
+
+      state.residents = state.residents.map(r =>
+        r.nameKey === cleanKey ? { ...r, residentActive: nextActive } : r
+      );
+
+      saveStateToStorage();
+      renderAll();
+
+      if (!nextActive) {
+        showToast(
+          `Warga "${target.nama}" diset NON-AKTIF dan dikecualikan dari perhitungan.`,
+          'warning'
+        );
+      } else {
+        showToast(
+          `Warga "${target.nama}" diaktifkan kembali.`,
+          'success'
+        );
+      }
+    }
+
+    function activateAllFilteredResidents() {
+      const filtered = getFilteredResidents();
+      const inactiveTargets = filtered.filter(r => r.residentActive === false);
+      if (inactiveTargets.length === 0) {
+        showToast('Tidak ada warga Non-Aktif pada hasil filter saat ini.', 'info');
+        return;
+      }
+
+      const targetKeys = new Set(inactiveTargets.map(r => r.nameKey));
+      targetKeys.forEach(k => {
+        state.residentStatusMap[k] = true;
+      });
+      state.residents = state.residents.map(r =>
+        targetKeys.has(r.nameKey) ? { ...r, residentActive: true } : r
+      );
+
+      saveStateToStorage();
+      renderAll();
+      showToast(`Mengaktifkan kembali ${targetKeys.size} nama warga tersaring.`, 'success');
     }
 
     function toggleKkActiveStatus(noKk) {
@@ -1837,17 +1994,30 @@
 
       document.getElementById('kpiInactiveKkCount').textContent = `${summary.totalKkNonAktif} KK`;
       document.getElementById('kpiInactiveMembersSub').textContent =
-        `${summary.inactiveResidentsCount} anggota dikecualikan dari perhitungan`;
+        `${summary.inactiveResidentsCount} warga dikecualikan (${summary.inactiveResidentOnlyCount} non-aktif · ${summary.inactiveKkMemberCount} KK non-aktif)`;
       document.getElementById('kpiInactiveKkListSub').textContent = summary.inactiveKkList.length > 0
         ? `KK Non-Aktif: ${summary.inactiveKkList.join(', ')}`
         : 'Tidak ada KK Non-Aktif';
+
+      const quickActiveEl = document.getElementById('quickBadgeActiveResidents');
+      const quickInactiveEl = document.getElementById('quickBadgeInactiveResidents');
+      const quickCountedEl = document.getElementById('quickBadgeCountedResidents');
+      if (quickActiveEl) {
+        quickActiveEl.textContent = `${summary.totalResidentActiveFlagCount} Warga Aktif`;
+      }
+      if (quickInactiveEl) {
+        quickInactiveEl.textContent = `${summary.totalResidentInactiveFlagCount} Warga Non-Aktif`;
+      }
+      if (quickCountedEl) {
+        quickCountedEl.textContent = `${summary.totalPenduduk} Terhitung (Warga & KK Aktif)`;
+      }
 
       const urlInput = document.getElementById('spreadsheetCsvUrl');
       if (urlInput && document.activeElement !== urlInput) {
         urlInput.value = state.csvUrl;
       }
       document.getElementById('syncStatusLabel').textContent =
-        `Sumber: ${state.sourceLabel} · ${state.residents.length} nama warga unik (${summary.totalPenduduk} terhitung, ${summary.inactiveResidentsCount} pada ${summary.totalKkNonAktif} KK non-aktif dikecualikan).`;
+        `Sumber: ${state.sourceLabel} · ${state.residents.length} nama warga unik (${summary.totalPenduduk} aktif terhitung, ${summary.inactiveResidentsCount} dikecualikan).`;
     }
 
     function renderAgeRangeEditor() {
@@ -2003,7 +2173,7 @@
       if (tfoot) {
         tfoot.innerHTML = `
           <tr>
-            <td class="px-4 py-2.5">Total Terhitung (KK Aktif)</td>
+            <td class="px-4 py-2.5">Total Terhitung (Aktif)</td>
             <td class="px-4 py-2.5 text-right text-sky-900">${sumMale}</td>
             <td class="px-4 py-2.5 text-right text-rose-900">${sumFemale}</td>
             <td class="px-4 py-2.5 text-right text-slate-900">${totalActive}</td>
@@ -2026,13 +2196,13 @@
               labels,
               datasets: [
                 {
-                  label: 'Laki-Laki (KK Aktif)',
+                  label: 'Laki-Laki (Aktif)',
                   data: maleSeries,
                   backgroundColor: '#0284c7',
                   borderRadius: 6
                 },
                 {
-                  label: 'Perempuan (KK Aktif)',
+                  label: 'Perempuan (Aktif)',
                   data: femaleSeries,
                   backgroundColor: '#e11d48',
                   borderRadius: 6
@@ -2060,7 +2230,7 @@
               labels,
               datasets: [
                 {
-                  label: 'Jumlah Warga (KK Aktif)',
+                  label: 'Jumlah Warga (Aktif)',
                   data: totalSeries,
                   backgroundColor: [
                     '#4f46e5',
@@ -2089,6 +2259,13 @@
     function getFilteredResidents() {
       const q = state.searchQuery.trim().toLowerCase();
       return state.residents.filter(r => {
+        const isResidentActive = r.residentActive !== false;
+        if (state.residentStatusFilter === 'AKTIF' && !isResidentActive) {
+          return false;
+        }
+        if (state.residentStatusFilter === 'NONAKTIF' && isResidentActive) {
+          return false;
+        }
         if (state.genderFilter !== 'ALL' && r.jk !== state.genderFilter) {
           return false;
         }
@@ -2121,7 +2298,7 @@
       const slice = filtered.slice(startIdx, startIdx + state.pageSize);
 
       document.getElementById('matrixSummaryText').textContent =
-        `Menampilkan ${slice.length} dari ${totalFiltered} baris tersaring · Terhitung: ${summary.totalPenduduk} warga (${summary.totalKkAktif} KK aktif) · Dikecualikan: ${summary.inactiveResidentsCount} anggota pada ${summary.totalKkNonAktif} KK non-aktif.`;
+        `Menampilkan ${slice.length} dari ${totalFiltered} baris tersaring · Terhitung: ${summary.totalPenduduk} warga aktif (${summary.totalKkAktif} KK aktif) · Dikecualikan: ${summary.inactiveResidentsCount} warga (${summary.inactiveResidentOnlyCount} non-aktif · ${summary.inactiveKkMemberCount} pada ${summary.totalKkNonAktif} KK non-aktif).`;
       document.getElementById('paginationInfoLabel').textContent =
         `Halaman ${state.currentPage} dari ${totalPages}`;
 
@@ -2134,7 +2311,7 @@
       if (slice.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="9" class="px-4 py-8 text-center text-slate-500">
+            <td colspan="10" class="px-4 py-8 text-center text-slate-500">
               Tidak ada data warga yang sesuai dengan filter saat ini.
             </td>
           </tr>
@@ -2144,29 +2321,48 @@
 
       tbody.innerHTML = slice.map((r, idx) => {
         const rowNum = startIdx + idx + 1;
+        const isResidentActive = r.residentActive !== false;
+        const isCounted = isResidentActive && r.kkActive;
+
+        const residentBadge = isResidentActive
+          ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">Aktif</span>'
+          : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">Non-Aktif</span>';
+
         const kkBadge = r.kkActive
           ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">KK Aktif</span>'
-          : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200">KK Non-Aktif (Dikecualikan)</span>';
+          : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200">KK Non-Aktif</span>';
 
-        const actionBtn = r.no_kk
+        const toggleResidentBtn = `<button type="button" onclick="toggleResidentActiveStatus('${escapeHtml(r.nameKey)}')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+          isResidentActive
+            ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200'
+            : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200'
+        }">${isResidentActive ? 'Non-Aktifkan Warga' : 'Aktifkan Warga'}</button>`;
+
+        const toggleKkBtn = r.no_kk
           ? `<button type="button" onclick="toggleKkActiveStatus('${escapeHtml(r.no_kk)}')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
               r.kkActive
                 ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'
                 : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'
             }">${r.kkActive ? 'Non-Aktifkan KK' : 'Aktifkan KK'}</button>`
-          : '<span class="text-xs text-slate-400">-</span>';
+          : '';
 
         return `
-          <tr class="hover:bg-slate-50/80 ${r.kkActive ? '' : 'bg-rose-50/40 opacity-80'}">
+          <tr class="hover:bg-slate-50/80 ${isCounted ? '' : 'bg-rose-50/35 opacity-80'}">
             <td class="px-3 py-2.5 text-slate-500">${rowNum}</td>
             <td class="px-3 py-2.5 font-mono text-xs text-slate-800">${escapeHtml(r.no_kk || '-')}</td>
             <td class="px-3 py-2.5 whitespace-nowrap">${kkBadge}</td>
             <td class="px-3 py-2.5 font-mono text-xs text-slate-700">${escapeHtml(r.nik || '-')}</td>
-            <td class="px-3 py-2.5 font-semibold text-slate-900">${escapeHtml(r.nama || '-')}</td>
+            <td class="px-3 py-2.5 font-semibold ${isResidentActive ? 'text-slate-900' : 'text-slate-500 line-through'}">${escapeHtml(r.nama || '-')}</td>
+            <td class="px-3 py-2.5 whitespace-nowrap">${residentBadge}</td>
             <td class="px-3 py-2.5 text-xs font-bold whitespace-nowrap ${r.jk === 'LAKI-LAKI' ? 'text-sky-700' : 'text-rose-700'}">${escapeHtml(r.jk)}</td>
             <td class="px-3 py-2.5 text-right font-semibold text-slate-800">${escapeHtml(r.umur)}</td>
             <td class="px-3 py-2.5 text-xs text-slate-600">${escapeHtml(r.alamat || '-')}</td>
-            <td class="px-3 py-2.5 text-right whitespace-nowrap">${actionBtn}</td>
+            <td class="px-3 py-2.5 text-right whitespace-nowrap">
+              <div class="inline-flex flex-wrap items-center justify-end gap-1.5">
+                ${toggleResidentBtn}
+                ${toggleKkBtn}
+              </div>
+            </td>
           </tr>
         `;
       }).join('');
@@ -2180,7 +2376,7 @@
 
       try {
         const parsedRows = parseSpreadsheetRowsSmart(rawText);
-        const cleaned = cleanResidents(parsedRows, state.kkStatusMap);
+        const cleaned = cleanResidents(parsedRows, state.kkStatusMap, state.residentStatusMap);
         if (cleaned.length === 0) {
           showToast('Tidak ditemukan baris warga valid pada data spreadsheet.', 'warning');
           return;
@@ -2227,16 +2423,18 @@
         return;
       }
 
-      const headers = ['NO KK', 'STATUS KK', 'NIK', 'NAMA WARGA', 'JENIS KELAMIN', 'UMUR', 'ALAMAT', 'UMKM', 'DISABILITAS', 'ANAK YATIM'];
+      const headers = ['NO KK', 'STATUS KK', 'NIK', 'NAMA WARGA', 'STATUS WARGA', 'JENIS KELAMIN', 'UMUR', 'ALAMAT', 'UMKM', 'DISABILITAS', 'ANAK YATIM'];
       const csvLines = [headers.join(',')];
 
       rows.forEach(r => {
-        const statusLabel = r.kkActive ? 'AKTIF' : 'NONAKTIF';
+        const kkStatusLabel = r.kkActive ? 'AKTIF' : 'NONAKTIF';
+        const residentStatusLabel = r.residentActive !== false ? 'AKTIF' : 'NONAKTIF';
         const line = [
           r.no_kk,
-          statusLabel,
+          kkStatusLabel,
           r.nik,
           r.nama,
+          residentStatusLabel,
           r.jk,
           r.umur,
           r.alamat,
@@ -2327,7 +2525,11 @@
       });
 
       document.getElementById('btnRestoreSnapshot').addEventListener('click', () => {
-        state.residents = cleanResidents(REFERENCE_SPREADSHEET_SNAPSHOT, state.kkStatusMap);
+        state.residents = cleanResidents(
+          REFERENCE_SPREADSHEET_SNAPSHOT,
+          state.kkStatusMap,
+          state.residentStatusMap
+        );
         state.sourceLabel = 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)';
         state.currentPage = 1;
         saveStateToStorage();
@@ -2355,8 +2557,16 @@
       document.getElementById('btnSaveAgeRanges').addEventListener('click', saveAgeRanges);
       document.getElementById('btnResetAgeRanges').addEventListener('click', resetAgeRanges);
 
+      document.getElementById('btnActivateAllVisibleResidents').addEventListener('click', activateAllFilteredResidents);
+
       document.getElementById('searchResidentInput').addEventListener('input', (e) => {
         state.searchQuery = e.target.value;
+        state.currentPage = 1;
+        renderResidentsMatrix();
+      });
+
+      document.getElementById('filterResidentStatusSelect').addEventListener('change', (e) => {
+        state.residentStatusFilter = e.target.value;
         state.currentPage = 1;
         renderResidentsMatrix();
       });
@@ -2402,11 +2612,13 @@
 
       document.getElementById('btnResetFilters').addEventListener('click', () => {
         state.searchQuery = '';
+        state.residentStatusFilter = 'ALL';
         state.genderFilter = 'ALL';
         state.kkStatusFilter = 'ALL';
         state.ageRangeFilter = 'ALL';
         state.currentPage = 1;
         document.getElementById('searchResidentInput').value = '';
+        document.getElementById('filterResidentStatusSelect').value = 'ALL';
         document.getElementById('filterGenderSelect').value = 'ALL';
         document.getElementById('filterKkStatusSelect').value = 'ALL';
         document.getElementById('filterAgeBracketSelect').value = 'ALL';
