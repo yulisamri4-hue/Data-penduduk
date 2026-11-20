@@ -1,0 +1,2447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e1b4b" />
+  <!-- Meta tag khusus iOS Safari & PWA -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RT05/RW04 Jrebeng Wetan" />
+  <title>Dashboard Kependudukan RT05/RW04 Jrebeng Wetan</title>
+
+  <!-- Ikon Apple Touch Icon (diperbarui secara dinamis dengan PNG 180x180 hasil render Canvas) -->
+  <link id="appleTouchIconLink" rel="apple-touch-icon" sizes="180x180" />
+
+  <!-- Tailwind CSS CDN untuk tata letak responsif mobile-first -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Chart.js & PapaParse CDN untuk visualisasi dan parsing CSV/TSV penuh tanpa terpotong -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      margin: 0;
+      padding: 0;
+      /* Ruang bawah agar konten utama tidak tertutup navigasi bawah tetap */
+      padding-bottom: 5.5rem;
+      overflow-x: hidden;
+    }
+
+    .table-scroll-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .chart-box {
+      position: relative;
+      width: 100%;
+      height: 290px;
+    }
+
+    @keyframes toastFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .toast-enter {
+      animation: toastFadeUp 0.2s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+  <!-- Header Atas -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
+            RT05 / RW04 · Jrebeng Wetan
+          </span>
+          <span id="headerStatsBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            0 Jiwa Terhitung · 0 KK Aktif
+          </span>
+          <span id="headerSourceBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+            Sumber: DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)
+          </span>
+        </div>
+        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 mt-1">
+          Dashboard Kependudukan RT05/RW04 Jrebeng Wetan
+        </h1>
+      </div>
+
+      <nav aria-label="Navigasi Bagian Utama" class="flex flex-wrap items-center gap-2">
+        <a href="#kpiSection" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
+          Ringkasan
+        </a>
+        <a href="#googleFormSyncSection" class="px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold transition">
+          Sumber Data
+        </a>
+        <a href="#ageBracketsSection" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold transition">
+          Rentang Umur
+        </a>
+        <a href="#residentMatrixSection" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition">
+          Matrik Warga
+        </a>
+        <button id="btnOpenInstallGuide" type="button" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold transition cursor-pointer">
+          Pasang PWA
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Kontainer Utama Satu Alur Gulir Vertikal -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <!-- Banner Status Instalasi PWA & Pemicu Instalasi Langsung -->
+    <section id="pwaInstallBanner" aria-label="Status Instalasi PWA" class="bg-indigo-950 text-white rounded-2xl border border-indigo-800 p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="flex items-start sm:items-center gap-3 min-w-0">
+        <img id="pwaBannerIconPreview" alt="Ikon Aplikasi RT05/RW04 Jrebeng Wetan" class="w-11 h-11 rounded-xl border border-indigo-400/40 bg-indigo-900 shrink-0 object-cover" />
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-200">
+              Mode Aplikasi Web Progresif (PWA)
+            </span>
+            <span id="pwaStatusBadge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-800 text-indigo-100 border border-indigo-600">
+              Memeriksa status...
+            </span>
+          </div>
+          <p id="pwaStatusDescription" class="text-xs text-indigo-100/90 mt-0.5">
+            Siap dipasang ke layar utama HP Android maupun iPhone/iPad.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <button id="btnTriggerNativeInstall" type="button" class="hidden px-3.5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 text-xs font-extrabold transition cursor-pointer shadow-sm">
+          Instal ke HP Sekarang
+        </button>
+        <button id="btnBannerInstallGuide" type="button" class="px-3.5 py-2 rounded-xl bg-indigo-800 hover:bg-indigo-700 text-white border border-indigo-600 text-xs font-bold transition cursor-pointer">
+          Panduan &amp; Status PWA
+        </button>
+      </div>
+    </section>
+
+    <!-- 1. Ringkasan KPI Otomatis (Beracuan NAMA WARGA Unik & Mengecualikan NO KK NON-AKTIF Beserta Anggotanya) -->
+    <section id="kpiSection" aria-label="Ringkasan Statistik Kependudukan" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Penduduk Terhitung (KK Aktif)</p>
+          <p id="kpiTotalResidents" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">0</p>
+          <p id="kpiTotalResidentsSub" class="text-xs text-slate-500 mt-1">0 Laki-Laki · 0 Perempuan</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-indigo-200 p-4 shadow-2xs">
+          <p class="text-xs font-bold uppercase tracking-wider text-indigo-700">Total KK Aktif</p>
+          <p id="kpiActiveKk" class="text-2xl sm:text-3xl font-extrabold text-indigo-900 mt-1">0</p>
+          <p id="kpiAvgFamilySize" class="text-xs text-slate-500 mt-1">Rata-rata 0,0 jiwa / KK aktif</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-sky-200 p-4 shadow-2xs">
+          <p class="text-xs font-bold uppercase tracking-wider text-sky-700">Laki-Laki (KK Aktif)</p>
+          <p id="kpiMaleCount" class="text-2xl sm:text-3xl font-extrabold text-sky-900 mt-1">0</p>
+          <p id="kpiMaleShare" class="text-xs text-slate-500 mt-1">0,0% dari penduduk terhitung</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-rose-200 p-4 shadow-2xs">
+          <p class="text-xs font-bold uppercase tracking-wider text-rose-700">Perempuan (KK Aktif)</p>
+          <p id="kpiFemaleCount" class="text-2xl sm:text-3xl font-extrabold text-rose-900 mt-1">0</p>
+          <p id="kpiFemaleShare" class="text-xs text-slate-500 mt-1">0,0% dari penduduk terhitung</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="bg-white rounded-2xl border border-amber-200 p-4 shadow-2xs flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-amber-800">Pengusaha UMKM</p>
+            <p class="text-xs text-slate-500 mt-0.5">Terdata YA (KK Aktif)</p>
+          </div>
+          <span id="kpiUmkmCount" class="text-2xl font-extrabold text-amber-800">0</span>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-purple-200 p-4 shadow-2xs flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-purple-800">Disabilitas</p>
+            <p class="text-xs text-slate-500 mt-0.5">Terdata YA (KK Aktif)</p>
+          </div>
+          <span id="kpiDisabilityCount" class="text-2xl font-extrabold text-purple-800">0</span>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-teal-200 p-4 shadow-2xs flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-teal-800">Anak Yatim ≤ 12 Th</p>
+            <p class="text-xs text-slate-500 mt-0.5">Usia ≤ 12 th (KK Aktif)</p>
+          </div>
+          <span id="kpiOrphanCount" class="text-2xl font-extrabold text-teal-800">0</span>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-rose-300 p-4 shadow-2xs">
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-xs font-bold uppercase tracking-wider text-rose-700">KK Non-Aktif</p>
+            <span id="kpiInactiveKkCount" class="text-xl font-extrabold text-rose-700">0 KK</span>
+          </div>
+          <p id="kpiInactiveMembersSub" class="text-xs text-rose-700 font-semibold mt-1">
+            0 anggota dikecualikan dari perhitungan
+          </p>
+          <p id="kpiInactiveKkListSub" class="text-[11px] text-slate-500 mt-0.5 truncate">
+            Daftar KK non-aktif: tidak ada
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Sumber Data Utama Spreadsheet & Tautan Google Form Resmi -->
+    <section id="googleFormSyncSection" aria-label="Sumber Data Spreadsheet dan Google Form" class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 sm:p-5 space-y-4">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3 border-b border-slate-100 pb-3.5">
+        <div class="space-y-1">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-violet-50 text-violet-800 border border-violet-200">
+            Database Tunggal: DATA KEPENDUDUKAN 2006 EXCEL (Jawaban) · Acuan: NAMA WARGA
+          </span>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
+            PENDATAAN PENDUDUK 2026 RT05/RW04 JREBENG WETAN
+          </h2>
+          <p class="text-xs text-slate-500">
+            Pengisian pendataan warga menggunakan formulir responden <strong>PENDATAAN PENDUDUK 2026 RT05/RW04 JREBENG WETAN</strong> yang dibuka di tab baru aman (<code class="font-mono">target="_blank" rel="noopener noreferrer"</code>), sedangkan seluruh perhitungan otomatis beracuan <strong>NAMA WARGA</strong> unik dari <strong>DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)</strong> dan mengecualikan <strong>NO KK NON-AKTIF</strong> beserta seluruh anggotanya.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <a id="externalOfficialFormLink" href="https://docs.google.com/forms/d/e/1FAIpQLSfGcxo5y3Ky7uCPzy4qJIHMZbAZ9zKExsDeUOlueK-fPmWeWw/viewform?usp=sharing" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs sm:text-sm font-bold transition">
+            Buka Google Form Resmi →
+          </a>
+          <button id="btnCopyFormUrl" type="button" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs sm:text-sm font-bold transition cursor-pointer">
+            Salin Link Form
+          </button>
+        </div>
+      </div>
+
+      <!-- Pengaturan Link Google Form Tersimpan di localStorage -->
+      <div class="bg-violet-50/50 border border-violet-200 rounded-xl p-3.5 space-y-2">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+          <label for="customGoogleFormUrlInput" class="block text-xs font-bold text-violet-950">
+            Tautan Google Form Responden (Dapat Diedit &amp; Tersimpan di localStorage)
+          </label>
+          <span id="activeFormLinkPreview" class="text-[11px] font-mono text-violet-800 truncate max-w-md"></span>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="customGoogleFormUrlInput" type="url" placeholder="https://docs.google.com/forms/d/e/1FAIpQLSfGcxo5y3Ky7uCPzy4qJIHMZbAZ9zKExsDeUOlueK-fPmWeWw/viewform?usp=sharing" class="flex-1 px-3 py-2 rounded-xl border border-violet-300 bg-white text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-violet-500" />
+          <button id="btnSaveFormUrl" type="button" class="px-3.5 py-2 rounded-xl bg-violet-700 hover:bg-violet-800 text-white text-xs font-bold transition cursor-pointer shrink-0">
+            Simpan Link Form
+          </button>
+          <button id="btnResetFormUrl" type="button" class="px-3.5 py-2 rounded-xl bg-white hover:bg-violet-100 text-violet-900 border border-violet-300 text-xs font-bold transition cursor-pointer shrink-0">
+            Reset Link Default
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel Impor & Sinkronisasi Spreadsheet Tanpa Terpotong -->
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3.5">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-700">
+              Sinkronisasi Spreadsheet Penuh (CSV / TSV / URL / Tempel Baris Tanpa Terpotong)
+            </p>
+            <p id="syncStatusLabel" class="text-xs text-slate-500 mt-0.5">
+              Sumber tunggal: DATA KEPENDUDUKAN 2006 EXCEL (Jawaban).
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btnSyncCsvUrl" type="button" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer">
+              Sinkron URL CSV
+            </button>
+            <button id="btnRestoreSnapshot" type="button" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold transition cursor-pointer">
+              Muat Snapshot Acuan
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label for="spreadsheetCsvUrl" class="block text-xs font-bold text-slate-700">
+              URL Publikasi CSV Spreadsheet (DATA KEPENDUDUKAN 2006 EXCEL)
+            </label>
+            <input id="spreadsheetCsvUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/1dxN0iXW5fOsNXBuBuTXaYhNqmm5sJRH5UnAMUYgjjeY/export?format=csv&gid=416751002" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div class="space-y-1">
+            <label for="spreadsheetCsvFile" class="block text-xs font-bold text-slate-700">
+              Unggah File CSV / TSV Spreadsheet (Seluruh Baris)
+            </label>
+            <input id="spreadsheetCsvFile" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" aria-label="Unggah File CSV atau TSV Spreadsheet" class="block w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-slate-300 rounded-xl bg-white cursor-pointer" />
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between gap-2">
+            <label for="spreadsheetPasteArea" class="block text-xs font-bold text-slate-700">
+              Tempel Baris CSV / TSV / Salinan Spreadsheet Penuh (Anti-Terpotong &amp; Tahan Kutipan Ganda)
+            </label>
+            <button id="btnApplyPastedCsv" type="button" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition cursor-pointer">
+              Terapkan Seluruh Baris
+            </button>
+          </div>
+          <textarea id="spreadsheetPasteArea" rows="3" placeholder="Tempel seluruh baris CSV/TSV dari spreadsheet DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Rentang Umur Dinamis & Visualisasi Chart.js -->
+    <section id="ageBracketsSection" aria-label="Matrik dan Grafik Rentang Umur" class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 sm:p-5 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3.5">
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
+            Rentang Umur per Jenis Kelamin (Penduduk KK Aktif)
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Dihitung otomatis beracuan NAMA WARGA unik pada NO KK aktif. Anggota pada NO KK NON-AKTIF dikecualikan.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnAddAgeRange" type="button" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold transition cursor-pointer">
+            + Tambah Rentang
+          </button>
+          <button id="btnSaveAgeRanges" type="button" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer">
+            Simpan Rentang
+          </button>
+          <button id="btnResetAgeRanges" type="button" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+            Reset Default
+          </button>
+        </div>
+      </div>
+
+      <div id="ageRangeEditorList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5"></div>
+
+      <div class="table-scroll-wrap border border-slate-200 rounded-xl">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+            <tr>
+              <th class="px-4 py-3 text-left">Rentang Umur</th>
+              <th class="px-4 py-3 text-right">Laki-Laki</th>
+              <th class="px-4 py-3 text-right">Perempuan</th>
+              <th class="px-4 py-3 text-right">Total</th>
+              <th class="px-4 py-3 text-right">Persentase</th>
+            </tr>
+          </thead>
+          <tbody id="ageMatrixTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
+          <tfoot id="ageMatrixTableFoot" class="bg-slate-50 font-bold text-slate-900 border-t-2 border-slate-200"></tfoot>
+        </table>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">Grafik Batang Rentang Umur (L / P · KK Aktif)</h3>
+          <div class="chart-box">
+            <canvas id="ageBarChartCanvas"></canvas>
+          </div>
+        </div>
+        <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">Proporsi Kelompok Umur (KK Aktif)</h3>
+          <div class="chart-box">
+            <canvas id="ageShareChartCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Matrik Warga dengan Pencarian, Filter, Toggle Status KK & Ekspor CSV -->
+    <section id="residentMatrixSection" aria-label="Matrik Warga" class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 sm:p-5 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3.5">
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
+            Matrik Warga
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Acuan perhitungan otomatis: NAMA WARGA unik. Menandai NO KK sebagai NON-AKTIF otomatis mengecualikan NO KK beserta seluruh anggotanya dari seluruh perhitungan.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnExportCsv" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition cursor-pointer">
+            Ekspor CSV
+          </button>
+          <button id="btnResetFilters" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+            Reset Filter
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+        <div class="lg:col-span-2">
+          <label for="searchResidentInput" class="block text-xs font-bold text-slate-700 mb-1">
+            Cari Nama Warga / NIK / NO KK / Alamat
+          </label>
+          <input id="searchResidentInput" type="search" placeholder="Ketik nama warga, NIK, NO KK, atau alamat..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div>
+          <label for="filterGenderSelect" class="block text-xs font-bold text-slate-700 mb-1">
+            Jenis Kelamin
+          </label>
+          <select id="filterGenderSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="ALL">Semua Jenis Kelamin</option>
+            <option value="LAKI-LAKI">Laki-Laki</option>
+            <option value="PEREMPUAN">Perempuan</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filterKkStatusSelect" class="block text-xs font-bold text-slate-700 mb-1">
+            Status NO KK
+          </label>
+          <select id="filterKkStatusSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="ALL">Semua Status KK</option>
+            <option value="AKTIF">KK Aktif (Terhitung)</option>
+            <option value="NONAKTIF">KK Non-Aktif (Dikecualikan)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filterAgeBracketSelect" class="block text-xs font-bold text-slate-700 mb-1">
+            Rentang Umur
+          </label>
+          <select id="filterAgeBracketSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="ALL">Semua Rentang Umur</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-600">
+        <p id="matrixSummaryText">Menampilkan 0 data warga.</p>
+        <div class="flex items-center gap-2">
+          <label for="pageSizeSelect" class="font-semibold">Baris / halaman:</label>
+          <select id="pageSizeSelect" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs font-semibold">
+            <option value="25" selected>25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="250">250</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-scroll-wrap border border-slate-200 rounded-xl">
+        <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm">
+          <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+            <tr>
+              <th class="px-3 py-3 text-left">No</th>
+              <th class="px-3 py-3 text-left">NO KK</th>
+              <th class="px-3 py-3 text-left">Status KK</th>
+              <th class="px-3 py-3 text-left">NIK</th>
+              <th class="px-3 py-3 text-left">Nama Warga</th>
+              <th class="px-3 py-3 text-left">JK</th>
+              <th class="px-3 py-3 text-right">Umur</th>
+              <th class="px-3 py-3 text-left">Alamat</th>
+              <th class="px-3 py-3 text-right">Aksi NO KK</th>
+            </tr>
+          </thead>
+          <tbody id="residentsMatrixBody" class="divide-y divide-slate-100 bg-white"></tbody>
+        </table>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+        <p id="paginationInfoLabel" class="text-xs text-slate-500">Halaman 1 dari 1</p>
+        <div class="flex items-center gap-2">
+          <button id="btnPrevPage" type="button" class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 disabled:opacity-40 cursor-pointer">
+            ← Sebelumnya
+          </button>
+          <button id="btnNextPage" type="button" class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 disabled:opacity-40 cursor-pointer">
+            Berikutnya →
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500">
+    Dashboard Kependudukan RT05/RW04 Jrebeng Wetan · Sumber Tunggal: DATA KEPENDUDUKAN 2006 EXCEL (Jawaban) · Acuan: NAMA WARGA · NO KK NON-AKTIF dikecualikan beserta seluruh anggotanya.
+  </footer>
+
+  <!-- Bottom Navigation Bar Tetap (Ringkasan, Sumber Data, Rentang Umur, Matrik Warga) -->
+  <nav aria-label="Navigasi Bawah" class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200">
+    <div class="max-w-3xl mx-auto px-2 py-1.5 grid grid-cols-4 gap-1 text-center">
+      <a href="#kpiSection" class="py-1.5 px-1 rounded-xl hover:bg-slate-100 text-[11px] font-bold text-slate-700">
+        Ringkasan
+      </a>
+      <a href="#googleFormSyncSection" class="py-1.5 px-1 rounded-xl hover:bg-violet-50 text-[11px] font-bold text-violet-700">
+        Sumber Data
+      </a>
+      <a href="#ageBracketsSection" class="py-1.5 px-1 rounded-xl hover:bg-indigo-50 text-[11px] font-bold text-indigo-700">
+        Rentang Umur
+      </a>
+      <a href="#residentMatrixSection" class="py-1.5 px-1 rounded-xl hover:bg-emerald-50 text-[11px] font-bold text-emerald-700">
+        Matrik Warga
+      </a>
+    </div>
+  </nav>
+
+  <!-- Modal Panduan Pasang PWA & Status Lingkungan -->
+  <div id="installGuideModal" class="fixed inset-0 z-50 hidden bg-slate-950/50 backdrop-blur-2xs items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="installGuideTitle">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-5 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <img id="pwaModalIconPreview" alt="Ikon PWA" class="w-9 h-9 rounded-lg border border-slate-200 bg-indigo-950 object-cover" />
+          <h3 id="installGuideTitle" class="text-base font-extrabold text-slate-900">Pasang PWA &amp; Status Aplikasi</h3>
+        </div>
+        <button id="btnCloseInstallGuide" type="button" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 cursor-pointer">
+          Tutup
+        </button>
+      </div>
+
+      <!-- Kotak Status Instalasi & Service Worker Saat Ini -->
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1.5 text-xs">
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-bold text-slate-700">Status Tampilan Saat Ini:</span>
+          <span id="modalPwaModeValue" class="font-extrabold text-indigo-800">Memeriksa...</span>
+        </div>
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-bold text-slate-700">Protokol &amp; Service Worker:</span>
+          <span id="modalSwStatusValue" class="font-semibold text-slate-800">Memeriksa...</span>
+        </div>
+        <p id="modalPwaContextNote" class="text-slate-600 pt-1 leading-relaxed"></p>
+      </div>
+
+      <!-- Tombol Instalasi Langsung (muncul bila prompt browser tersedia) -->
+      <div id="modalNativeInstallWrap" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="text-xs text-emerald-950">
+          <p class="font-extrabold">Prompt Instalasi Browser Tersedia</p>
+          <p class="text-emerald-800 mt-0.5">Ketuk tombol di samping untuk memunculkan dialog instalasi aplikasi di perangkat Anda.</p>
+        </div>
+        <button id="btnModalNativeInstall" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition cursor-pointer shrink-0">
+          Instal Sekarang
+        </button>
+      </div>
+
+      <div class="text-xs sm:text-sm text-slate-600 space-y-2.5">
+        <p><strong>Android (Chrome):</strong> Jika tombol <em>Instal Sekarang</em> muncul, ketuk tombol tersebut. Jika tidak, ketuk menu titik tiga (⋮) di pojok kanan atas lalu pilih <strong>Tambahkan ke layar utama</strong> atau <strong>Instal aplikasi</strong>.</p>
+        <p><strong>iPhone / iPad (Safari):</strong> Ketuk ikon <strong>Bagikan</strong> (kotak dengan panah ke atas) lalu gulir ke bawah dan pilih <strong>Tambah ke Layar Utama</strong>.</p>
+        <p><strong>Jika dibuka langsung sebagai file lokal (<code class="font-mono">file://</code>):</strong> Browser membatasi Service Worker dan prompt instalasi otomatis pada protokol <code class="font-mono">file://</code>. Untuk pengalaman PWA penuh dan cache offline Service Worker, jalankan file ini melalui server lokal (misalnya VS Code Live Server, <code class="font-mono">npx serve</code>, atau <code class="font-mono">python3 -m http.server</code>) atau hosting HTTPS.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wadah Toast Notifikasi -->
+  <div id="toastContainer" class="fixed bottom-16 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <script>
+    // Tautan responden resmi formulir PENDATAAN PENDUDUK 2026 RT05/RW04 JREBENG WETAN
+    const DEFAULT_GOOGLE_FORM_URL =
+      'https://docs.google.com/forms/d/e/1FAIpQLSfGcxo5y3Ky7uCPzy4qJIHMZbAZ9zKExsDeUOlueK-fPmWeWw/viewform?usp=sharing';
+
+    // URL ekspor CSV sumber tunggal spreadsheet DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)
+    const DEFAULT_SPREADSHEET_CSV_URL =
+      'https://docs.google.com/spreadsheets/d/1dxN0iXW5fOsNXBuBuTXaYhNqmm5sJRH5UnAMUYgjjeY/export?format=csv&gid=416751002';
+
+    const DEFAULT_AGE_RANGES = [
+      { label: '0-5', min: 0, max: 5 },
+      { label: '6-12', min: 6, max: 12 },
+      { label: '13-17', min: 13, max: 17 },
+      { label: '18-25', min: 18, max: 25 },
+      { label: '26-45', min: 26, max: 45 },
+      { label: '46-60', min: 46, max: 60 },
+      { label: '60+', min: 61, max: 200 }
+    ];
+
+    // Snapshot awal dari database tunggal "DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)"
+    const REFERENCE_SPREADSHEET_SNAPSHOT = [
+      { no_kk: '12346789007', kkActive: true, nik: '123456789909000', nama: 'YULIS', jk: 'LAKI-LAKI', tanggal_lahir: '15/07/1978', umur: '48 TAHUN,4 BULAN,19 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051209180005', kkActive: true, nik: '3513223107870002', nama: 'RIKHO TRI YULIADMOKO', jk: 'LAKI-LAKI', tanggal_lahir: '31/07/1987', umur: '39 TAHUN,3 BULAN,14 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051209180005', kkActive: true, nik: '3513224503880001', nama: 'VEGA BATHARI R. TYAS', jk: 'PEREMPUAN', tanggal_lahir: '05/03/1988', umur: '38 TAHUN,8 BULAN,12 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051209180005', kkActive: true, nik: '3513224702130001', nama: 'VANYA AZZAHRA PUTRIADMOKO', jk: 'PEREMPUAN', tanggal_lahir: '07/02/2013', umur: '13 TAHUN,9 BULAN,17 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051403230007', kkActive: true, nik: '3513194204930001', nama: 'Titianna Zakiah Ambarwati', jk: 'PEREMPUAN', tanggal_lahir: '02/04/1993', umur: '33 TAHUN,7 BULAN,16 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051209180005', kkActive: true, nik: '3513224305160001', nama: 'REISHA INARA PUTRIADMOKO', jk: 'PEREMPUAN', tanggal_lahir: '03/05/2016', umur: '10 TAHUN,6 BULAN,24 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3508040808220002', kkActive: true, nik: '350804260100001', nama: 'RIENDI PRATAMA', jk: 'LAKI-LAKI', tanggal_lahir: '26/01/1990', umur: '36 TAHUN,9 BULAN,9 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574053006100006', kkActive: true, nik: '3574051012540002', nama: 'Budi hari santoso', jk: 'LAKI-LAKI', tanggal_lahir: '10/12/1954', umur: '71 TAHUN,11 BULAN,12 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574053006100006', kkActive: true, nik: '3574054712660001', nama: 'Anny indarwati', jk: 'PEREMPUAN', tanggal_lahir: '07/12/1966', umur: '59 TAHUN,11 BULAN,16 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051304120002', kkActive: true, nik: '3574054311860001', nama: 'NOVITA HERMA PURNAMASARI', jk: 'PEREMPUAN', tanggal_lahir: '03/11/1986', umur: '40 TAHUN,0 BULAN,10 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051304120002', kkActive: true, nik: '3574050908820002', nama: 'ERDIANTO SETYO ADI', jk: 'LAKI-LAKI', tanggal_lahir: '09/08/1982', umur: '44 TAHUN,3 BULAN,25 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051304120002', kkActive: true, nik: '3574056505080002', nama: 'CLEARESTA NARA FAUZIYYAH', jk: 'PEREMPUAN', tanggal_lahir: '25/05/2008', umur: '18 TAHUN,5 BULAN,20 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051011100131', kkActive: true, nik: '3574054304550001', nama: 'ENDANG RAHAYU', jk: 'PEREMPUAN', tanggal_lahir: '03/04/1955', umur: '71 TAHUN,7 BULAN,7 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574051304120002', kkActive: true, nik: '3574051202140002', nama: 'AZKA NABHAN CHALIEF', jk: 'LAKI-LAKI', tanggal_lahir: '12/02/2014', umur: '12 TAHUN,9 BULAN,27 HARI,', alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3513121404210005', kkActive: true, nik: '3513126308710002', nama: 'Nurul Qomariyah', jk: 'PEREMPUAN', tanggal_lahir: '23/08/1971', umur: 55, alamat: 'RT 05 RW 04 Jrebeng Wetan', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010002', kkActive: true, nik: '3574041403790004', nama: 'Indra Ardianta', jk: 'LAKI-LAKI', umur: 47, alamat: 'Gg. Melati RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010003', kkActive: true, nik: '3574042207730005', nama: 'Tri Sujarwanto', jk: 'LAKI-LAKI', umur: 53, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010003', kkActive: true, nik: '3574040905050006', nama: 'Muhammad Thoriq', jk: 'LAKI-LAKI', umur: 21, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010004', kkActive: true, nik: '3574041802680007', nama: 'BUDIONO', jk: 'LAKI-LAKI', umur: 58, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'YA', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010004', kkActive: true, nik: '3574045504720008', nama: 'Helmiatun Hasanah', jk: 'PEREMPUAN', umur: 54, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010004', kkActive: true, nik: '3574041010960009', nama: 'LUKMAN HAKIM ADITYA FIRMANSYAH', jk: 'LAKI-LAKI', umur: 30, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010004', kkActive: true, nik: '3574044712010010', nama: 'Dhea Putri Shalsya Nabila', jk: 'PEREMPUAN', umur: 24, alamat: 'Gg. Kenanga RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010005', kkActive: true, nik: '3574044507850011', nama: 'Hilmiyati', jk: 'PEREMPUAN', umur: 41, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'YA', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010005', kkActive: true, nik: '3574045211080012', nama: "Nanda Dewi Rohma Nur'Aini", jk: 'PEREMPUAN', umur: 18, alamat: 'Jl. Jrebeng Wetan RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' },
+      { no_kk: '3574041201010006', kkActive: true, nik: '3574041103640013', nama: 'Drs. TRI JOKO DHUTO', jk: 'LAKI-LAKI', tanggal_lahir: '11/03/1964', umur: 62, alamat: 'Gg. Mawar RT 05 RW 04', umkm: 'TIDAK', disabilitas: 'TIDAK', anak_yatim: 'TIDAK' }
+    ];
+
+    const STORAGE_KEYS = {
+      residents: 'rt05_rw04_jrebeng_wetan_residents_v3',
+      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v3',
+      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v3',
+      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v3',
+      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v3',
+      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v3'
+    };
+
+    let state = {
+      residents: [],
+      kkStatusMap: {},
+      ageRanges: [],
+      csvUrl: DEFAULT_SPREADSHEET_CSV_URL,
+      formUrl: DEFAULT_GOOGLE_FORM_URL,
+      sourceLabel: 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)',
+      searchQuery: '',
+      genderFilter: 'ALL',
+      kkStatusFilter: 'ALL',
+      ageRangeFilter: 'ALL',
+      pageSize: 25,
+      currentPage: 1
+    };
+
+    // State PWA runtime (prompt instalasi bawaan browser & status Service Worker)
+    let deferredInstallPrompt = null;
+    let serviceWorkerRegistered = false;
+    let pwaIconUrls = {
+      icon180: '',
+      icon192: '',
+      icon512: ''
+    };
+
+    let barChart = null;
+    let shareChart = null;
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const palette = {
+        success: 'bg-emerald-900 text-emerald-50 border-emerald-700',
+        warning: 'bg-amber-900 text-amber-50 border-amber-700',
+        error: 'bg-rose-900 text-rose-50 border-rose-700',
+        info: 'bg-slate-900 text-slate-50 border-slate-700'
+      };
+      const el = document.createElement('div');
+      el.className = `toast-enter pointer-events-auto border rounded-xl px-4 py-3 text-xs font-semibold shadow-lg ${palette[type] || palette.info}`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.remove();
+      }, 3400);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function sanitizeHttpsUrl(rawUrl, fallbackUrl = DEFAULT_GOOGLE_FORM_URL) {
+      const candidate = String(rawUrl ?? '').trim();
+      if (!candidate) return fallbackUrl;
+      try {
+        const parsed = new URL(candidate);
+        if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+          return parsed.toString();
+        }
+      } catch (_) {
+        try {
+          const withHttps = new URL(`https://${candidate}`);
+          if (withHttps.hostname.includes('.')) {
+            return withHttps.toString();
+          }
+        } catch (_) {
+          // Abaikan URL tidak valid
+        }
+      }
+      return fallbackUrl;
+    }
+
+    // Menghitung umur otomatis dari TANGGAL LAHIR (DD/MM/YYYY atau YYYY-MM-DD) terhadap tanggal acuan (default 2026 / tanggal berjalan)
+    function computeAgeFromBirthDate(rawBirthDate, referenceDate = new Date()) {
+      if (!rawBirthDate) return null;
+      const str = String(rawBirthDate).replace(/["'“”‘’]/g, '').trim();
+      if (!str) return null;
+
+      let day = null;
+      let month = null;
+      let year = null;
+
+      const dmyMatch = str.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+      if (dmyMatch) {
+        day = parseInt(dmyMatch[1], 10);
+        month = parseInt(dmyMatch[2], 10);
+        year = parseInt(dmyMatch[3], 10);
+      } else {
+        const ymdMatch = str.match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/);
+        if (ymdMatch) {
+          year = parseInt(ymdMatch[1], 10);
+          month = parseInt(ymdMatch[2], 10);
+          day = parseInt(ymdMatch[3], 10);
+        }
+      }
+
+      if (!year || !month || !day || month < 1 || month > 12 || day < 1 || day > 31) {
+        const parsedDate = new Date(str);
+        if (Number.isNaN(parsedDate.getTime())) return null;
+        year = parsedDate.getFullYear();
+        month = parsedDate.getMonth() + 1;
+        day = parsedDate.getDate();
+      }
+
+      const now = referenceDate instanceof Date && !Number.isNaN(referenceDate.getTime())
+        ? referenceDate
+        : new Date();
+      const refYear = Math.max(now.getFullYear(), 2026);
+      const refMonth = now.getMonth() + 1;
+      const refDay = now.getDate();
+
+      let age = refYear - year;
+      if (refMonth < month || (refMonth === month && refDay < day)) {
+        age -= 1;
+      }
+
+      if (age < 0 || age > 110) return null;
+      return age;
+    }
+
+    // Menebak usia numerik dari teks KLASIFIKASI UMUR bila umur numerik/tanggal lahir tidak tersedia
+    function inferAgeFromClassification(rawClassification) {
+      const upper = String(rawClassification ?? '').trim().toUpperCase();
+      if (!upper) return null;
+      if (upper.includes('BAYI') || upper.includes('BALITA') || upper.includes('BATITA')) return 1;
+      if (upper.includes('ANAK')) return 8;
+      if (upper.includes('REMAJA')) return 15;
+      if (upper.includes('DEWASA')) return 30;
+      if (upper.includes('LANSIA')) return 65;
+      return null;
+    }
+
+    // Parser umur otomatis: mengekstrak angka sebelum kata TAHUN (mengabaikan kutip dan koma), fallback ke TANGGAL LAHIR, validasi 0-110
+    function parseUmur(rawAge, rawBirthDate = '', rawClassification = '') {
+      if (typeof rawAge === 'number' && Number.isFinite(rawAge)) {
+        const rounded = Math.round(rawAge);
+        if (rounded > 0 && rounded <= 110) return rounded;
+        if (rounded === 0) {
+          const dobAge = computeAgeFromBirthDate(rawBirthDate);
+          return dobAge !== null ? dobAge : 0;
+        }
+        return computeAgeFromBirthDate(rawBirthDate) ?? inferAgeFromClassification(rawClassification) ?? 0;
+      }
+
+      if (rawAge && typeof rawAge === 'object') {
+        const thn = parseInt(rawAge.tahun ?? rawAge.TAHUN ?? 0, 10);
+        if (Number.isFinite(thn) && thn > 0 && thn <= 110) {
+          return thn;
+        }
+        const fromDob = computeAgeFromBirthDate(rawBirthDate);
+        if (fromDob !== null) return fromDob;
+        if (Number.isFinite(thn) && thn === 0) return 0;
+        return inferAgeFromClassification(rawClassification) ?? 0;
+      }
+
+      const cleanedStr = String(rawAge ?? '')
+        .replace(/["'“”‘’]/g, '')
+        .trim();
+
+      if (cleanedStr) {
+        const yearMatch = cleanedStr.match(/(\d{1,3})\s*(?:TAHUN|THN|YRS?|YR)\b/i);
+        if (yearMatch) {
+          const yrs = parseInt(yearMatch[1], 10);
+          if (Number.isFinite(yrs) && yrs >= 0 && yrs <= 110) {
+            return yrs;
+          }
+          const dobAge = computeAgeFromBirthDate(rawBirthDate);
+          if (dobAge !== null) return dobAge;
+          return inferAgeFromClassification(rawClassification) ?? 0;
+        }
+
+        if (/^\d+\s*(?:BLN|BULAN|MO|MONTH|HR|HARI|DAY)\b/i.test(cleanedStr)) {
+          return 0;
+        }
+
+        if (/^\d{1,3}$/.test(cleanedStr)) {
+          const numVal = parseInt(cleanedStr, 10);
+          if (Number.isFinite(numVal) && numVal > 0 && numVal <= 110) {
+            return numVal;
+          }
+          if (numVal === 0) {
+            const dobAge = computeAgeFromBirthDate(rawBirthDate);
+            return dobAge !== null ? dobAge : 0;
+          }
+        }
+      }
+
+      const dobAge = computeAgeFromBirthDate(rawBirthDate);
+      if (dobAge !== null) return dobAge;
+
+      const clsAge = inferAgeFromClassification(rawClassification);
+      if (clsAge !== null) return clsAge;
+
+      return 0;
+    }
+
+    function normalizeGender(rawGender) {
+      const val = String(rawGender ?? '').trim().toUpperCase();
+      if (
+        val === 'L' ||
+        val === 'LK' ||
+        val === 'LAKI-LAKI' ||
+        val === 'LAKI LAKI' ||
+        val === 'LAKILAKI' ||
+        val === 'MALE' ||
+        val === 'PRIA'
+      ) {
+        return 'LAKI-LAKI';
+      }
+      if (
+        val === 'P' ||
+        val === 'PR' ||
+        val === 'PEREMPUAN' ||
+        val === 'WANITA' ||
+        val === 'FEMALE'
+      ) {
+        return 'PEREMPUAN';
+      }
+      return 'PEREMPUAN';
+    }
+
+    function normalizeIdNumber(rawVal) {
+      if (typeof rawVal === 'number' && Number.isFinite(rawVal)) {
+        if (!Number.isInteger(rawVal)) {
+          return rawVal.toLocaleString('fullwide', { useGrouping: false }).trim();
+        }
+        return String(Math.round(rawVal));
+      }
+      const str = String(rawVal ?? '').trim();
+      if (!str) return '';
+
+      const sciMatch = str.match(/^([+-]?\d+(?:[.,]\d+)?)[eE]([+-]?\d+)$/);
+      if (sciMatch) {
+        const coeffStr = sciMatch[1].replace(',', '.');
+        const exp = parseInt(sciMatch[2], 10);
+        const parts = coeffStr.split('.');
+        const intPart = parts[0].replace(/^[-+]/, '');
+        const sign = coeffStr.startsWith('-') ? '-' : '';
+        const fracPart = parts[1] || '';
+        const combined = intPart + fracPart;
+        const decimalPos = intPart.length + exp;
+
+        if (exp >= 0 && decimalPos >= 0) {
+          if (decimalPos >= combined.length) {
+            return sign + combined + '0'.repeat(decimalPos - combined.length);
+          }
+          return sign + combined.slice(0, decimalPos) + '.' + combined.slice(decimalPos);
+        }
+      }
+
+      return str.replace(/\s+/g, '');
+    }
+
+    // Normalisasi NAMA WARGA sebagai kunci acuan utama unik
+    function normalizeName(rawName) {
+      return String(rawName ?? '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toUpperCase();
+    }
+
+    function buildResidentNameKey(recordOrName) {
+      if (typeof recordOrName === 'string') {
+        return normalizeName(recordOrName);
+      }
+      return normalizeName(
+        recordOrName?.nama ??
+        recordOrName?.['NAMA PENDUDUK'] ??
+        recordOrName?.['NAMA WARGA'] ??
+        recordOrName?.['NAMA'] ??
+        ''
+      );
+    }
+
+    function parseKkActiveFlag(row) {
+      if (typeof row?.kkActive === 'boolean') return row.kkActive;
+      const statusText = String(
+        row?.kkStatus ??
+        row?.status_kk ??
+        row?.['STATUS KK'] ??
+        row?.['STATUS NO KK'] ??
+        ''
+      ).trim().toUpperCase();
+      if (
+        statusText === 'NONAKTIF' ||
+        statusText === 'NON-AKTIF' ||
+        statusText === 'NON AKTIF' ||
+        statusText === 'TIDAK AKTIF' ||
+        statusText === 'INACTIVE' ||
+        statusText === 'FALSE' ||
+        statusText === '0'
+      ) {
+        return false;
+      }
+      return true;
+    }
+
+    function normalizeYesNo(rawVal) {
+      const upper = String(rawVal ?? '').trim().toUpperCase();
+      if (upper === 'YA' || upper === 'Y' || upper === 'TRUE' || upper === '1') return 'YA';
+      return 'TIDAK';
+    }
+
+    function pickColumnValue(obj, candidates) {
+      if (!obj || typeof obj !== 'object') return undefined;
+      const keys = Object.keys(obj);
+      for (let i = 0; i < candidates.length; i += 1) {
+        const target = candidates[i].toUpperCase();
+        if (obj[candidates[i]] !== undefined) return obj[candidates[i]];
+        const matchedKey = keys.find(k => String(k || '').trim().toUpperCase() === target);
+        if (matchedKey !== undefined) return obj[matchedKey];
+      }
+      return undefined;
+    }
+
+    // Membersihkan dan menormalkan seluruh baris tanpa batas jumlah baris (anti-terpotong)
+    function cleanResidents(rawList, externalKkStatusMap = {}) {
+      if (!Array.isArray(rawList)) return [];
+
+      const kkActiveLookup = new Map();
+      Object.entries(externalKkStatusMap || {}).forEach(([kk, active]) => {
+        const cleanKk = normalizeIdNumber(kk);
+        if (cleanKk) kkActiveLookup.set(cleanKk, Boolean(active));
+      });
+
+      const seenNameKeys = new Set();
+      const normalizedRows = [];
+
+      rawList.forEach((item, idx) => {
+        if (!item || typeof item !== 'object') return;
+
+        const noKkRaw = pickColumnValue(item, ['no_kk', 'NO KK', 'NO. KK', 'NOMOR KK']);
+        const nikRaw = pickColumnValue(item, ['nik', 'NIK', 'NO NIK']);
+        const namaRaw = pickColumnValue(item, ['nama', 'NAMA PENDUDUK', 'NAMA WARGA', 'NAMA', 'NAMA LENGKAP']);
+        const jkRaw = pickColumnValue(item, ['jk', 'JENIS KELAMIN', 'JK', 'GENDER']);
+        const dobRaw = pickColumnValue(item, ['tanggal_lahir', 'TANGGAL LAHIR', 'TGL LAHIR', 'LAHIR']);
+        const umurRaw = pickColumnValue(item, ['umur', 'UMUR', 'USIA']);
+        const klasifikasiUmurRaw = pickColumnValue(item, ['klasifikasi_umur', 'KLASIFIKASI UMUR', 'KATEGORI UMUR']);
+        const tahunRaw = pickColumnValue(item, ['tahun', 'TAHUN']);
+        const bulanRaw = pickColumnValue(item, ['bulan', 'BULAN']);
+        const hariRaw = pickColumnValue(item, ['hari', 'HARI']);
+        const alamatRaw = pickColumnValue(item, ['alamat', 'ALAMAT SEKARANG', 'ALAMAT']);
+        const umkmRaw = pickColumnValue(item, ['umkm', 'PENGUSAHA UMKM', 'UMKM']);
+        const disabilitasRaw = pickColumnValue(item, ['disabilitas', 'DISABILITAS']);
+        const anakYatimRaw = pickColumnValue(item, ['anak_yatim', 'ANAK YATIM <= 12 TAHUN', 'ANAK YATIM']);
+
+        const noKk = normalizeIdNumber(noKkRaw ?? '');
+        const nik = normalizeIdNumber(nikRaw ?? '');
+        const nama = String(namaRaw ?? '').replace(/\s+/g, ' ').trim();
+        const tanggalLahir = String(dobRaw ?? '').replace(/["']/g, '').trim();
+
+        const nameKey = buildResidentNameKey({ nama });
+        if (!nameKey) return;
+        if (seenNameKeys.has(nameKey)) return;
+
+        const rawYearCheck = parseInt(String(umurRaw ?? '').replace(/["']/g, '').match(/(\d{1,3})\s*(?:TAHUN|THN)/i)?.[1] || '', 10);
+        const dobAgeCheck = computeAgeFromBirthDate(tanggalLahir);
+        if (!nik && !noKk && dobAgeCheck === null && Number.isFinite(rawYearCheck) && rawYearCheck > 110) {
+          return;
+        }
+
+        seenNameKeys.add(nameKey);
+
+        const jk = normalizeGender(jkRaw ?? '');
+        const ageSource = (umurRaw !== undefined && umurRaw !== null && String(umurRaw).trim() !== '')
+          ? umurRaw
+          : {
+              tahun: tahunRaw ?? 0,
+              bulan: bulanRaw ?? 0,
+              hari: hariRaw ?? 0
+            };
+        const umur = parseUmur(ageSource, tanggalLahir, klasifikasiUmurRaw);
+        const alamat = String(alamatRaw ?? 'RT 05 RW 04 Jrebeng Wetan')
+          .replace(/\s+/g, ' ')
+          .trim() || 'RT 05 RW 04 Jrebeng Wetan';
+
+        const umkm = normalizeYesNo(umkmRaw ?? 'TIDAK');
+        const disabilitas = normalizeYesNo(disabilitasRaw ?? 'TIDAK');
+        const anakYatim = normalizeYesNo(anakYatimRaw ?? 'TIDAK');
+
+        const rowKkActive = parseKkActiveFlag(item);
+        if (noKk && !kkActiveLookup.has(noKk)) {
+          kkActiveLookup.set(noKk, rowKkActive);
+        }
+
+        normalizedRows.push({
+          id: `res-${idx + 1}-${nameKey}`,
+          nameKey,
+          no_kk: noKk,
+          nik,
+          nama,
+          jk,
+          tanggal_lahir: tanggalLahir,
+          umur,
+          alamat,
+          umkm,
+          disabilitas,
+          anak_yatim: anakYatim,
+          kkActive: noKk && kkActiveLookup.has(noKk) ? kkActiveLookup.get(noKk) : rowKkActive
+        });
+      });
+
+      return normalizedRows.map(rec => ({
+        ...rec,
+        kkActive: rec.no_kk && kkActiveLookup.has(rec.no_kk)
+          ? kkActiveLookup.get(rec.no_kk)
+          : rec.kkActive
+      }));
+    }
+
+    // Perhitungan otomatis beracuan NAMA WARGA unik & mengecualikan NO KK NON-AKTIF beserta anggotanya
+    function summarizeResidents(list) {
+      const items = Array.isArray(list) ? list : [];
+
+      const inactiveKkSet = new Set();
+      const activeKkSet = new Set();
+
+      items.forEach(r => {
+        if (!r.no_kk) return;
+        if (!r.kkActive) {
+          inactiveKkSet.add(r.no_kk);
+        }
+      });
+
+      items.forEach(r => {
+        if (!r.no_kk) return;
+        if (!inactiveKkSet.has(r.no_kk) && r.kkActive) {
+          activeKkSet.add(r.no_kk);
+        }
+      });
+
+      const activeResidentsByName = new Map();
+      const excludedResidentsByName = new Map();
+
+      items.forEach(r => {
+        const key = buildResidentNameKey(r);
+        if (!key) return;
+        const isInactiveByKk = (r.no_kk && inactiveKkSet.has(r.no_kk)) || r.kkActive === false;
+        if (isInactiveByKk) {
+          if (!excludedResidentsByName.has(key)) {
+            excludedResidentsByName.set(key, r);
+          }
+        } else if (!activeResidentsByName.has(key)) {
+          activeResidentsByName.set(key, r);
+        }
+      });
+
+      const activeResidents = Array.from(activeResidentsByName.values());
+      const excludedResidents = Array.from(excludedResidentsByName.values());
+
+      let lakiLaki = 0;
+      let perempuan = 0;
+      let umkmCount = 0;
+      let disabilityCount = 0;
+      let orphanCount = 0;
+
+      activeResidents.forEach(r => {
+        if (r.jk === 'LAKI-LAKI') lakiLaki += 1;
+        else perempuan += 1;
+
+        if (r.umkm === 'YA') umkmCount += 1;
+        if (r.disabilitas === 'YA') disabilityCount += 1;
+        if (r.anak_yatim === 'YA' && r.umur <= 12) orphanCount += 1;
+      });
+
+      const totalPenduduk = activeResidents.length;
+      const totalKkAktif = activeKkSet.size;
+      const totalKkNonAktif = inactiveKkSet.size;
+      const inactiveResidentsCount = excludedResidents.length;
+      const avgPerActiveKk = totalKkAktif > 0 ? totalPenduduk / totalKkAktif : 0;
+
+      return {
+        totalPenduduk,
+        totalKkAktif,
+        totalKkNonAktif,
+        inactiveKkList: Array.from(inactiveKkSet),
+        inactiveResidentsCount,
+        lakiLaki,
+        perempuan,
+        umkmCount,
+        disabilityCount,
+        orphanCount,
+        avgPerActiveKk,
+        activeResidents
+      };
+    }
+
+    function repairUnclosedQuotesInText(text) {
+      const lines = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+      return lines.map(line => {
+        let quoteCount = 0;
+        for (let i = 0; i < line.length; i += 1) {
+          if (line[i] === '"') {
+            if (line[i + 1] === '"') {
+              i += 1;
+            } else {
+              quoteCount += 1;
+            }
+          }
+        }
+        return quoteCount % 2 === 1 ? `${line}"` : line;
+      }).join('\n');
+    }
+
+    // Mengurai seluruh baris CSV/TSV tanpa memotong jumlah baris
+    function parseSpreadsheetRowsSmart(rawText) {
+      const repairedText = repairUnclosedQuotesInText(rawText).replace(/^\uFEFF/, '').trim();
+      if (!repairedText) return [];
+
+      if (typeof Papa !== 'undefined') {
+        const headerParsed = Papa.parse(repairedText, {
+          header: true,
+          skipEmptyLines: true,
+          delimiter: ''
+        });
+        const rows = Array.isArray(headerParsed.data) ? headerParsed.data : [];
+        const fields = Array.isArray(headerParsed.meta?.fields)
+          ? headerParsed.meta.fields.map(f => String(f || '').trim().toUpperCase())
+          : [];
+
+        const hasKnownHeader = fields.some(f =>
+          f.includes('NAMA') || f.includes('NIK') || f.includes('NO KK') || f.includes('KK') || f.includes('JK') || f.includes('KELAMIN')
+        );
+
+        if (hasKnownHeader && rows.length > 0) {
+          return rows;
+        }
+
+        const unheaded = Papa.parse(repairedText, {
+          header: false,
+          skipEmptyLines: true,
+          delimiter: ''
+        });
+        const rawRows = Array.isArray(unheaded.data) ? unheaded.data : [];
+        return rawRows
+          .filter(cells => Array.isArray(cells) && cells.some(c => String(c || '').trim() !== ''))
+          .map((cells, rowIdx) => {
+            const trimmed = cells.map(c => String(c ?? '').replace(/^["']|["']$/g, '').trim());
+            const startsWithTimestamp = /^\d{1,4}[/-]\d{1,2}[/-]\d{1,4}/.test(trimmed[0] || '');
+            const base = startsWithTimestamp ? trimmed.slice(1) : trimmed;
+
+            const noKk = base[0] || '';
+            const nik = base[1] || '';
+            const nama = base[2] || '';
+            const jk = base[3] || '';
+            const dobCell = trimmed.find(c => /^\d{1,2}[./-]\d{1,2}[./-]\d{4}$/.test(c) || /^\d{4}[./-]\d{1,2}[./-]\d{1,2}$/.test(c)) || '';
+            const ageTextCell = trimmed.find(c => /\d+\s*(?:TAHUN|THN|BULAN|BLN|HARI|HR)\b/i.test(c)) || '';
+            const clsCell = trimmed.find(c => /\b(?:BAYI|BALITA|BATITA|ANAK|REMAJA|DEWASA|LANSIA)\b/i.test(c)) || '';
+            const umurOrTgl = ageTextCell || base[4] || base[5] || '';
+            const alamat = base[5] || base[6] || 'RT 05 RW 04 Jrebeng Wetan';
+
+            const lastThree = trimmed.slice(-3);
+            const hasTailAge = lastThree.length === 3 && lastThree.every(v => /^\d+$/.test(v));
+            const tahun = hasTailAge ? parseInt(lastThree[0], 10) : undefined;
+            const bulan = hasTailAge ? parseInt(lastThree[1], 10) : undefined;
+            const hari = hasTailAge ? parseInt(lastThree[2], 10) : undefined;
+
+            return {
+              id: `row-${rowIdx + 1}-${nik || nama || 'item'}`,
+              no_kk: noKk,
+              nik,
+              nama,
+              jk,
+              tanggal_lahir: dobCell,
+              umur: ageTextCell || (hasTailAge ? { tahun, bulan, hari } : umurOrTgl),
+              klasifikasi_umur: clsCell,
+              tahun,
+              bulan,
+              hari,
+              alamat
+            };
+          });
+      }
+
+      return [];
+    }
+
+    function findAgeRangeForAge(age, ranges) {
+      const list = Array.isArray(ranges) && ranges.length > 0 ? ranges : DEFAULT_AGE_RANGES;
+      const numericAge = typeof age === 'number' && Number.isFinite(age)
+        ? Math.max(0, Math.min(110, Math.round(age)))
+        : parseUmur(age);
+
+      for (let i = 0; i < list.length; i += 1) {
+        const min = Math.max(0, parseInt(list[i].min, 10) || 0);
+        const rawMax = parseInt(list[i].max, 10);
+        const max = Number.isFinite(rawMax) && rawMax >= min ? rawMax : 200;
+        if (numericAge >= min && numericAge <= max) {
+          return list[i].label;
+        }
+      }
+
+      const zeroBucket = list.find(r => (parseInt(r.min, 10) || 0) === 0);
+      if (zeroBucket && numericAge === 0) return zeroBucket.label;
+      return list[list.length - 1].label;
+    }
+
+    function saveStateToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.residents, JSON.stringify(state.residents));
+        localStorage.setItem(STORAGE_KEYS.kkStatusMap, JSON.stringify(state.kkStatusMap));
+        localStorage.setItem(STORAGE_KEYS.ranges, JSON.stringify(state.ageRanges));
+        localStorage.setItem(STORAGE_KEYS.csvUrl, state.csvUrl);
+        localStorage.setItem(STORAGE_KEYS.formUrl, state.formUrl);
+        localStorage.setItem(STORAGE_KEYS.sourceLabel, state.sourceLabel);
+      } catch (err) {
+        console.error('Gagal menyimpan ke localStorage:', err);
+      }
+    }
+
+    function loadStateFromStorage() {
+      try {
+        const savedUrl = localStorage.getItem(STORAGE_KEYS.csvUrl);
+        if (savedUrl) state.csvUrl = savedUrl;
+
+        const savedFormUrl = localStorage.getItem(STORAGE_KEYS.formUrl);
+        if (savedFormUrl) state.formUrl = sanitizeHttpsUrl(savedFormUrl, DEFAULT_GOOGLE_FORM_URL);
+
+        const savedSource = localStorage.getItem(STORAGE_KEYS.sourceLabel);
+        if (savedSource) state.sourceLabel = savedSource;
+
+        const savedKkMap = localStorage.getItem(STORAGE_KEYS.kkStatusMap);
+        if (savedKkMap) {
+          const parsedMap = JSON.parse(savedKkMap);
+          if (parsedMap && typeof parsedMap === 'object') {
+            state.kkStatusMap = parsedMap;
+          }
+        }
+
+        const savedRanges = localStorage.getItem(STORAGE_KEYS.ranges);
+        if (savedRanges) {
+          const parsedRanges = JSON.parse(savedRanges);
+          if (Array.isArray(parsedRanges) && parsedRanges.length > 0) {
+            state.ageRanges = parsedRanges.map(r => ({
+              label: String(r.label || `${r.min}-${r.max}`).trim(),
+              min: Math.max(0, parseInt(r.min, 10) || 0),
+              max: Math.max(0, parseInt(r.max, 10) || 0)
+            }));
+          } else {
+            state.ageRanges = DEFAULT_AGE_RANGES.map(r => ({ ...r }));
+          }
+        } else {
+          state.ageRanges = DEFAULT_AGE_RANGES.map(r => ({ ...r }));
+        }
+
+        const savedResidents = localStorage.getItem(STORAGE_KEYS.residents);
+        if (savedResidents) {
+          const parsedResidents = JSON.parse(savedResidents);
+          const cleaned = cleanResidents(parsedResidents, state.kkStatusMap);
+          if (cleaned.length > 0) {
+            state.residents = cleaned;
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Gagal memuat state dari localStorage:', err);
+      }
+
+      state.residents = cleanResidents(REFERENCE_SPREADSHEET_SNAPSHOT, state.kkStatusMap);
+      state.sourceLabel = 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)';
+      saveStateToStorage();
+    }
+
+    function applyFormUrlToUi() {
+      const safeUrl = sanitizeHttpsUrl(state.formUrl, DEFAULT_GOOGLE_FORM_URL);
+      state.formUrl = safeUrl;
+      const extLink = document.getElementById('externalOfficialFormLink');
+      if (extLink) {
+        extLink.setAttribute('href', safeUrl);
+        extLink.setAttribute('target', '_blank');
+        extLink.setAttribute('rel', 'noopener noreferrer');
+      }
+      const formInput = document.getElementById('customGoogleFormUrlInput');
+      if (formInput && document.activeElement !== formInput) {
+        formInput.value = safeUrl;
+      }
+      const previewEl = document.getElementById('activeFormLinkPreview');
+      if (previewEl) {
+        previewEl.textContent = safeUrl;
+      }
+    }
+
+    function toggleKkActiveStatus(noKk) {
+      const cleanKk = normalizeIdNumber(noKk);
+      if (!cleanKk) return;
+
+      const currentMembers = state.residents.filter(r => r.no_kk === cleanKk);
+      const currentlyActive = currentMembers.length > 0
+        ? currentMembers.some(r => r.kkActive !== false)
+        : (state.kkStatusMap[cleanKk] !== false);
+
+      const nextActive = !currentlyActive;
+      state.kkStatusMap[cleanKk] = nextActive;
+
+      state.residents = state.residents.map(r =>
+        r.no_kk === cleanKk ? { ...r, kkActive: nextActive } : r
+      );
+
+      saveStateToStorage();
+      renderAll();
+
+      if (!nextActive) {
+        showToast(
+          `NO KK ${cleanKk} diset NON-AKTIF (${currentMembers.length} anggota dikecualikan dari perhitungan).`,
+          'warning'
+        );
+      } else {
+        showToast(
+          `NO KK ${cleanKk} diaktifkan kembali (${currentMembers.length} anggota masuk perhitungan).`,
+          'success'
+        );
+      }
+    }
+
+    // =========================================================================
+    // BAGIAN PWA: IKON PNG DARI SVG + CANVAS, SERVICE WORKER, BEFOREINSTALLPROMPT
+    // =========================================================================
+
+    // Merender ikon SVG tajam ke offscreen HTML5 Canvas untuk menghasilkan PNG data URL beresolusi tinggi
+    function generatePngIconDataUrl(size) {
+      const svgMarkup = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+          <defs>
+            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1e1b4b" />
+              <stop offset="55%" stop-color="#312e81" />
+              <stop offset="100%" stop-color="#0f766e" />
+            </linearGradient>
+            <linearGradient id="accentRing" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#34d399" />
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#bgGrad)" />
+          <rect x="22" y="22" width="468" height="468" rx="94" ry="94" fill="none" stroke="url(#accentRing)" stroke-width="6" stroke-opacity="0.55" />
+          <g fill="#ffffff">
+            <!-- Siluet kepala & bahu warga -->
+            <circle cx="256" cy="178" r="56" />
+            <path d="M148 332c0-52 48-84 108-84s108 32 108 84v18H148v-18z" />
+          </g>
+          <!-- Lencana RT05/RW04 di bagian bawah -->
+          <rect x="86" y="376" width="340" height="68" rx="22" fill="#0f172a" fill-opacity="0.72" stroke="#93c5fd" stroke-opacity="0.45" stroke-width="2" />
+          <text x="256" y="420" text-anchor="middle" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="1.5">RT05 / RW04</text>
+        </svg>
+      `.trim();
+
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return '';
+
+      try {
+        const img = new Image();
+        const svgBase64 = btoa(unescape(encodeURIComponent(svgMarkup)));
+        const svgDataUrl = `data:image/svg+xml;base64,${svgBase64}`;
+        img.src = svgDataUrl;
+        if (img.complete && img.naturalWidth > 0) {
+          ctx.drawImage(img, 0, 0, size, size);
+          return canvas.toDataURL('image/png');
+        }
+      } catch (_) {
+        // Fallback gambar raster langsung di canvas bila decode sinkron SVG tidak didukung
+      }
+
+      // Fallback raster canvas murni agar selalu menghasilkan PNG data URL valid
+      const grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, '#1e1b4b');
+      grad.addColorStop(1, '#0f766e');
+      const radius = Math.round(size * 0.22);
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, radius);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(size * 0.5, size * 0.35, size * 0.11, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.ellipse(size * 0.5, size * 0.62, size * 0.21, size * 0.13, 0, Math.PI, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = `800 ${Math.round(size * 0.068)}px Inter, Arial, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('RT05 / RW04', size * 0.5, size * 0.81);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    // Merender SVG ke offscreen canvas secara asinkron dan menyinkronkan ke manifest, apple-touch-icon, dan preview UI
+    function buildCanvasPngIcons() {
+      const sizes = [180, 192, 512];
+      const svgMarkup = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+          <defs>
+            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1e1b4b" />
+              <stop offset="55%" stop-color="#312e81" />
+              <stop offset="100%" stop-color="#0f766e" />
+            </linearGradient>
+            <linearGradient id="accentRing" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#34d399" />
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#bgGrad)" />
+          <rect x="22" y="22" width="468" height="468" rx="94" ry="94" fill="none" stroke="url(#accentRing)" stroke-width="6" stroke-opacity="0.55" />
+          <g fill="#ffffff">
+            <circle cx="256" cy="178" r="56" />
+            <path d="M148 332c0-52 48-84 108-84s108 32 108 84v18H148v-18z" />
+          </g>
+          <rect x="86" y="376" width="340" height="68" rx="22" fill="#0f172a" fill-opacity="0.72" stroke="#93c5fd" stroke-opacity="0.45" stroke-width="2" />
+          <text x="256" y="420" text-anchor="middle" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="1.5">RT05 / RW04</text>
+        </svg>
+      `.trim();
+
+      const fallback180 = generatePngIconDataUrl(180);
+      const fallback192 = generatePngIconDataUrl(192);
+      const fallback512 = generatePngIconDataUrl(512);
+
+      pwaIconUrls = {
+        icon180: fallback180,
+        icon192: fallback192,
+        icon512: fallback512
+      };
+
+      applyIconsToDom();
+
+      const svgBlob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+      const svgObjectUrl = URL.createObjectURL(svgBlob);
+      const svgImage = new Image();
+      svgImage.onload = () => {
+        try {
+          const generated = {};
+          sizes.forEach((sz) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = sz;
+            canvas.height = sz;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.clearRect(0, 0, sz, sz);
+              ctx.drawImage(svgImage, 0, 0, sz, sz);
+              generated[sz] = canvas.toDataURL('image/png');
+            }
+          });
+          if (generated[180]) pwaIconUrls.icon180 = generated[180];
+          if (generated[192]) pwaIconUrls.icon192 = generated[192];
+          if (generated[512]) pwaIconUrls.icon512 = generated[512];
+          applyIconsToDom();
+          attachWebAppManifest();
+        } catch (err) {
+          console.error('Gagal merender ikon PNG dari SVG:', err);
+        } finally {
+          URL.revokeObjectURL(svgObjectUrl);
+        }
+      };
+      svgImage.onerror = () => {
+        URL.revokeObjectURL(svgObjectUrl);
+      };
+      svgImage.src = svgObjectUrl;
+    }
+
+    function applyIconsToDom() {
+      const appleLink = document.getElementById('appleTouchIconLink');
+      if (appleLink && pwaIconUrls.icon180) {
+        appleLink.setAttribute('href', pwaIconUrls.icon180);
+      }
+      const bannerPreview = document.getElementById('pwaBannerIconPreview');
+      if (bannerPreview && pwaIconUrls.icon192) {
+        bannerPreview.setAttribute('src', pwaIconUrls.icon192);
+      }
+      const modalPreview = document.getElementById('pwaModalIconPreview');
+      if (modalPreview && pwaIconUrls.icon192) {
+        modalPreview.setAttribute('src', pwaIconUrls.icon192);
+      }
+    }
+
+    function attachWebAppManifest() {
+      try {
+        const icons = [];
+        if (pwaIconUrls.icon192) {
+          icons.push({
+            src: pwaIconUrls.icon192,
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          });
+        }
+        if (pwaIconUrls.icon512) {
+          icons.push({
+            src: pwaIconUrls.icon512,
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          });
+        }
+
+        const manifest = {
+          name: 'Dashboard Kependudukan RT05/RW04 Jrebeng Wetan',
+          short_name: 'RT05/RW04 Jrebeng Wetan',
+          description: 'Dashboard Kependudukan RT05/RW04 Jrebeng Wetan beracuan NAMA WARGA unik & DATA KEPENDUDUKAN 2006 EXCEL (Jawaban).',
+          start_url: '.',
+          scope: '.',
+          display: 'standalone',
+          orientation: 'portrait-primary',
+          background_color: '#f8fafc',
+          theme_color: '#1e1b4b',
+          icons
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+
+        let linkEl = document.getElementById('dynamicPwaManifestLink');
+        if (!linkEl) {
+          linkEl = document.createElement('link');
+          linkEl.id = 'dynamicPwaManifestLink';
+          linkEl.rel = 'manifest';
+          document.head.appendChild(linkEl);
+        }
+        const previousHref = linkEl.getAttribute('href');
+        linkEl.setAttribute('href', manifestUrl);
+        if (previousHref && previousHref.startsWith('blob:')) {
+          URL.revokeObjectURL(previousHref);
+        }
+      } catch (err) {
+        console.error('Gagal memasang Web App Manifest:', err);
+      }
+    }
+
+    async function registerServiceWorkerSafe() {
+      const protocol = window.location.protocol;
+      const isFileProtocol = protocol === 'file:';
+      const isSecureContext = window.isSecureContext || protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+      if (isFileProtocol || !isSecureContext || !('serviceWorker' in navigator)) {
+        serviceWorkerRegistered = false;
+        renderPwaStatusUi();
+        return;
+      }
+
+      try {
+        // Service Worker dengan strategi cache-first / network-first fallback untuk aset statis & respon offline yang aman
+        const swCode = `
+          const CACHE_NAME = 'rt05-rw04-jrebeng-wetan-pwa-v1';
+
+          self.addEventListener('install', (event) => {
+            event.waitUntil(
+              caches.open(CACHE_NAME).then((cache) => {
+                return cache.addAll([self.registration.scope]).catch(() => Promise.resolve());
+              }).then(() => self.skipWaiting())
+            );
+          });
+
+          self.addEventListener('activate', (event) => {
+            event.waitUntil(
+              caches.keys().then((keys) => Promise.all(
+                keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+              )).then(() => self.clients.claim())
+            );
+          });
+
+          self.addEventListener('fetch', (event) => {
+            if (event.request.method !== 'GET') return;
+            const reqUrl = new URL(event.request.url);
+            if (reqUrl.origin !== self.location.origin) return;
+
+            event.respondWith(
+              caches.match(event.request).then((cachedResponse) => {
+                const networkFetch = fetch(event.request).then((networkResponse) => {
+                  if (networkResponse && networkResponse.ok) {
+                    const cloned = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned)).catch(() => {});
+                  }
+                  return networkResponse;
+                }).catch(() => cachedResponse);
+
+                if (cachedResponse) {
+                  // Cache-first dengan pembaruan latar belakang (stale-while-revalidate / network fallback)
+                  networkFetch.catch(() => {});
+                  return cachedResponse;
+                }
+
+                return networkFetch.catch(() => new Response(
+                  'Aplikasi sedang luring dan belum memiliki salinan cache untuk permintaan ini.',
+                  { status: 503, statusText: 'Offline', headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+                ));
+              })
+            );
+          });
+        `;
+
+        const swBlob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        await navigator.serviceWorker.register(swUrl, { scope: './' });
+        await navigator.serviceWorker.ready;
+        serviceWorkerRegistered = true;
+      } catch (err) {
+        console.error('Pendaftaran Service Worker gagal:', err);
+        serviceWorkerRegistered = false;
+      }
+
+      renderPwaStatusUi();
+    }
+
+    function detectStandaloneMode() {
+      const displayStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+      const displayFullscreen = window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches;
+      const iosStandalone = Boolean(window.navigator.standalone);
+      return Boolean(displayStandalone || displayFullscreen || iosStandalone);
+    }
+
+    function detectIosSafari() {
+      const ua = window.navigator.userAgent || '';
+      const isIosDevice = /iPad|iPhone|iPod/i.test(ua) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+      const isWebkit = /WebKit/i.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS/i.test(ua);
+      return isIosDevice && isWebkit;
+    }
+
+    function renderPwaStatusUi() {
+      const isStandalone = detectStandaloneMode();
+      const isFile = window.location.protocol === 'file:';
+      const isIos = detectIosSafari();
+      const canNativePrompt = Boolean(deferredInstallPrompt);
+
+      const statusBadge = document.getElementById('pwaStatusBadge');
+      const statusDesc = document.getElementById('pwaStatusDescription');
+      const nativeBtnBanner = document.getElementById('btnTriggerNativeInstall');
+      const nativeBtnModal = document.getElementById('btnModalNativeInstall');
+      const modalNativeWrap = document.getElementById('modalNativeInstallWrap');
+      const modalModeVal = document.getElementById('modalPwaModeValue');
+      const modalSwVal = document.getElementById('modalSwStatusValue');
+      const modalNote = document.getElementById('modalPwaContextNote');
+      const headerInstallBtn = document.getElementById('btnOpenInstallGuide');
+
+      if (nativeBtnBanner) {
+        nativeBtnBanner.classList.toggle('hidden', !canNativePrompt || isStandalone);
+      }
+      if (modalNativeWrap) {
+        modalNativeWrap.classList.toggle('hidden', !canNativePrompt || isStandalone);
+      }
+      if (nativeBtnModal) {
+        nativeBtnModal.disabled = !canNativePrompt;
+      }
+
+      if (isStandalone) {
+        if (statusBadge) {
+          statusBadge.textContent = 'Terpasang (Standalone)';
+          statusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-200 border border-emerald-400/40';
+        }
+        if (statusDesc) {
+          statusDesc.textContent = 'Aplikasi sedang berjalan sebagai aplikasi terpasang di layar utama perangkat Anda.';
+        }
+        if (headerInstallBtn) {
+          headerInstallBtn.textContent = 'PWA Terpasang';
+        }
+        if (modalModeVal) modalModeVal.textContent = 'Mode Aplikasi Terpasang (Standalone)';
+      } else if (isFile) {
+        if (statusBadge) {
+          statusBadge.textContent = 'Dibuka via file://';
+          statusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-200 border border-amber-400/40';
+        }
+        if (statusDesc) {
+          statusDesc.textContent = 'File lokal (file://) aktif. Untuk instalasi PWA penuh & Service Worker offline, buka lewat server HTTP/HTTPS.';
+        }
+        if (headerInstallBtn) {
+          headerInstallBtn.textContent = 'Pasang PWA';
+        }
+        if (modalModeVal) modalModeVal.textContent = 'Browser File Lokal (file://)';
+      } else {
+        if (statusBadge) {
+          statusBadge.textContent = canNativePrompt ? 'Siap Diinstal' : 'Mode Browser';
+          statusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-200 border border-sky-400/40';
+        }
+        if (statusDesc) {
+          statusDesc.textContent = canNativePrompt
+            ? 'Browser mendukung instalasi langsung. Klik "Instal ke HP Sekarang" atau "Pasang PWA".'
+            : (isIos
+                ? 'Di Safari iPhone/iPad: ketuk tombol Bagikan lalu pilih "Tambah ke Layar Utama".'
+                : 'Buka menu browser untuk menambahkan aplikasi ke layar utama atau lihat panduan instalasi.');
+        }
+        if (headerInstallBtn) {
+          headerInstallBtn.textContent = canNativePrompt ? 'Instal PWA' : 'Pasang PWA';
+        }
+        if (modalModeVal) modalModeVal.textContent = isIos ? 'Browser iOS Safari' : 'Browser Web';
+      }
+
+      if (modalSwVal) {
+        if (isFile) {
+          modalSwVal.textContent = 'file:// (Service Worker nonaktif)';
+        } else if (serviceWorkerRegistered) {
+          modalSwVal.textContent = `${window.location.protocol} · Service Worker Aktif`;
+        } else if ('serviceWorker' in navigator) {
+          modalSwVal.textContent = `${window.location.protocol} · Menunggu / Tidak Aktif`;
+        } else {
+          modalSwVal.textContent = `${window.location.protocol} · Tidak Didukung`;
+        }
+      }
+
+      if (modalNote) {
+        if (isStandalone) {
+          modalNote.textContent = 'Anda sudah menjalankan dashboard dalam mode jendela aplikasi terpasang (standalone) tanpa bilah alamat browser.';
+        } else if (isFile) {
+          modalNote.textContent = 'Saat dibuka langsung dari penyimpanan lokal (file://), sebagian browser membatasi instalasi PWA otomatis dan Service Worker. Jalankan melalui HTTP/HTTPS agar fitur PWA berjalan penuh.';
+        } else if (canNativePrompt) {
+          modalNote.textContent = 'Prompt instalasi asli browser telah siap. Anda dapat memicu instalasi langsung dari tombol "Instal Sekarang".';
+        } else if (isIos) {
+          modalNote.textContent = 'iOS Safari tidak memunculkan prompt otomatis; gunakan menu Bagikan -> "Tambah ke Layar Utama" untuk memasang ikon aplikasi.';
+        } else {
+          modalNote.textContent = 'Jika prompt instalasi belum muncul, Anda dapat memasangnya lewat menu browser ("Tambahkan ke layar utama" / "Instal aplikasi").';
+        }
+      }
+    }
+
+    async function triggerNativePwaInstall() {
+      if (detectStandaloneMode()) {
+        showToast('Aplikasi sudah berjalan dalam mode terpasang (standalone).', 'info');
+        return;
+      }
+
+      if (!deferredInstallPrompt) {
+        openInstallGuideModal();
+        if (window.location.protocol === 'file:') {
+          showToast('Buka melalui server HTTP/HTTPS untuk mengaktifkan prompt instalasi otomatis.', 'warning');
+        } else {
+          showToast('Ikuti panduan instalasi sesuai browser perangkat Anda.', 'info');
+        }
+        return;
+      }
+
+      try {
+        const promptEvent = deferredInstallPrompt;
+        promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+        deferredInstallPrompt = null;
+        renderPwaStatusUi();
+
+        if (choice && choice.outcome === 'accepted') {
+          showToast('Instalasi aplikasi RT05/RW04 Jrebeng Wetan diterima.', 'success');
+        } else {
+          showToast('Instalasi dibatalkan. Anda dapat mencobanya lagi kapan saja.', 'info');
+        }
+      } catch (err) {
+        console.error('Gagal memicu prompt instalasi:', err);
+        deferredInstallPrompt = null;
+        renderPwaStatusUi();
+        openInstallGuideModal();
+      }
+    }
+
+    function openInstallGuideModal() {
+      renderPwaStatusUi();
+      const modal = document.getElementById('installGuideModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeInstallGuideModal() {
+      const modal = document.getElementById('installGuideModal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function initPwaLifecycle() {
+      buildCanvasPngIcons();
+      attachWebAppManifest();
+      renderPwaStatusUi();
+      registerServiceWorkerSafe();
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        renderPwaStatusUi();
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        renderPwaStatusUi();
+        showToast('Aplikasi berhasil dipasang ke layar utama HP Anda!', 'success');
+      });
+
+      if (window.matchMedia) {
+        const mq = window.matchMedia('(display-mode: standalone)');
+        if (typeof mq.addEventListener === 'function') {
+          mq.addEventListener('change', renderPwaStatusUi);
+        }
+      }
+    }
+
+    // =========================================================================
+    // RENDER KPI, RENTANG UMUR, GRAFIK CHART.JS & MATRIK WARGA
+    // =========================================================================
+
+    function renderKpiSummary() {
+      applyFormUrlToUi();
+      const summary = summarizeResidents(state.residents);
+      const malePct = summary.totalPenduduk > 0
+        ? ((summary.lakiLaki / summary.totalPenduduk) * 100).toFixed(1).replace('.', ',')
+        : '0,0';
+      const femalePct = summary.totalPenduduk > 0
+        ? ((summary.perempuan / summary.totalPenduduk) * 100).toFixed(1).replace('.', ',')
+        : '0,0';
+
+      document.getElementById('headerStatsBadge').textContent =
+        `${summary.totalPenduduk} Jiwa Terhitung · ${summary.totalKkAktif} KK Aktif`;
+      document.getElementById('headerSourceBadge').textContent =
+        `Sumber: ${state.sourceLabel}`;
+
+      document.getElementById('kpiTotalResidents').textContent = summary.totalPenduduk;
+      document.getElementById('kpiTotalResidentsSub').textContent =
+        `${summary.lakiLaki} Laki-Laki · ${summary.perempuan} Perempuan`;
+
+      document.getElementById('kpiActiveKk').textContent = summary.totalKkAktif;
+      document.getElementById('kpiAvgFamilySize').textContent =
+        `Rata-rata ${summary.avgPerActiveKk.toFixed(1).replace('.', ',')} jiwa / KK aktif`;
+
+      document.getElementById('kpiMaleCount').textContent = summary.lakiLaki;
+      document.getElementById('kpiMaleShare').textContent = `${malePct}% dari penduduk terhitung`;
+
+      document.getElementById('kpiFemaleCount').textContent = summary.perempuan;
+      document.getElementById('kpiFemaleShare').textContent = `${femalePct}% dari penduduk terhitung`;
+
+      document.getElementById('kpiUmkmCount').textContent = summary.umkmCount;
+      document.getElementById('kpiDisabilityCount').textContent = summary.disabilityCount;
+      document.getElementById('kpiOrphanCount').textContent = summary.orphanCount;
+
+      document.getElementById('kpiInactiveKkCount').textContent = `${summary.totalKkNonAktif} KK`;
+      document.getElementById('kpiInactiveMembersSub').textContent =
+        `${summary.inactiveResidentsCount} anggota dikecualikan dari perhitungan`;
+      document.getElementById('kpiInactiveKkListSub').textContent = summary.inactiveKkList.length > 0
+        ? `KK Non-Aktif: ${summary.inactiveKkList.join(', ')}`
+        : 'Tidak ada KK Non-Aktif';
+
+      const urlInput = document.getElementById('spreadsheetCsvUrl');
+      if (urlInput && document.activeElement !== urlInput) {
+        urlInput.value = state.csvUrl;
+      }
+      document.getElementById('syncStatusLabel').textContent =
+        `Sumber: ${state.sourceLabel} · ${state.residents.length} nama warga unik (${summary.totalPenduduk} terhitung, ${summary.inactiveResidentsCount} pada ${summary.totalKkNonAktif} KK non-aktif dikecualikan).`;
+    }
+
+    function renderAgeRangeEditor() {
+      const container = document.getElementById('ageRangeEditorList');
+      if (!container) return;
+
+      container.innerHTML = state.ageRanges.map((rng, idx) => `
+        <div class="border border-slate-200 rounded-xl p-2.5 bg-slate-50 flex items-center gap-2">
+          <div class="flex-1 min-w-0">
+            <label class="block text-[11px] font-bold text-slate-600">Label</label>
+            <input type="text" data-range-idx="${idx}" data-field="label" value="${escapeHtml(rng.label)}" class="age-range-input w-full px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-800" />
+          </div>
+          <div class="w-16">
+            <label class="block text-[11px] font-bold text-slate-600">Min</label>
+            <input type="number" min="0" max="150" data-range-idx="${idx}" data-field="min" value="${escapeHtml(rng.min)}" class="age-range-input w-full px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs text-slate-800" />
+          </div>
+          <div class="w-16">
+            <label class="block text-[11px] font-bold text-slate-600">Max</label>
+            <input type="number" min="0" max="200" data-range-idx="${idx}" data-field="max" value="${escapeHtml(rng.max)}" class="age-range-input w-full px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs text-slate-800" />
+          </div>
+          <button type="button" onclick="removeAgeRange(${idx})" title="Hapus rentang" class="mt-4 px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold cursor-pointer">
+            ×
+          </button>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.age-range-input').forEach(inp => {
+        inp.addEventListener('change', (e) => {
+          const idx = parseInt(e.target.getAttribute('data-range-idx'), 10);
+          const field = e.target.getAttribute('data-field');
+          if (!state.ageRanges[idx]) return;
+          if (field === 'label') {
+            state.ageRanges[idx].label = e.target.value.trim() || `${state.ageRanges[idx].min}-${state.ageRanges[idx].max}`;
+          } else if (field === 'min') {
+            state.ageRanges[idx].min = Math.max(0, parseInt(e.target.value, 10) || 0);
+          } else if (field === 'max') {
+            state.ageRanges[idx].max = Math.max(0, parseInt(e.target.value, 10) || 0);
+          }
+        });
+      });
+
+      const ageSelect = document.getElementById('filterAgeBracketSelect');
+      if (ageSelect) {
+        const currentVal = state.ageRangeFilter;
+        ageSelect.innerHTML = `<option value="ALL">Semua Rentang Umur</option>` +
+          state.ageRanges.map(r => `<option value="${escapeHtml(r.label)}">${escapeHtml(r.label)} tahun</option>`).join('');
+        ageSelect.value = state.ageRanges.some(r => r.label === currentVal) ? currentVal : 'ALL';
+        state.ageRangeFilter = ageSelect.value;
+      }
+    }
+
+    function addAgeRange() {
+      const last = state.ageRanges[state.ageRanges.length - 1];
+      const nextMin = last ? (parseInt(last.max, 10) || 0) + 1 : 0;
+      const nextMax = nextMin + 9;
+      state.ageRanges.push({
+        label: `${nextMin}-${nextMax}`,
+        min: nextMin,
+        max: nextMax
+      });
+      renderAgeRangeEditor();
+    }
+
+    function removeAgeRange(index) {
+      if (state.ageRanges.length <= 1) {
+        showToast('Minimal harus ada 1 rentang umur.', 'warning');
+        return;
+      }
+      state.ageRanges.splice(index, 1);
+      renderAgeRangeEditor();
+      renderAgeMatrixAndCharts();
+    }
+
+    function saveAgeRanges() {
+      state.ageRanges = state.ageRanges.map(r => {
+        const min = Math.max(0, parseInt(r.min, 10) || 0);
+        const max = Math.max(min, parseInt(r.max, 10) || min);
+        const label = String(r.label || `${min}-${max}`).trim() || `${min}-${max}`;
+        return { label, min, max };
+      });
+      saveStateToStorage();
+      renderAgeRangeEditor();
+      renderAgeMatrixAndCharts();
+      showToast('Rentang umur tersimpan.', 'success');
+    }
+
+    function resetAgeRanges() {
+      state.ageRanges = DEFAULT_AGE_RANGES.map(r => ({ ...r }));
+      saveStateToStorage();
+      renderAgeRangeEditor();
+      renderAgeMatrixAndCharts();
+      showToast('Rentang umur dikembalikan ke default.', 'info');
+    }
+
+    function renderAgeMatrixAndCharts() {
+      const summary = summarizeResidents(state.residents);
+      const activeResidents = summary.activeResidents;
+      const activeRanges = (Array.isArray(state.ageRanges) && state.ageRanges.length > 0)
+        ? state.ageRanges
+        : DEFAULT_AGE_RANGES;
+
+      const countsByLabel = new Map();
+      activeRanges.forEach(r => {
+        countsByLabel.set(r.label, { male: 0, female: 0, total: 0 });
+      });
+
+      activeResidents.forEach(res => {
+        const bucket = findAgeRangeForAge(res.umur, activeRanges);
+        if (!countsByLabel.has(bucket)) {
+          countsByLabel.set(bucket, { male: 0, female: 0, total: 0 });
+        }
+        const entry = countsByLabel.get(bucket);
+        if (res.jk === 'LAKI-LAKI') entry.male += 1;
+        else entry.female += 1;
+        entry.total += 1;
+      });
+
+      const totalActive = activeResidents.length;
+      let sumMale = 0;
+      let sumFemale = 0;
+
+      const labels = [];
+      const maleSeries = [];
+      const femaleSeries = [];
+      const totalSeries = [];
+
+      const tbody = document.getElementById('ageMatrixTableBody');
+      const tfoot = document.getElementById('ageMatrixTableFoot');
+
+      const rowsHtml = activeRanges.map(r => {
+        const stat = countsByLabel.get(r.label) || { male: 0, female: 0, total: 0 };
+        sumMale += stat.male;
+        sumFemale += stat.female;
+        const pct = totalActive > 0 ? ((stat.total / totalActive) * 100).toFixed(1).replace('.', ',') : '0,0';
+
+        labels.push(r.label);
+        maleSeries.push(stat.male);
+        femaleSeries.push(stat.female);
+        totalSeries.push(stat.total);
+
+        return `
+          <tr class="hover:bg-slate-50/80">
+            <td class="px-4 py-2.5 font-semibold text-slate-800">${escapeHtml(r.label)} tahun</td>
+            <td class="px-4 py-2.5 text-right text-sky-800 font-semibold">${stat.male}</td>
+            <td class="px-4 py-2.5 text-right text-rose-800 font-semibold">${stat.female}</td>
+            <td class="px-4 py-2.5 text-right font-extrabold text-slate-900">${stat.total}</td>
+            <td class="px-4 py-2.5 text-right text-slate-600">${pct}%</td>
+          </tr>
+        `;
+      }).join('');
+
+      if (tbody) tbody.innerHTML = rowsHtml;
+      if (tfoot) {
+        tfoot.innerHTML = `
+          <tr>
+            <td class="px-4 py-2.5">Total Terhitung (KK Aktif)</td>
+            <td class="px-4 py-2.5 text-right text-sky-900">${sumMale}</td>
+            <td class="px-4 py-2.5 text-right text-rose-900">${sumFemale}</td>
+            <td class="px-4 py-2.5 text-right text-slate-900">${totalActive}</td>
+            <td class="px-4 py-2.5 text-right">${totalActive > 0 ? '100,0%' : '0,0%'}</td>
+          </tr>
+        `;
+      }
+
+      if (typeof Chart !== 'undefined') {
+        const barCanvas = document.getElementById('ageBarChartCanvas');
+        const shareCanvas = document.getElementById('ageShareChartCanvas');
+
+        if (barChart) barChart.destroy();
+        if (shareChart) shareChart.destroy();
+
+        if (barCanvas) {
+          barChart = new Chart(barCanvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: 'Laki-Laki (KK Aktif)',
+                  data: maleSeries,
+                  backgroundColor: '#0284c7',
+                  borderRadius: 6
+                },
+                {
+                  label: 'Perempuan (KK Aktif)',
+                  data: femaleSeries,
+                  backgroundColor: '#e11d48',
+                  borderRadius: 6
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'top' }
+              },
+              scales: {
+                x: { stacked: false },
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+              }
+            }
+          });
+        }
+
+        if (shareCanvas) {
+          shareChart = new Chart(shareCanvas.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: 'Jumlah Warga (KK Aktif)',
+                  data: totalSeries,
+                  backgroundColor: [
+                    '#4f46e5',
+                    '#0ea5e9',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ec4899',
+                    '#8b5cf6',
+                    '#64748b'
+                  ]
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'right' }
+              }
+            }
+          });
+        }
+      }
+    }
+
+    function getFilteredResidents() {
+      const q = state.searchQuery.trim().toLowerCase();
+      return state.residents.filter(r => {
+        if (state.genderFilter !== 'ALL' && r.jk !== state.genderFilter) {
+          return false;
+        }
+        if (state.kkStatusFilter === 'AKTIF' && !r.kkActive) {
+          return false;
+        }
+        if (state.kkStatusFilter === 'NONAKTIF' && r.kkActive) {
+          return false;
+        }
+        if (state.ageRangeFilter !== 'ALL') {
+          const bucket = findAgeRangeForAge(r.umur, state.ageRanges);
+          if (bucket !== state.ageRangeFilter) return false;
+        }
+        if (q) {
+          const hay = `${r.nama} ${r.nik} ${r.no_kk} ${r.alamat}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderResidentsMatrix() {
+      const summary = summarizeResidents(state.residents);
+      const filtered = getFilteredResidents();
+      const totalFiltered = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(totalFiltered / state.pageSize));
+      if (state.currentPage > totalPages) state.currentPage = totalPages;
+
+      const startIdx = (state.currentPage - 1) * state.pageSize;
+      const slice = filtered.slice(startIdx, startIdx + state.pageSize);
+
+      document.getElementById('matrixSummaryText').textContent =
+        `Menampilkan ${slice.length} dari ${totalFiltered} baris tersaring · Terhitung: ${summary.totalPenduduk} warga (${summary.totalKkAktif} KK aktif) · Dikecualikan: ${summary.inactiveResidentsCount} anggota pada ${summary.totalKkNonAktif} KK non-aktif.`;
+      document.getElementById('paginationInfoLabel').textContent =
+        `Halaman ${state.currentPage} dari ${totalPages}`;
+
+      document.getElementById('btnPrevPage').disabled = state.currentPage <= 1;
+      document.getElementById('btnNextPage').disabled = state.currentPage >= totalPages;
+
+      const tbody = document.getElementById('residentsMatrixBody');
+      if (!tbody) return;
+
+      if (slice.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="px-4 py-8 text-center text-slate-500">
+              Tidak ada data warga yang sesuai dengan filter saat ini.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = slice.map((r, idx) => {
+        const rowNum = startIdx + idx + 1;
+        const kkBadge = r.kkActive
+          ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">KK Aktif</span>'
+          : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200">KK Non-Aktif (Dikecualikan)</span>';
+
+        const actionBtn = r.no_kk
+          ? `<button type="button" onclick="toggleKkActiveStatus('${escapeHtml(r.no_kk)}')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+              r.kkActive
+                ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'
+                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'
+            }">${r.kkActive ? 'Non-Aktifkan KK' : 'Aktifkan KK'}</button>`
+          : '<span class="text-xs text-slate-400">-</span>';
+
+        return `
+          <tr class="hover:bg-slate-50/80 ${r.kkActive ? '' : 'bg-rose-50/40 opacity-80'}">
+            <td class="px-3 py-2.5 text-slate-500">${rowNum}</td>
+            <td class="px-3 py-2.5 font-mono text-xs text-slate-800">${escapeHtml(r.no_kk || '-')}</td>
+            <td class="px-3 py-2.5 whitespace-nowrap">${kkBadge}</td>
+            <td class="px-3 py-2.5 font-mono text-xs text-slate-700">${escapeHtml(r.nik || '-')}</td>
+            <td class="px-3 py-2.5 font-semibold text-slate-900">${escapeHtml(r.nama || '-')}</td>
+            <td class="px-3 py-2.5 text-xs font-bold whitespace-nowrap ${r.jk === 'LAKI-LAKI' ? 'text-sky-700' : 'text-rose-700'}">${escapeHtml(r.jk)}</td>
+            <td class="px-3 py-2.5 text-right font-semibold text-slate-800">${escapeHtml(r.umur)}</td>
+            <td class="px-3 py-2.5 text-xs text-slate-600">${escapeHtml(r.alamat || '-')}</td>
+            <td class="px-3 py-2.5 text-right whitespace-nowrap">${actionBtn}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function ingestCsvText(rawText, label) {
+      if (!rawText || !rawText.trim()) {
+        showToast('Data CSV/spreadsheet kosong.', 'warning');
+        return;
+      }
+
+      try {
+        const parsedRows = parseSpreadsheetRowsSmart(rawText);
+        const cleaned = cleanResidents(parsedRows, state.kkStatusMap);
+        if (cleaned.length === 0) {
+          showToast('Tidak ditemukan baris warga valid pada data spreadsheet.', 'warning');
+          return;
+        }
+        state.residents = cleaned;
+        state.sourceLabel = label || 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)';
+        state.currentPage = 1;
+        saveStateToStorage();
+        renderAll();
+        showToast(`Berhasil memuat seluruh ${cleaned.length} data warga dari ${state.sourceLabel}.`, 'success');
+      } catch (err) {
+        console.error('Gagal mengurai data spreadsheet:', err);
+        showToast('Gagal mengurai data CSV/TSV spreadsheet.', 'error');
+      }
+    }
+
+    async function syncCsvFromUrl() {
+      const inputEl = document.getElementById('spreadsheetCsvUrl');
+      const url = (inputEl ? inputEl.value : state.csvUrl || '').trim();
+      state.csvUrl = url;
+      saveStateToStorage();
+
+      if (!url) {
+        showToast('Masukkan URL CSV publik spreadsheet terlebih dahulu.', 'warning');
+        return;
+      }
+
+      try {
+        showToast('Mengambil seluruh baris CSV dari spreadsheet...', 'info');
+        const resp = await fetch(url, { cache: 'no-store' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const text = await resp.text();
+        ingestCsvText(text, 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)');
+      } catch (err) {
+        console.error('Gagal sinkron URL CSV:', err);
+        showToast('Gagal mengambil URL CSV langsung. Gunakan Unggah File CSV atau Tempel Seluruh Baris Spreadsheet.', 'error');
+      }
+    }
+
+    function exportFilteredCsv() {
+      const rows = getFilteredResidents();
+      if (rows.length === 0) {
+        showToast('Tidak ada data warga untuk diekspor.', 'warning');
+        return;
+      }
+
+      const headers = ['NO KK', 'STATUS KK', 'NIK', 'NAMA WARGA', 'JENIS KELAMIN', 'UMUR', 'ALAMAT', 'UMKM', 'DISABILITAS', 'ANAK YATIM'];
+      const csvLines = [headers.join(',')];
+
+      rows.forEach(r => {
+        const statusLabel = r.kkActive ? 'AKTIF' : 'NONAKTIF';
+        const line = [
+          r.no_kk,
+          statusLabel,
+          r.nik,
+          r.nama,
+          r.jk,
+          r.umur,
+          r.alamat,
+          r.umkm,
+          r.disabilitas,
+          r.anak_yatim
+        ].map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(',');
+        csvLines.push(line);
+      });
+
+      const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'matrik-warga-rt05-rw04-jrebeng-wetan.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast(`Mengekspor ${rows.length} baris data warga ke CSV.`, 'success');
+    }
+
+    function copyFormLink() {
+      const text = sanitizeHttpsUrl(state.formUrl, DEFAULT_GOOGLE_FORM_URL);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Link Google Form berhasil disalin.', 'success');
+        }).catch(() => {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Link Google Form berhasil disalin.', 'success');
+      } catch (err) {
+        showToast('Gagal menyalin tautan secara otomatis.', 'warning');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function renderAll() {
+      renderKpiSummary();
+      renderAgeRangeEditor();
+      renderAgeMatrixAndCharts();
+      renderResidentsMatrix();
+      renderPwaStatusUi();
+    }
+
+    function bindUiEvents() {
+      document.getElementById('btnCopyFormUrl').addEventListener('click', copyFormLink);
+
+      document.getElementById('btnSaveFormUrl').addEventListener('click', () => {
+        const rawInput = document.getElementById('customGoogleFormUrlInput')?.value || '';
+        const cleanedUrl = sanitizeHttpsUrl(rawInput, '');
+        if (!cleanedUrl) {
+          showToast('Masukkan URL Google Form yang valid (https://...).', 'warning');
+          return;
+        }
+        state.formUrl = cleanedUrl;
+        saveStateToStorage();
+        applyFormUrlToUi();
+        showToast('Tautan Google Form tersimpan di localStorage.', 'success');
+      });
+
+      document.getElementById('btnResetFormUrl').addEventListener('click', () => {
+        state.formUrl = DEFAULT_GOOGLE_FORM_URL;
+        saveStateToStorage();
+        applyFormUrlToUi();
+        showToast('Tautan Google Form dikembalikan ke default.', 'info');
+      });
+
+      document.getElementById('btnSyncCsvUrl').addEventListener('click', syncCsvFromUrl);
+      document.getElementById('spreadsheetCsvUrl').addEventListener('change', (e) => {
+        state.csvUrl = e.target.value.trim();
+        saveStateToStorage();
+      });
+
+      document.getElementById('btnRestoreSnapshot').addEventListener('click', () => {
+        state.residents = cleanResidents(REFERENCE_SPREADSHEET_SNAPSHOT, state.kkStatusMap);
+        state.sourceLabel = 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)';
+        state.currentPage = 1;
+        saveStateToStorage();
+        renderAll();
+        showToast(`Memuat ${state.residents.length} data warga acuan dari DATA KEPENDUDUKAN 2006 EXCEL (Jawaban).`, 'success');
+      });
+
+      document.getElementById('spreadsheetCsvFile').addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          ingestCsvText(String(ev.target?.result || ''), file.name);
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      document.getElementById('btnApplyPastedCsv').addEventListener('click', () => {
+        const raw = document.getElementById('spreadsheetPasteArea')?.value || '';
+        ingestCsvText(raw, 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)');
+      });
+
+      document.getElementById('btnAddAgeRange').addEventListener('click', addAgeRange);
+      document.getElementById('btnSaveAgeRanges').addEventListener('click', saveAgeRanges);
+      document.getElementById('btnResetAgeRanges').addEventListener('click', resetAgeRanges);
+
+      document.getElementById('searchResidentInput').addEventListener('input', (e) => {
+        state.searchQuery = e.target.value;
+        state.currentPage = 1;
+        renderResidentsMatrix();
+      });
+
+      document.getElementById('filterGenderSelect').addEventListener('change', (e) => {
+        state.genderFilter = e.target.value;
+        state.currentPage = 1;
+        renderResidentsMatrix();
+      });
+
+      document.getElementById('filterKkStatusSelect').addEventListener('change', (e) => {
+        state.kkStatusFilter = e.target.value;
+        state.currentPage = 1;
+        renderResidentsMatrix();
+      });
+
+      document.getElementById('filterAgeBracketSelect').addEventListener('change', (e) => {
+        state.ageRangeFilter = e.target.value;
+        state.currentPage = 1;
+        renderResidentsMatrix();
+      });
+
+      document.getElementById('pageSizeSelect').addEventListener('change', (e) => {
+        state.pageSize = parseInt(e.target.value, 10) || 25;
+        state.currentPage = 1;
+        renderResidentsMatrix();
+      });
+
+      document.getElementById('btnPrevPage').addEventListener('click', () => {
+        if (state.currentPage > 1) {
+          state.currentPage -= 1;
+          renderResidentsMatrix();
+        }
+      });
+
+      document.getElementById('btnNextPage').addEventListener('click', () => {
+        const totalPages = Math.max(1, Math.ceil(getFilteredResidents().length / state.pageSize));
+        if (state.currentPage < totalPages) {
+          state.currentPage += 1;
+          renderResidentsMatrix();
+        }
+      });
+
+      document.getElementById('btnResetFilters').addEventListener('click', () => {
+        state.searchQuery = '';
+        state.genderFilter = 'ALL';
+        state.kkStatusFilter = 'ALL';
+        state.ageRangeFilter = 'ALL';
+        state.currentPage = 1;
+        document.getElementById('searchResidentInput').value = '';
+        document.getElementById('filterGenderSelect').value = 'ALL';
+        document.getElementById('filterKkStatusSelect').value = 'ALL';
+        document.getElementById('filterAgeBracketSelect').value = 'ALL';
+        renderResidentsMatrix();
+        showToast('Filter matrik warga direset.', 'info');
+      });
+
+      document.getElementById('btnExportCsv').addEventListener('click', exportFilteredCsv);
+
+      // Kontrol modal & prompt instalasi PWA
+      const modal = document.getElementById('installGuideModal');
+      document.getElementById('btnOpenInstallGuide').addEventListener('click', () => {
+        if (deferredInstallPrompt && !detectStandaloneMode()) {
+          triggerNativePwaInstall();
+        } else {
+          openInstallGuideModal();
+        }
+      });
+      document.getElementById('btnBannerInstallGuide').addEventListener('click', openInstallGuideModal);
+      document.getElementById('btnTriggerNativeInstall').addEventListener('click', triggerNativePwaInstall);
+      document.getElementById('btnModalNativeInstall').addEventListener('click', triggerNativePwaInstall);
+      document.getElementById('btnCloseInstallGuide').addEventListener('click', closeInstallGuideModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeInstallGuideModal();
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initPwaLifecycle();
+      loadStateFromStorage();
+      bindUiEvents();
+      renderAll();
+    });
+  </script>
+</body>
+</html>
