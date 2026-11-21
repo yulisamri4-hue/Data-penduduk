@@ -411,7 +411,7 @@
     </section>
 
     <!-- 3B. Pengelompokan Berdasarkan Alamat (Warga & KK Aktif) -->
-    <section id="addressGroupSection" aria-label="Pengelompokan Berdasarkan Alamat" class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 sm:p-5 space-y-4">
+    <section id="addressGroupSection" aria-label="Pengelompokan Berdasarkan Alamat" class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 sm:p-5 space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3.5">
         <div>
           <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
@@ -443,6 +443,22 @@
           <tbody id="addressGroupTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
           <tfoot id="addressGroupTableFoot" class="bg-slate-50 font-bold text-slate-900 border-t-2 border-slate-200"></tfoot>
         </table>
+      </div>
+
+      <!-- Visualisasi Chart Pengelompokan Berdasarkan Alamat -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">Grafik Batang KK, Laki-Laki &amp; Perempuan per Alamat</h3>
+          <div class="chart-box">
+            <canvas id="addressBarChartCanvas"></canvas>
+          </div>
+        </div>
+        <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">Proporsi Jumlah Jiwa per Kelompok Alamat (Aktif)</h3>
+          <div class="chart-box">
+            <canvas id="addressShareChartCanvas"></canvas>
+          </div>
+        </div>
       </div>
 
       <!-- Rincian Warga per Kelompok Alamat: Nama Warga, NO KK, NIK, Tanggal Lahir -->
@@ -813,14 +829,14 @@
     ];
 
     const STORAGE_KEYS = {
-      residents: 'rt05_rw04_jrebeng_wetan_residents_v8',
-      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v8',
-      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v8',
-      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v8',
-      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v8',
-      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v8',
-      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v8',
-      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v8'
+      residents: 'rt05_rw04_jrebeng_wetan_residents_v9',
+      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v9',
+      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v9',
+      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v9',
+      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v9',
+      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v9',
+      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v9',
+      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v9'
     };
 
     let state = {
@@ -858,6 +874,8 @@
 
     let barChart = null;
     let shareChart = null;
+    let addressBarChart = null;
+    let addressShareChart = null;
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
@@ -1372,7 +1390,6 @@
     }
 
     // Perhitungan otomatis beracuan NAMA WARGA unik berstatus Aktif & mengecualikan warga Non-Aktif serta NO KK NON-AKTIF beserta anggotanya
-    // Sekaligus menjumlahkan secara lengkap jawaban YA dan TIDAK untuk UMKM, Disabilitas, dan Anak Yatim
     function summarizeResidents(list) {
       const items = Array.isArray(list) ? list : [];
 
@@ -2674,6 +2691,99 @@
       return '-';
     }
 
+    function renderAddressCharts(groups) {
+      if (typeof Chart === 'undefined') return;
+
+      const barCanvas = document.getElementById('addressBarChartCanvas');
+      const shareCanvas = document.getElementById('addressShareChartCanvas');
+
+      if (addressBarChart) {
+        addressBarChart.destroy();
+        addressBarChart = null;
+      }
+      if (addressShareChart) {
+        addressShareChart.destroy();
+        addressShareChart = null;
+      }
+
+      const list = Array.isArray(groups) ? groups : [];
+      const labels = list.map(g => g.label);
+      const kkSeries = list.map(g => g.kkSet.size);
+      const maleSeries = list.map(g => g.male);
+      const femaleSeries = list.map(g => g.female);
+      const totalSeries = list.map(g => g.total);
+
+      if (barCanvas) {
+        addressBarChart = new Chart(barCanvas.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Jumlah KK (Aktif)',
+                data: kkSeries,
+                backgroundColor: '#4f46e5',
+                borderRadius: 6
+              },
+              {
+                label: 'Laki-Laki (Aktif)',
+                data: maleSeries,
+                backgroundColor: '#0284c7',
+                borderRadius: 6
+              },
+              {
+                label: 'Perempuan (Aktif)',
+                data: femaleSeries,
+                backgroundColor: '#e11d48',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'top' }
+            },
+            scales: {
+              x: { stacked: false },
+              y: { beginAtZero: true, ticks: { precision: 0 } }
+            }
+          }
+        });
+      }
+
+      if (shareCanvas) {
+        addressShareChart = new Chart(shareCanvas.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Total Jiwa (Aktif)',
+                data: totalSeries,
+                backgroundColor: [
+                  '#d97706',
+                  '#0d9488',
+                  '#e11d48',
+                  '#4f46e5',
+                  '#0284c7',
+                  '#64748b'
+                ]
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'right' }
+            }
+          }
+        });
+      }
+    }
+
     function renderAddressDetailPanel(activeResidents, groups) {
       const detailSelect = document.getElementById('addressDetailGroupSelect');
       const titleEl = document.getElementById('addressDetailTitle');
@@ -2806,6 +2916,7 @@
           </tr>
         `;
         if (tfoot) tfoot.innerHTML = '';
+        renderAddressCharts([]);
         renderAddressDetailPanel([], []);
         return;
       }
@@ -2855,6 +2966,7 @@
         `;
       }
 
+      renderAddressCharts(groups);
       renderAddressDetailPanel(activeResidents, groups);
     }
 
