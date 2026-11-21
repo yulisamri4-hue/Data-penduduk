@@ -553,19 +553,24 @@
       </div>
     </section>
 
-    <!-- 4. Matrik Warga dengan Pencarian, Filter, Toggle Status Warga & Status KK, serta Ekspor CSV -->
+    <!-- 4. Matrik Warga (Diproteksi PIN Login) dengan Pencarian, Filter, Toggle Status Warga & Status KK, serta Ekspor CSV -->
     <section id="residentMatrixSection" aria-label="Matrik Warga" class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 sm:p-5 space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3.5">
         <div class="space-y-1">
-          <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
-            Matrik Warga
-          </h2>
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
+              Matrik Warga
+            </h2>
+            <span id="matrixLockStatusBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+              Terkunci PIN
+            </span>
+          </div>
           <p class="text-xs text-slate-500">
-            Acuan perhitungan otomatis: NAMA WARGA unik berstatus Aktif. Anda dapat mengubah status <strong>Aktif / Non-Aktif</strong> langsung pada tiap <strong>Nama Warga</strong> atau <strong>NO KK</strong>.
+            Akses data rinci warga pada Matrik Warga dilindungi PIN khusus pengurus/petugas berwenang.
           </p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div id="matrixUnlockedHeaderActions" class="hidden flex-wrap items-center gap-2">
           <button id="btnActivateAllVisibleResidents" type="button" class="px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold transition cursor-pointer">
             Aktifkan Warga Tersaring
           </button>
@@ -575,133 +580,198 @@
           <button id="btnResetFilters" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
             Reset Filter
           </button>
-        </div>
-      </div>
-
-      <!-- Ringkasan Cepat Status Warga (Aktif vs Non-Aktif) -->
-      <div id="residentStatusQuickBar" class="flex flex-wrap items-center justify-between gap-2 bg-indigo-50/50 border border-indigo-100 rounded-xl px-3.5 py-2.5 text-xs">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="font-bold text-slate-700">Ringkasan Nama Warga:</span>
-          <span id="quickBadgeActiveResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-indigo-100 text-indigo-900 border border-indigo-200">
-            0 Warga Aktif
-          </span>
-          <span id="quickBadgeInactiveResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-200">
-            0 Warga Non-Aktif
-          </span>
-          <span id="quickBadgeCountedResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-900 border border-emerald-200">
-            0 Terhitung (Warga &amp; KK Aktif)
-          </span>
-        </div>
-        <span class="text-[11px] text-slate-500">
-          Klik tombol pada kolom <strong>Aksi Warga &amp; KK</strong> untuk beralih Aktif / Non-Aktif.
-        </span>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-        <div class="lg:col-span-2">
-          <label for="searchResidentInput" class="block text-xs font-bold text-slate-700 mb-1">
-            Cari Nama Warga / NIK / NO KK / Alamat
-          </label>
-          <input id="searchResidentInput" type="search" placeholder="Ketik nama warga, NIK, NO KK, atau alamat..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-        </div>
-
-        <div>
-          <label for="filterAddressSelect" class="block text-xs font-bold text-slate-700 mb-1">
-            Alamat
-          </label>
-          <select id="filterAddressSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="ALL">Semua Alamat</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="filterResidentStatusSelect" class="block text-xs font-bold text-slate-700 mb-1">
-            Status Warga
-          </label>
-          <select id="filterResidentStatusSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="ALL">Semua Status Warga</option>
-            <option value="AKTIF">Warga Aktif</option>
-            <option value="NONAKTIF">Warga Non-Aktif</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="filterGenderSelect" class="block text-xs font-bold text-slate-700 mb-1">
-            Jenis Kelamin
-          </label>
-          <select id="filterGenderSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="ALL">Semua Jenis Kelamin</option>
-            <option value="LAKI-LAKI">Laki-Laki</option>
-            <option value="PEREMPUAN">Perempuan</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="filterKkStatusSelect" class="block text-xs font-bold text-slate-700 mb-1">
-            Status NO KK
-          </label>
-          <select id="filterKkStatusSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="ALL">Semua Status KK</option>
-            <option value="AKTIF">KK Aktif</option>
-            <option value="NONAKTIF">KK Non-Aktif</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="filterAgeBracketSelect" class="block text-xs font-bold text-slate-700 mb-1">
-            Rentang Umur
-          </label>
-          <select id="filterAgeBracketSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="ALL">Semua Rentang Umur</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-600">
-        <p id="matrixSummaryText">Menampilkan 0 data warga.</p>
-        <div class="flex items-center gap-2">
-          <label for="pageSizeSelect" class="font-semibold">Baris / halaman:</label>
-          <select id="pageSizeSelect" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs font-semibold">
-            <option value="25" selected>25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="250">250</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="table-scroll-wrap border border-slate-200 rounded-xl">
-        <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm">
-          <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
-            <tr>
-              <th class="px-3 py-3 text-left">No</th>
-              <th class="px-3 py-3 text-left">NO KK</th>
-              <th class="px-3 py-3 text-left">Status KK</th>
-              <th class="px-3 py-3 text-left">NIK</th>
-              <th class="px-3 py-3 text-left">Nama Warga</th>
-              <th class="px-3 py-3 text-left">Status Warga</th>
-              <th class="px-3 py-3 text-left">JK</th>
-              <th class="px-3 py-3 text-right">Umur</th>
-              <th class="px-3 py-3 text-center">UMKM</th>
-              <th class="px-3 py-3 text-center">Disabilitas</th>
-              <th class="px-3 py-3 text-center">Anak Yatim</th>
-              <th class="px-3 py-3 text-left">Alamat</th>
-              <th class="px-3 py-3 text-right">Aksi Warga &amp; KK</th>
-            </tr>
-          </thead>
-          <tbody id="residentsMatrixBody" class="divide-y divide-slate-100 bg-white"></tbody>
-        </table>
-      </div>
-
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
-        <p id="paginationInfoLabel" class="text-xs text-slate-500">Halaman 1 dari 1</p>
-        <div class="flex items-center gap-2">
-          <button id="btnPrevPage" type="button" class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 disabled:opacity-40 cursor-pointer">
-            ← Sebelumnya
+          <button id="btnLockMatrixPin" type="button" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition cursor-pointer">
+            Kunci Matrik
           </button>
-          <button id="btnNextPage" type="button" class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 disabled:opacity-40 cursor-pointer">
-            Berikutnya →
-          </button>
+        </div>
+      </div>
+
+      <!-- Layar Kunci PIN Login Khusus Matrik Warga -->
+      <div id="residentMatrixPinLockCard" class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-xl mx-auto my-2 space-y-4">
+        <div class="space-y-1 text-center">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-900 border border-indigo-200">
+            Akses Terbatas · PIN Matrik Warga
+          </span>
+          <h3 class="text-base sm:text-lg font-extrabold text-slate-900 pt-1">
+            Masukkan PIN Login untuk Membuka Matrik Warga
+          </h3>
+          <p class="text-xs text-slate-600">
+            Hanya petugas atau pengurus berwenang yang mengetahui PIN yang dapat melihat tabel Matrik Warga, mengubah status Aktif/Non-Aktif, atau mengekspor CSV. (PIN awal: <code class="font-mono font-bold text-slate-800">050426</code>)
+          </p>
+        </div>
+
+        <form id="matrixPinUnlockForm" class="space-y-3">
+          <div>
+            <label for="matrixPinInput" class="block text-xs font-bold text-slate-700 mb-1">
+              Kode PIN Matrik Warga
+            </label>
+            <input id="matrixPinInput" type="password" inputmode="numeric" autocomplete="off" placeholder="Masukkan kode PIN..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-mono tracking-widest text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+            <p id="matrixPinErrorText" class="hidden text-xs font-semibold text-rose-700 mt-1">
+              PIN salah. Silakan periksa kembali kode PIN Anda.
+            </p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-2">
+            <button id="btnUnlockMatrixPin" type="submit" class="flex-1 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition cursor-pointer">
+              Buka Matrik Warga
+            </button>
+            <button id="btnToggleChangePinPanel" type="button" class="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold transition cursor-pointer">
+              Ganti PIN
+            </button>
+          </div>
+        </form>
+
+        <!-- Panel Ganti PIN (Tersimpan di localStorage) -->
+        <div id="changePinPanel" class="hidden border-t border-slate-200 pt-3.5 space-y-2.5">
+          <p class="text-xs font-bold text-slate-800">Ubah Kode PIN Matrik Warga</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label for="currentPinForChangeInput" class="block text-[11px] font-bold text-slate-600 mb-1">PIN Saat Ini</label>
+              <input id="currentPinForChangeInput" type="password" inputmode="numeric" placeholder="PIN saat ini" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-mono text-slate-900" />
+            </div>
+            <div>
+              <label for="newPinInput" class="block text-[11px] font-bold text-slate-600 mb-1">PIN Baru (min. 4 digit)</label>
+              <input id="newPinInput" type="password" inputmode="numeric" placeholder="PIN baru" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-mono text-slate-900" />
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btnSaveNewMatrixPin" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition cursor-pointer">
+              Simpan PIN Baru
+            </button>
+            <button id="btnResetDefaultMatrixPin" type="button" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+              Reset PIN ke Default (050426)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Konten Matrik Warga (Tampil Setelah PIN Benar) -->
+      <div id="residentMatrixProtectedContent" class="hidden space-y-4">
+        <!-- Ringkasan Cepat Status Warga (Aktif vs Non-Aktif) -->
+        <div id="residentStatusQuickBar" class="flex flex-wrap items-center justify-between gap-2 bg-indigo-50/50 border border-indigo-100 rounded-xl px-3.5 py-2.5 text-xs">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-bold text-slate-700">Ringkasan Nama Warga:</span>
+            <span id="quickBadgeActiveResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-indigo-100 text-indigo-900 border border-indigo-200">
+              0 Warga Aktif
+            </span>
+            <span id="quickBadgeInactiveResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-900 border border-amber-200">
+              0 Warga Non-Aktif
+            </span>
+            <span id="quickBadgeCountedResidents" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-900 border border-emerald-200">
+              0 Terhitung (Warga &amp; KK Aktif)
+            </span>
+          </div>
+          <span class="text-[11px] text-slate-500">
+            Klik tombol pada kolom <strong>Aksi Warga &amp; KK</strong> untuk beralih Aktif / Non-Aktif.
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <div class="lg:col-span-2">
+            <label for="searchResidentInput" class="block text-xs font-bold text-slate-700 mb-1">
+              Cari Nama Warga / NIK / NO KK / Alamat
+            </label>
+            <input id="searchResidentInput" type="search" placeholder="Ketik nama warga, NIK, NO KK, atau alamat..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div>
+            <label for="filterAddressSelect" class="block text-xs font-bold text-slate-700 mb-1">
+              Alamat
+            </label>
+            <select id="filterAddressSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="ALL">Semua Alamat</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="filterResidentStatusSelect" class="block text-xs font-bold text-slate-700 mb-1">
+              Status Warga
+            </label>
+            <select id="filterResidentStatusSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="ALL">Semua Status Warga</option>
+              <option value="AKTIF">Warga Aktif</option>
+              <option value="NONAKTIF">Warga Non-Aktif</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="filterGenderSelect" class="block text-xs font-bold text-slate-700 mb-1">
+              Jenis Kelamin
+            </label>
+            <select id="filterGenderSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="ALL">Semua Jenis Kelamin</option>
+              <option value="LAKI-LAKI">Laki-Laki</option>
+              <option value="PEREMPUAN">Perempuan</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="filterKkStatusSelect" class="block text-xs font-bold text-slate-700 mb-1">
+              Status NO KK
+            </label>
+            <select id="filterKkStatusSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="ALL">Semua Status KK</option>
+              <option value="AKTIF">KK Aktif</option>
+              <option value="NONAKTIF">KK Non-Aktif</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="filterAgeBracketSelect" class="block text-xs font-bold text-slate-700 mb-1">
+              Rentang Umur
+            </label>
+            <select id="filterAgeBracketSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="ALL">Semua Rentang Umur</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-600">
+          <p id="matrixSummaryText">Menampilkan 0 data warga.</p>
+          <div class="flex items-center gap-2">
+            <label for="pageSizeSelect" class="font-semibold">Baris / halaman:</label>
+            <select id="pageSizeSelect" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs font-semibold">
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="250">250</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-scroll-wrap border border-slate-200 rounded-xl">
+          <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm">
+            <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+              <tr>
+                <th class="px-3 py-3 text-left">No</th>
+                <th class="px-3 py-3 text-left">NO KK</th>
+                <th class="px-3 py-3 text-left">Status KK</th>
+                <th class="px-3 py-3 text-left">NIK</th>
+                <th class="px-3 py-3 text-left">Nama Warga</th>
+                <th class="px-3 py-3 text-left">Status Warga</th>
+                <th class="px-3 py-3 text-left">JK</th>
+                <th class="px-3 py-3 text-right">Umur</th>
+                <th class="px-3 py-3 text-center">UMKM</th>
+                <th class="px-3 py-3 text-center">Disabilitas</th>
+                <th class="px-3 py-3 text-center">Anak Yatim</th>
+                <th class="px-3 py-3 text-left">Alamat</th>
+                <th class="px-3 py-3 text-right">Aksi Warga &amp; KK</th>
+              </tr>
+            </thead>
+            <tbody id="residentsMatrixBody" class="divide-y divide-slate-100 bg-white"></tbody>
+          </table>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+          <p id="paginationInfoLabel" class="text-xs text-slate-500">Halaman 1 dari 1</p>
+          <div class="flex items-center gap-2">
+            <button id="btnPrevPage" type="button" class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 disabled:opacity-40 cursor-pointer">
+              ← Sebelumnya
+            </button>
+            <button id="btnNextPage" type="button" class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 disabled:opacity-40 cursor-pointer">
+              Berikutnya →
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -786,6 +856,9 @@
     const DEFAULT_SPREADSHEET_CSV_URL =
       'https://docs.google.com/spreadsheets/d/1dxN0iXW5fOsNXBuBuTXaYhNqmm5sJRH5UnAMUYgjjeY/export?format=csv&gid=416751002';
 
+    // PIN default untuk membuka Matrik Warga (dapat diubah dan disimpan di localStorage)
+    const DEFAULT_MATRIX_PIN = '050426';
+
     const DEFAULT_AGE_RANGES = [
       { label: '0-5', min: 0, max: 5 },
       { label: '6-12', min: 6, max: 12 },
@@ -826,14 +899,15 @@
     ];
 
     const STORAGE_KEYS = {
-      residents: 'rt05_rw04_jrebeng_wetan_residents_v9',
-      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v9',
-      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v9',
-      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v9',
-      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v9',
-      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v9',
-      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v9',
-      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v9'
+      residents: 'rt05_rw04_jrebeng_wetan_residents_v10',
+      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v10',
+      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v10',
+      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v10',
+      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v10',
+      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v10',
+      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v10',
+      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v10',
+      matrixPin: 'rt05_rw04_jrebeng_wetan_matrix_pin_v10'
     };
 
     let state = {
@@ -845,6 +919,8 @@
       csvUrl: DEFAULT_SPREADSHEET_CSV_URL,
       formUrl: DEFAULT_GOOGLE_FORM_URL,
       sourceLabel: 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)',
+      matrixPin: DEFAULT_MATRIX_PIN,
+      matrixUnlocked: false,
       searchQuery: '',
       umkmSearchQuery: '',
       umkmPermitFilter: 'ALL',
@@ -1615,6 +1691,7 @@
         localStorage.setItem(STORAGE_KEYS.csvUrl, state.csvUrl);
         localStorage.setItem(STORAGE_KEYS.formUrl, state.formUrl);
         localStorage.setItem(STORAGE_KEYS.sourceLabel, state.sourceLabel);
+        localStorage.setItem(STORAGE_KEYS.matrixPin, String(state.matrixPin || DEFAULT_MATRIX_PIN));
       } catch (err) {
         console.error('Gagal menyimpan ke localStorage:', err);
       }
@@ -1630,6 +1707,13 @@
 
         const savedSource = localStorage.getItem(STORAGE_KEYS.sourceLabel);
         if (savedSource) state.sourceLabel = savedSource;
+
+        const savedPin = localStorage.getItem(STORAGE_KEYS.matrixPin);
+        if (savedPin && String(savedPin).trim().length >= 4) {
+          state.matrixPin = String(savedPin).trim();
+        } else {
+          state.matrixPin = DEFAULT_MATRIX_PIN;
+        }
 
         const savedKkMap = localStorage.getItem(STORAGE_KEYS.kkStatusMap);
         if (savedKkMap) {
@@ -1699,6 +1783,104 @@
       saveStateToStorage();
     }
 
+    // =========================================================================
+    // KONTROL PIN LOGIN KHUSUS MATRIK WARGA
+    // =========================================================================
+
+    function renderMatrixPinState() {
+      const badgeEl = document.getElementById('matrixLockStatusBadge');
+      const lockCardEl = document.getElementById('residentMatrixPinLockCard');
+      const protectedEl = document.getElementById('residentMatrixProtectedContent');
+      const unlockedActionsEl = document.getElementById('matrixUnlockedHeaderActions');
+
+      if (state.matrixUnlocked) {
+        if (badgeEl) {
+          badgeEl.textContent = 'Terbuka (PIN Terverifikasi)';
+          badgeEl.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300';
+        }
+        if (lockCardEl) lockCardEl.classList.add('hidden');
+        if (protectedEl) protectedEl.classList.remove('hidden');
+        if (unlockedActionsEl) {
+          unlockedActionsEl.classList.remove('hidden');
+          unlockedActionsEl.classList.add('flex');
+        }
+        renderResidentsMatrix();
+      } else {
+        if (badgeEl) {
+          badgeEl.textContent = 'Terkunci PIN';
+          badgeEl.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300';
+        }
+        if (lockCardEl) lockCardEl.classList.remove('hidden');
+        if (protectedEl) protectedEl.classList.add('hidden');
+        if (unlockedActionsEl) {
+          unlockedActionsEl.classList.add('hidden');
+          unlockedActionsEl.classList.remove('flex');
+        }
+      }
+    }
+
+    function unlockResidentMatrixWithPin(enteredPin) {
+      const cleanEntered = String(enteredPin ?? '').trim();
+      const errorEl = document.getElementById('matrixPinErrorText');
+      const pinInput = document.getElementById('matrixPinInput');
+
+      if (!cleanEntered || cleanEntered !== String(state.matrixPin || DEFAULT_MATRIX_PIN)) {
+        if (errorEl) errorEl.classList.remove('hidden');
+        showToast('PIN Matrik Warga salah. Akses ditolak.', 'error');
+        if (pinInput) {
+          pinInput.focus();
+          pinInput.select();
+        }
+        return;
+      }
+
+      if (errorEl) errorEl.classList.add('hidden');
+      if (pinInput) pinInput.value = '';
+      state.matrixUnlocked = true;
+      renderMatrixPinState();
+      showToast('PIN benar. Matrik Warga terbuka.', 'success');
+    }
+
+    function lockResidentMatrix() {
+      state.matrixUnlocked = false;
+      const pinInput = document.getElementById('matrixPinInput');
+      const errorEl = document.getElementById('matrixPinErrorText');
+      if (pinInput) pinInput.value = '';
+      if (errorEl) errorEl.classList.add('hidden');
+      renderMatrixPinState();
+      showToast('Matrik Warga dikunci kembali.', 'info');
+    }
+
+    function saveNewMatrixPin() {
+      const currentInp = document.getElementById('currentPinForChangeInput');
+      const newInp = document.getElementById('newPinInput');
+      const currentVal = String(currentInp?.value ?? '').trim();
+      const newVal = String(newInp?.value ?? '').trim();
+
+      if (currentVal !== String(state.matrixPin || DEFAULT_MATRIX_PIN)) {
+        showToast('PIN saat ini tidak sesuai.', 'error');
+        return;
+      }
+      if (newVal.length < 4) {
+        showToast('PIN baru minimal 4 karakter/digit.', 'warning');
+        return;
+      }
+
+      state.matrixPin = newVal;
+      saveStateToStorage();
+      if (currentInp) currentInp.value = '';
+      if (newInp) newInp.value = '';
+      document.getElementById('changePinPanel')?.classList.add('hidden');
+      showToast('PIN Matrik Warga berhasil diperbarui.', 'success');
+    }
+
+    function resetDefaultMatrixPin() {
+      state.matrixPin = DEFAULT_MATRIX_PIN;
+      saveStateToStorage();
+      document.getElementById('changePinPanel')?.classList.add('hidden');
+      showToast(`PIN dikembalikan ke default (${DEFAULT_MATRIX_PIN}).`, 'info');
+    }
+
     function applyFormUrlToUi() {
       const safeUrl = sanitizeHttpsUrl(state.formUrl, DEFAULT_GOOGLE_FORM_URL);
       state.formUrl = safeUrl;
@@ -1719,6 +1901,10 @@
     }
 
     function toggleResidentActiveStatus(nameKey) {
+      if (!state.matrixUnlocked) {
+        showToast('Buka kunci PIN Matrik Warga terlebih dahulu.', 'warning');
+        return;
+      }
       const cleanKey = normalizeName(nameKey);
       if (!cleanKey) return;
 
@@ -1750,6 +1936,10 @@
     }
 
     function activateAllFilteredResidents() {
+      if (!state.matrixUnlocked) {
+        showToast('Buka kunci PIN Matrik Warga terlebih dahulu.', 'warning');
+        return;
+      }
       const filtered = getFilteredResidents();
       const inactiveTargets = filtered.filter(r => r.residentActive === false);
       if (inactiveTargets.length === 0) {
@@ -1771,6 +1961,10 @@
     }
 
     function toggleKkActiveStatus(noKk) {
+      if (!state.matrixUnlocked) {
+        showToast('Buka kunci PIN Matrik Warga terlebih dahulu.', 'warning');
+        return;
+      }
       const cleanKk = normalizeIdNumber(noKk);
       if (!cleanKk) return;
 
@@ -2964,7 +3158,9 @@
       const addrSelect = document.getElementById('filterAddressSelect');
       if (addrSelect) addrSelect.value = state.addressFilter;
       renderAddressGrouping();
-      renderResidentsMatrix();
+      if (state.matrixUnlocked) {
+        renderResidentsMatrix();
+      }
       const detailPanel = document.getElementById('addressDetailPanel');
       if (detailPanel && nextKey !== 'ALL') {
         detailPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -3160,6 +3356,8 @@
     }
 
     function renderResidentsMatrix() {
+      if (!state.matrixUnlocked) return;
+
       const summary = summarizeResidents(state.residents);
       const filtered = getFilteredResidents();
       const totalFiltered = filtered.length;
@@ -3296,6 +3494,10 @@
     }
 
     function exportFilteredCsv() {
+      if (!state.matrixUnlocked) {
+        showToast('Buka kunci PIN Matrik Warga terlebih dahulu sebelum mengekspor CSV.', 'warning');
+        return;
+      }
       const rows = getFilteredResidents();
       if (rows.length === 0) {
         showToast('Tidak ada data warga untuk diekspor.', 'warning');
@@ -3374,7 +3576,7 @@
       renderAgeMatrixAndCharts();
       renderAddressGrouping();
       renderUmkmClassification();
-      renderResidentsMatrix();
+      renderMatrixPinState();
       renderPwaStatusUi();
     }
 
@@ -3450,6 +3652,22 @@
         state.umkmPermitFilter = e.target.value;
         renderUmkmClassification();
       });
+
+      // Event PIN Login Matrik Warga
+      document.getElementById('matrixPinUnlockForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pinVal = document.getElementById('matrixPinInput')?.value || '';
+        unlockResidentMatrixWithPin(pinVal);
+      });
+
+      document.getElementById('btnLockMatrixPin').addEventListener('click', lockResidentMatrix);
+
+      document.getElementById('btnToggleChangePinPanel').addEventListener('click', () => {
+        document.getElementById('changePinPanel')?.classList.toggle('hidden');
+      });
+
+      document.getElementById('btnSaveNewMatrixPin').addEventListener('click', saveNewMatrixPin);
+      document.getElementById('btnResetDefaultMatrixPin').addEventListener('click', resetDefaultMatrixPin);
 
       document.getElementById('btnActivateAllVisibleResidents').addEventListener('click', activateAllFilteredResidents);
 
