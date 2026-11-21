@@ -461,26 +461,58 @@
         </div>
       </div>
 
-      <!-- Rincian Warga per Kelompok Alamat: Nama Warga, NO KK, NIK, Tanggal Lahir -->
+      <!-- Rincian Warga per Kelompok Alamat (Diproteksi PIN Login): Nama Warga, NO KK, NIK, Tanggal Lahir -->
       <div id="addressDetailPanel" class="border border-amber-200 bg-amber-50/35 rounded-xl p-4 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div>
-            <h3 id="addressDetailTitle" class="text-sm font-extrabold text-slate-900">
-              Rincian Warga per Alamat (Warga &amp; KK Aktif)
-            </h3>
-            <p id="addressDetailSubtitle" class="text-xs text-slate-600 mt-0.5">
-              Menampilkan Nama Warga, NO KK, NIK, dan Tanggal Lahir berdasarkan kelompok alamat.
+          <div class="space-y-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 id="addressDetailTitle" class="text-sm font-extrabold text-slate-900">
+                Rincian Warga per Alamat (Warga &amp; KK Aktif)
+              </h3>
+              <span id="addressDetailLockBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                Terkunci PIN
+              </span>
+            </div>
+            <p id="addressDetailSubtitle" class="text-xs text-slate-600">
+              Menampilkan Nama Warga, NO KK, NIK, dan Tanggal Lahir berdasarkan kelompok alamat (khusus akses ber-PIN).
             </p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
+          <div id="addressDetailUnlockedControls" class="hidden flex-wrap items-center gap-2">
             <label for="addressDetailGroupSelect" class="text-xs font-bold text-slate-700">Kelompok:</label>
             <select id="addressDetailGroupSelect" class="px-3 py-1.5 rounded-xl border border-amber-300 bg-white text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
               <option value="ALL">Semua Kelompok Alamat Aktif</option>
             </select>
+            <button id="btnLockAddressDetailPin" type="button" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition cursor-pointer">
+              Kunci Rincian
+            </button>
           </div>
         </div>
 
-        <div class="table-scroll-wrap border border-slate-200 rounded-xl bg-white">
+        <!-- Layar Kunci PIN Login Khusus Rincian Warga per Alamat -->
+        <div id="addressDetailPinLockCard" class="bg-white border border-amber-200 rounded-xl p-4 sm:p-5 max-w-lg mx-auto space-y-3">
+          <div class="text-center space-y-1">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-900 border border-amber-200">
+              Akses Terbatas · PIN Rincian Warga per Alamat
+            </span>
+            <p class="text-xs text-slate-600">
+              Masukkan PIN untuk melihat daftar <strong>Nama Warga</strong>, <strong>NO KK</strong>, <strong>NIK</strong>, dan <strong>Tanggal Lahir</strong> per kelompok alamat.
+            </p>
+          </div>
+
+          <form id="addressDetailPinUnlockForm" class="flex flex-col sm:flex-row gap-2">
+            <label for="addressDetailPinInput" class="sr-only">Kode PIN Rincian Warga per Alamat</label>
+            <input id="addressDetailPinInput" type="password" inputmode="numeric" autocomplete="off" placeholder="Masukkan kode PIN..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm font-mono tracking-widest text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" required />
+            <button id="btnUnlockAddressDetailPin" type="submit" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold transition cursor-pointer shrink-0">
+              Buka Rincian
+            </button>
+          </form>
+          <p id="addressDetailPinErrorText" class="hidden text-xs font-semibold text-rose-700 text-center">
+            PIN salah. Silakan periksa kembali kode PIN Anda.
+          </p>
+        </div>
+
+        <!-- Tabel Rincian Warga per Alamat (Tampil Setelah PIN Benar) -->
+        <div id="addressDetailProtectedContent" class="hidden table-scroll-wrap border border-slate-200 rounded-xl bg-white">
           <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm">
             <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
               <tr>
@@ -856,7 +888,7 @@
     const DEFAULT_SPREADSHEET_CSV_URL =
       'https://docs.google.com/spreadsheets/d/1dxN0iXW5fOsNXBuBuTXaYhNqmm5sJRH5UnAMUYgjjeY/export?format=csv&gid=416751002';
 
-    // PIN default untuk membuka Matrik Warga (dapat diubah dan disimpan di localStorage)
+    // PIN default untuk membuka Matrik Warga & Rincian Warga per Alamat (dapat diubah dan disimpan di localStorage)
     const DEFAULT_MATRIX_PIN = '050426';
 
     const DEFAULT_AGE_RANGES = [
@@ -899,15 +931,15 @@
     ];
 
     const STORAGE_KEYS = {
-      residents: 'rt05_rw04_jrebeng_wetan_residents_v10',
-      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v10',
-      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v10',
-      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v10',
-      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v10',
-      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v10',
-      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v10',
-      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v10',
-      matrixPin: 'rt05_rw04_jrebeng_wetan_matrix_pin_v10'
+      residents: 'rt05_rw04_jrebeng_wetan_residents_v11',
+      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v11',
+      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v11',
+      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v11',
+      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v11',
+      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v11',
+      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v11',
+      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v11',
+      matrixPin: 'rt05_rw04_jrebeng_wetan_matrix_pin_v11'
     };
 
     let state = {
@@ -921,6 +953,7 @@
       sourceLabel: 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)',
       matrixPin: DEFAULT_MATRIX_PIN,
       matrixUnlocked: false,
+      addressDetailUnlocked: false,
       searchQuery: '',
       umkmSearchQuery: '',
       umkmPermitFilter: 'ALL',
@@ -1784,8 +1817,76 @@
     }
 
     // =========================================================================
-    // KONTROL PIN LOGIN KHUSUS MATRIK WARGA
+    // KONTROL PIN LOGIN KHUSUS MATRIK WARGA & RINCIAN WARGA PER ALAMAT
     // =========================================================================
+
+    function verifyPinValue(enteredPin) {
+      const cleanEntered = String(enteredPin ?? '').trim();
+      return Boolean(cleanEntered) && cleanEntered === String(state.matrixPin || DEFAULT_MATRIX_PIN);
+    }
+
+    function renderAddressDetailPinState() {
+      const badgeEl = document.getElementById('addressDetailLockBadge');
+      const lockCardEl = document.getElementById('addressDetailPinLockCard');
+      const protectedEl = document.getElementById('addressDetailProtectedContent');
+      const controlsEl = document.getElementById('addressDetailUnlockedControls');
+
+      if (state.addressDetailUnlocked) {
+        if (badgeEl) {
+          badgeEl.textContent = 'Terbuka (PIN Terverifikasi)';
+          badgeEl.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300';
+        }
+        if (lockCardEl) lockCardEl.classList.add('hidden');
+        if (protectedEl) protectedEl.classList.remove('hidden');
+        if (controlsEl) {
+          controlsEl.classList.remove('hidden');
+          controlsEl.classList.add('flex');
+        }
+      } else {
+        if (badgeEl) {
+          badgeEl.textContent = 'Terkunci PIN';
+          badgeEl.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300';
+        }
+        if (lockCardEl) lockCardEl.classList.remove('hidden');
+        if (protectedEl) protectedEl.classList.add('hidden');
+        if (controlsEl) {
+          controlsEl.classList.add('hidden');
+          controlsEl.classList.remove('flex');
+        }
+      }
+    }
+
+    function unlockAddressDetailWithPin(enteredPin) {
+      const errorEl = document.getElementById('addressDetailPinErrorText');
+      const pinInput = document.getElementById('addressDetailPinInput');
+
+      if (!verifyPinValue(enteredPin)) {
+        if (errorEl) errorEl.classList.remove('hidden');
+        showToast('PIN Rincian Warga per Alamat salah. Akses ditolak.', 'error');
+        if (pinInput) {
+          pinInput.focus();
+          pinInput.select();
+        }
+        return;
+      }
+
+      if (errorEl) errorEl.classList.add('hidden');
+      if (pinInput) pinInput.value = '';
+      state.addressDetailUnlocked = true;
+      renderAddressDetailPinState();
+      renderAddressGrouping();
+      showToast('PIN benar. Rincian Warga per Alamat terbuka.', 'success');
+    }
+
+    function lockAddressDetailPin() {
+      state.addressDetailUnlocked = false;
+      const pinInput = document.getElementById('addressDetailPinInput');
+      const errorEl = document.getElementById('addressDetailPinErrorText');
+      if (pinInput) pinInput.value = '';
+      if (errorEl) errorEl.classList.add('hidden');
+      renderAddressDetailPinState();
+      showToast('Rincian Warga per Alamat dikunci kembali.', 'info');
+    }
 
     function renderMatrixPinState() {
       const badgeEl = document.getElementById('matrixLockStatusBadge');
@@ -1820,11 +1921,10 @@
     }
 
     function unlockResidentMatrixWithPin(enteredPin) {
-      const cleanEntered = String(enteredPin ?? '').trim();
       const errorEl = document.getElementById('matrixPinErrorText');
       const pinInput = document.getElementById('matrixPinInput');
 
-      if (!cleanEntered || cleanEntered !== String(state.matrixPin || DEFAULT_MATRIX_PIN)) {
+      if (!verifyPinValue(enteredPin)) {
         if (errorEl) errorEl.classList.remove('hidden');
         showToast('PIN Matrik Warga salah. Akses ditolak.', 'error');
         if (pinInput) {
@@ -1871,7 +1971,7 @@
       if (currentInp) currentInp.value = '';
       if (newInp) newInp.value = '';
       document.getElementById('changePinPanel')?.classList.add('hidden');
-      showToast('PIN Matrik Warga berhasil diperbarui.', 'success');
+      showToast('PIN berhasil diperbarui untuk Rincian Warga & Matrik Warga.', 'success');
     }
 
     function resetDefaultMatrixPin() {
@@ -2965,11 +3065,12 @@
     }
 
     function renderAddressDetailPanel(activeResidents, groups) {
+      renderAddressDetailPinState();
+
       const detailSelect = document.getElementById('addressDetailGroupSelect');
       const titleEl = document.getElementById('addressDetailTitle');
       const subtitleEl = document.getElementById('addressDetailSubtitle');
       const tbody = document.getElementById('addressDetailTableBody');
-      if (!tbody) return;
 
       const validKeys = new Set(groups.map(g => g.key));
       if (state.addressDetailGroup !== 'ALL' && !validKeys.has(state.addressDetailGroup)) {
@@ -2992,11 +3093,15 @@
         : getSimplifiedAddressLabel(state.addressDetailGroup);
 
       if (titleEl) {
-        titleEl.textContent = `Rincian Warga — ${activeGroupLabel} (${detailRows.length} Jiwa)`;
+        titleEl.textContent = state.addressDetailUnlocked
+          ? `Rincian Warga — ${activeGroupLabel} (${detailRows.length} Jiwa)`
+          : `Rincian Warga — ${activeGroupLabel} (Terkunci PIN)`;
       }
       if (subtitleEl) {
-        subtitleEl.textContent = `Menampilkan Nama Warga, NO KK, NIK, dan Tanggal Lahir untuk kelompok "${activeGroupLabel}" (hanya warga & KK aktif terhitung).`;
+        subtitleEl.textContent = `Menampilkan Nama Warga, NO KK, NIK, dan Tanggal Lahir untuk kelompok "${activeGroupLabel}" (khusus akses ber-PIN, warga & KK aktif).`;
       }
+
+      if (!state.addressDetailUnlocked || !tbody) return;
 
       if (detailRows.length === 0) {
         tbody.innerHTML = `
@@ -3164,6 +3269,9 @@
       const detailPanel = document.getElementById('addressDetailPanel');
       if (detailPanel && nextKey !== 'ALL') {
         detailPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (!state.addressDetailUnlocked) {
+          document.getElementById('addressDetailPinInput')?.focus();
+        }
       }
     }
 
@@ -3642,6 +3750,15 @@
       document.getElementById('btnAddAgeRange').addEventListener('click', addAgeRange);
       document.getElementById('btnSaveAgeRanges').addEventListener('click', saveAgeRanges);
       document.getElementById('btnResetAgeRanges').addEventListener('click', resetAgeRanges);
+
+      // Event PIN Login Rincian Warga per Alamat
+      document.getElementById('addressDetailPinUnlockForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pinVal = document.getElementById('addressDetailPinInput')?.value || '';
+        unlockAddressDetailWithPin(pinVal);
+      });
+
+      document.getElementById('btnLockAddressDetailPin').addEventListener('click', lockAddressDetailPin);
 
       document.getElementById('searchUmkmInput').addEventListener('input', (e) => {
         state.umkmSearchQuery = e.target.value;
