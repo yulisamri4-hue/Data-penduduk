@@ -232,7 +232,7 @@
               Rekapitulasi Jawaban Ya / Tidak (Warga &amp; KK Aktif)
             </h2>
             <p class="text-xs text-slate-500">
-              Penjumlahan otomatis jawaban <strong>Ya</strong> dan <strong>Tidak</strong> yang disinkronkan dari seluruh kolom survei (UMKM, Disabilitas, dan Anak Yatim). Total Ya + Tidak selalu sama dengan jumlah penduduk aktif terhitung.
+              Penjumlahan otomatis jawaban <strong>Ya</strong> dan <strong>Tidak</strong> pada warga &amp; KK aktif. Total Ya + Tidak selalu sama dengan jumlah penduduk aktif terhitung.
             </p>
           </div>
           <span id="yesNoAuditBadge" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -498,28 +498,25 @@
       </div>
     </section>
 
-    <!-- 3C. Klasifikasi UMKM: Nama, NIK, NO KK, Perijinan, Nama Produk -->
+    <!-- 3C. Klasifikasi UMKM: Nama, NIK, NO KK, Perijinan, Nama Produk (Acuan Jawaban YA Pertanyaan Pengusaha UMKM) -->
     <section id="umkmClassificationSection" aria-label="Klasifikasi UMKM" class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 sm:p-5 space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3.5">
         <div class="space-y-1">
           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-50 text-orange-800 border border-orange-200">
-            Klasifikasi Usaha Mikro, Kecil &amp; Menengah (Warga &amp; KK Aktif)
+            Klasifikasi UMKM · Jawaban "YA" pada Pertanyaan "Apakah Anda Pengusaha UMKM" (Warga &amp; KK Aktif)
           </span>
           <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
             Klasifikasi UMKM — Nama, NIK, NO KK, Perijinan &amp; Nama Produk
           </h2>
           <p class="text-xs text-slate-500">
-            Menampilkan warga aktif pada KK aktif dengan status UMKM <strong>YA</strong> (atau yang memiliki data Nama Produk / Perijinan). Anda juga dapat menyunting <strong>Perijinan</strong> dan <strong>Nama Produk</strong> langsung dan menyimpannya ke browser.
+            Dikelompokkan otomatis dari warga aktif pada KK aktif dengan jawaban <strong>YA</strong> pada kolom pertanyaan <strong>Apakah Anda Pengusaha UMKM</strong>, lengkap dengan rincian <strong>Nama</strong>, <strong>NIK</strong>, <strong>NO KK</strong>, <strong>Perijinan</strong>, dan <strong>Nama Produk</strong>.
           </p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
           <span id="umkmClassificationCountBadge" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-900 border border-orange-200">
-            0 Pelaku UMKM
+            0 Pengusaha UMKM (YA)
           </span>
-          <button id="btnToggleShowAllUmkmResidents" type="button" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs font-bold transition cursor-pointer">
-            Tampilkan Semua Warga Aktif
-          </button>
         </div>
       </div>
 
@@ -851,7 +848,6 @@
       searchQuery: '',
       umkmSearchQuery: '',
       umkmPermitFilter: 'ALL',
-      showAllUmkmResidents: false,
       editingUmkmKey: '',
       addressFilter: 'ALL',
       addressDetailGroup: 'ALL',
@@ -1290,17 +1286,13 @@
         const bulanRaw = pickColumnValue(item, ['bulan', 'BULAN']);
         const hariRaw = pickColumnValue(item, ['hari', 'HARI']);
         const alamatRaw = pickColumnValue(item, ['alamat', 'ALAMAT SEKARANG', 'ALAMAT'], ['ALAMAT']);
-        const umkmRaw = pickColumnValue(item, ['umkm', 'PENGUSAHA UMKM', 'UMKM'], ['PENGUSAHA UMKM', 'UMKM']);
-        const perijinanRaw = pickColumnValue(
+        const umkmRaw = pickColumnValue(
           item,
-          ['perijinan', 'PERIJINAN', 'PERIZINAN', 'IJIN USAHA', 'IZIN USAHA', 'STATUS IJIN', 'LEGALITAS'],
-          ['PERIJINAN', 'PERIZINAN', 'IJIN', 'IZIN', 'NIB', 'LEGALITAS']
+          ['umkm', 'PENGUSAHA UMKM', 'UMKM', 'APAKAH ANDA PENGUSAHA UMKM'],
+          ['PENGUSAHA UMKM', 'UMKM']
         );
-        const namaProdukRaw = pickColumnValue(
-          item,
-          ['nama_produk', 'NAMA PRODUK', 'PRODUK', 'nama_umkm', 'NAMA UMKM', 'NAMA USAHA', 'USAHA', 'BIDANG USAHA'],
-          ['NAMA PRODUK', 'PRODUK', 'NAMA UMKM', 'NAMA USAHA', 'USAHA']
-        );
+        const perijinanRaw = pickColumnValue(item, ['perijinan', 'PERIJINAN', 'PERIZINAN', 'IJIN USAHA', 'IZIN USAHA', 'STATUS IJIN'], ['PERIJINAN', 'PERIZINAN', 'IJIN', 'IZIN']);
+        const namaProdukRaw = pickColumnValue(item, ['nama_produk', 'NAMA PRODUK', 'PRODUK', 'nama_umkm', 'NAMA UMKM', 'NAMA USAHA', 'USAHA'], ['NAMA PRODUK', 'PRODUK', 'NAMA UMKM', 'NAMA USAHA']);
         const disabilitasRaw = pickColumnValue(item, ['disabilitas', 'DISABILITAS'], ['DISABILITAS']);
         const anakYatimRaw = pickColumnValue(item, ['anak_yatim', 'ANAK YATIM <= 12 TAHUN', 'ANAK YATIM'], ['YATIM']);
 
@@ -1351,12 +1343,6 @@
         }
 
         const savedUmkm = umkmMetaLookup.get(nameKey);
-        const finalPerijinan = savedUmkm && savedUmkm.perijinan !== undefined && savedUmkm.perijinan !== ''
-          ? savedUmkm.perijinan
-          : rowPerijinan;
-        const finalNamaProduk = savedUmkm && savedUmkm.nama_umkm !== undefined && savedUmkm.nama_umkm !== ''
-          ? savedUmkm.nama_umkm
-          : rowNamaProduk;
 
         normalizedRows.push({
           id: `res-${idx + 1}-${nameKey}`,
@@ -1369,8 +1355,8 @@
           umur,
           alamat,
           umkm,
-          perijinan: finalPerijinan,
-          nama_umkm: finalNamaProduk,
+          perijinan: savedUmkm ? savedUmkm.perijinan : rowPerijinan,
+          nama_umkm: savedUmkm ? savedUmkm.nama_umkm : rowNamaProduk,
           disabilitas,
           anak_yatim: anakYatim,
           kkActive: noKk && kkActiveLookup.has(noKk) ? kkActiveLookup.get(noKk) : rowKkActive,
@@ -2986,7 +2972,7 @@
     }
 
     // =========================================================================
-    // KLASIFIKASI UMKM: NAMA, NIK, NO KK, PERIJINAN, NAMA PRODUK
+    // KLASIFIKASI UMKM: ACUAN JAWABAN "YA" PERTANYAAN PENGUSAHA UMKM
     // =========================================================================
 
     function isUmkmLicensed(perijinanText) {
@@ -3022,20 +3008,15 @@
         nama_umkm: nextNamaProduk
       };
 
-      state.residents = state.residents.map(r => {
-        if (r.nameKey !== cleanKey) return r;
-        const shouldMarkUmkm = r.umkm === 'YA' || Boolean(nextNamaProduk) || Boolean(nextPerijinan);
-        return {
-          ...r,
-          umkm: shouldMarkUmkm ? 'YA' : r.umkm,
-          perijinan: nextPerijinan,
-          nama_umkm: nextNamaProduk
-        };
-      });
+      state.residents = state.residents.map(r =>
+        r.nameKey === cleanKey
+          ? { ...r, perijinan: nextPerijinan, nama_umkm: nextNamaProduk }
+          : r
+      );
 
       state.editingUmkmKey = '';
       saveStateToStorage();
-      renderAll();
+      renderUmkmClassification();
       showToast('Data Perijinan & Nama Produk berhasil disimpan.', 'success');
     }
 
@@ -3043,28 +3024,17 @@
       const summary = summarizeResidents(state.residents);
       const activeResidents = summary.activeResidents;
 
-      const umkmActiveList = activeResidents.filter(r =>
-        normalizeYesNo(r.umkm) === 'YA' ||
-        Boolean(String(r.nama_umkm ?? '').trim()) ||
-        Boolean(String(r.perijinan ?? '').trim())
-      );
+      // Klasifikasi UMKM selalu beracuan pada jawaban "YA" pertanyaan "Apakah Anda Pengusaha UMKM"
+      const umkmYesResidents = activeResidents.filter(r => normalizeYesNo(r.umkm) === 'YA');
 
       const badge = document.getElementById('umkmClassificationCountBadge');
       if (badge) {
-        badge.textContent = `${umkmActiveList.length} Pelaku UMKM (Aktif)`;
+        badge.textContent = `${umkmYesResidents.length} Pengusaha UMKM (YA)`;
       }
 
-      const toggleShowAllBtn = document.getElementById('btnToggleShowAllUmkmResidents');
-      if (toggleShowAllBtn) {
-        toggleShowAllBtn.textContent = state.showAllUmkmResidents
-          ? 'Tampilkan Hanya Pelaku UMKM'
-          : 'Tampilkan Semua Warga Aktif';
-      }
-
-      const baseRows = state.showAllUmkmResidents ? activeResidents : umkmActiveList;
       const q = String(state.umkmSearchQuery ?? '').trim().toLowerCase();
 
-      const filteredRows = baseRows.filter(r => {
+      const filteredRows = umkmYesResidents.filter(r => {
         const permitStr = String(r.perijinan ?? '').trim();
         const licensed = isUmkmLicensed(permitStr);
 
@@ -3085,9 +3055,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="7" class="px-4 py-6 text-center text-slate-500">
-              ${umkmActiveList.length === 0
-                ? 'Belum ada warga aktif berstatus UMKM = YA. Klik "Tampilkan Semua Warga Aktif" untuk mengisi data Perijinan & Nama Produk.'
-                : 'Tidak ada data klasifikasi UMKM yang sesuai dengan pencarian/filter saat ini.'}
+              Tidak ada warga aktif dengan jawaban "YA" pada pertanyaan "Apakah Anda Pengusaha UMKM" yang sesuai dengan filter saat ini.
             </td>
           </tr>
         `;
@@ -3097,7 +3065,7 @@
       tbody.innerHTML = filteredRows.map((r, idx) => {
         const isEditing = state.editingUmkmKey === r.nameKey;
         const permitDisplay = String(r.perijinan ?? '').trim() || 'Belum Diisi';
-        const productNameDisplay = String(r.nama_umkm ?? '').trim() || (normalizeYesNo(r.umkm) === 'YA' ? 'Produk Warga (Belum Diisi)' : '-');
+        const productNameDisplay = String(r.nama_umkm ?? '').trim() || 'Belum Diisi';
         const licensed = isUmkmLicensed(r.perijinan);
 
         const permitBadge = licensed
@@ -3480,11 +3448,6 @@
 
       document.getElementById('filterUmkmPermitSelect').addEventListener('change', (e) => {
         state.umkmPermitFilter = e.target.value;
-        renderUmkmClassification();
-      });
-
-      document.getElementById('btnToggleShowAllUmkmResidents').addEventListener('click', () => {
-        state.showAllUmkmResidents = !state.showAllUmkmResidents;
         renderUmkmClassification();
       });
 
