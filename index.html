@@ -1976,7 +1976,7 @@
         return false;
       }
       try {
-        // Hindari data URL terlalu besar (>900KB) yang melebihi batas dokumen
+        // Hindari data URL terlalu besar (>700KB) yang melebihi batas dokumen
         const safeSlides = getActiveSlides()
           .filter(s => !String(s.url || '').startsWith('data:image/') || String(s.url || '').length < 700000)
           .map(s => ({
