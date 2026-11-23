@@ -220,7 +220,7 @@
         <div id="headerAdminEditorForm" class="hidden space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
             <span class="text-xs font-extrabold text-emerald-800">
-              Mode Admin Aktif · Perubahan dapat dibagikan lewat URL (?h=...)
+              Mode Admin Aktif · Perubahan tersimpan otomatis &amp; tersinkronisasi lewat URL (?h=...)
             </span>
             <button id="btnLockHeaderAdmin" type="button" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold cursor-pointer">
               Kunci Admin
@@ -794,7 +794,7 @@
             <button id="btnSaveNewMatrixPin" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
               Simpan PIN Baru
             </button>
-            <button id="btnResetDefaultMatrixPin" type="button" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer">
+            <button id="btnResetDefaultMatrixPin" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer">
               Reset PIN ke Default (050426)
             </button>
           </div>
@@ -1796,6 +1796,33 @@
       return baseUrl;
     }
 
+    // Sinkronkan parameter ?h= pada URL browser secara diam-diam agar pengguna yang membuka tautan langsung menerima pembaruan
+    function syncHeaderUrlQueryParam(hasDataUrlSlides = false) {
+      if (window.location.protocol === 'file:') return;
+      try {
+        const urlObj = new URL(window.location.href);
+        if (hasDataUrlSlides) {
+          urlObj.searchParams.delete('h');
+          window.history.replaceState({}, '', urlObj.toString());
+          return;
+        }
+        const payload = {
+          title: state.headerBranding.title,
+          subtitle: state.headerBranding.subtitle,
+          linkLabel: state.headerBranding.linkLabel,
+          linkUrl: state.headerBranding.linkUrl,
+          slides: state.headerBranding.slides.filter(s => !String(s.url || '').startsWith('data:image/'))
+        };
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        if (encoded.length < 4500) {
+          urlObj.searchParams.set('h', encoded);
+          window.history.replaceState({}, '', urlObj.toString());
+        }
+      } catch (_) {
+        // Abaikan jika replaceState dibatasi konteks
+      }
+    }
+
     function loadStateFromStorage() {
       try {
         const savedUrl = localStorage.getItem(STORAGE_KEYS.csvUrl);
@@ -1832,6 +1859,12 @@
         if (urlSharedBranding) {
           state.headerBranding = urlSharedBranding;
           state.formUrl = urlSharedBranding.linkUrl;
+          try {
+            localStorage.setItem(STORAGE_KEYS.headerBranding, JSON.stringify(state.headerBranding));
+            localStorage.setItem(STORAGE_KEYS.formUrl, state.formUrl);
+          } catch (_) {
+            // Abaikan error penyimpanan
+          }
         }
 
         const savedKkMap = localStorage.getItem(STORAGE_KEYS.kkStatusMap);
@@ -1943,6 +1976,7 @@
     function renderHeaderBrandingUi() {
       const hb = state.headerBranding || DEFAULT_HEADER_BRANDING;
       document.getElementById('headerMainTitle').textContent = hb.title || DEFAULT_HEADER_BRANDING.title;
+      document.title = hb.title || DEFAULT_HEADER_BRANDING.title;
       document.getElementById('headerSubtitleText').textContent = hb.subtitle || DEFAULT_HEADER_BRANDING.subtitle;
       document.getElementById('headerUrlLinkLabel').textContent = hb.linkLabel || DEFAULT_HEADER_BRANDING.linkLabel;
 
@@ -2961,7 +2995,7 @@
       }
     }
 
-    async function syncCsvFromUrl() {
+    async function syncCsvFromUrl(isSilentAutoSync = false) {
       const btn = document.getElementById('btnSyncCsvUrl');
       const inputEl = document.getElementById('spreadsheetCsvUrl');
       const normalizedUrl = normalizeGoogleSheetsCsvUrl(inputEl ? inputEl.value : state.csvUrl);
@@ -2970,11 +3004,11 @@
       saveStateToStorage();
 
       if (!normalizedUrl) {
-        showToast('Masukkan URL CSV publik spreadsheet terlebih dahulu.', 'warning');
+        if (!isSilentAutoSync) showToast('Masukkan URL CSV publik spreadsheet terlebih dahulu.', 'warning');
         return;
       }
 
-      if (btn) {
+      if (btn && !isSilentAutoSync) {
         btn.disabled = true;
         btn.textContent = 'Menyinkronkan...';
       }
@@ -2983,12 +3017,32 @@
         const resp = await fetch(normalizedUrl, { cache: 'no-store' });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const text = await resp.text();
-        ingestCsvText(text, 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)');
+        const parsedRows = parseSpreadsheetRowsSmart(text);
+        const cleaned = cleanResidents(
+          parsedRows,
+          state.kkStatusMap,
+          state.residentStatusMap,
+          state.umkmMetaMap
+        );
+        if (cleaned.length > 0) {
+          state.residents = cleaned;
+          state.sourceLabel = 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)';
+          state.currentPage = 1;
+          saveStateToStorage();
+          renderAll();
+          if (!isSilentAutoSync) {
+            showToast(`Berhasil memuat ${cleaned.length} data warga.`, 'success');
+          }
+        } else if (!isSilentAutoSync) {
+          showToast('Tidak ditemukan baris warga valid pada data CSV/spreadsheet.', 'warning');
+        }
       } catch (err) {
         console.error('Gagal sinkron URL CSV:', err);
-        showToast('Gagal mengambil URL CSV langsung. Coba unggah file CSV atau tempel baris data.', 'error');
+        if (!isSilentAutoSync) {
+          showToast('Gagal mengambil URL CSV langsung. Coba unggah file CSV atau tempel baris data.', 'error');
+        }
       } finally {
-        if (btn) {
+        if (btn && !isSilentAutoSync) {
           btn.disabled = false;
           btn.textContent = 'Sinkron URL CSV';
         }
@@ -3166,7 +3220,9 @@
           slides: getActiveSlides().map(s => ({ ...s }))
         };
         state.formUrl = nextLinkUrl;
+        const hasUploadedDataUrl = state.headerBranding.slides.some(s => String(s.url || '').startsWith('data:image/'));
         saveStateToStorage();
+        syncHeaderUrlQueryParam(hasUploadedDataUrl);
         renderHeaderBrandingUi();
         applyFormUrlToUi();
         showToast('Perubahan header & slideshow berhasil disimpan.', 'success');
@@ -3181,6 +3237,7 @@
         state.formUrl = DEFAULT_GOOGLE_FORM_URL;
         state.currentSlideIndex = 0;
         saveStateToStorage();
+        syncHeaderUrlQueryParam(false);
         syncHeaderAdminPanelState();
         renderHeaderBrandingUi();
         applyFormUrlToUi();
@@ -3216,7 +3273,7 @@
         showToast('Link Google Form direset ke default.', 'info');
       });
 
-      document.getElementById('btnSyncCsvUrl')?.addEventListener('click', syncCsvFromUrl);
+      document.getElementById('btnSyncCsvUrl')?.addEventListener('click', () => syncCsvFromUrl(false));
       document.getElementById('spreadsheetCsvUrl')?.addEventListener('change', (e) => {
         state.csvUrl = normalizeGoogleSheetsCsvUrl(e.target.value.trim());
         e.target.value = state.csvUrl;
@@ -3483,6 +3540,22 @@
       modal?.addEventListener('click', (e) => {
         if (e.target === modal) closeGuide();
       });
+
+      // Sinkronisasi otomatis saat tab/link dibuka atau difokuskan kembali
+      window.addEventListener('storage', (e) => {
+        if (Object.values(STORAGE_KEYS).includes(e.key)) {
+          loadStateFromStorage();
+          renderAll();
+        }
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          loadStateFromStorage();
+          renderAll();
+          syncCsvFromUrl(true);
+        }
+      });
     }
 
     window.goToHeaderSlide = goToHeaderSlide;
@@ -3501,6 +3574,7 @@
       bindUiEvents();
       renderAll();
       startSlideshowTimer();
+      syncCsvFromUrl(true);
     }
 
     if (document.readyState === 'loading') {
