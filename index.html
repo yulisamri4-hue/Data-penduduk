@@ -21,6 +21,23 @@
   <!-- Chart.js & PapaParse CDN untuk visualisasi dan parsing CSV/TSV penuh -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Modul Firebase untuk sinkronisasi perubahan admin ke semua user -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    window.__CLOUD_SYNC_MODULE__ = {
+      initializeApp,
+      getAuth,
+      signInAnonymously,
+      signInWithCustomToken,
+      getFirestore,
+      doc,
+      setDoc,
+      onSnapshot
+    };
+  </script>
 
   <style>
     :root {
@@ -1102,6 +1119,16 @@
     let addressShareChart = null;
     let headerSlideTimer = null;
 
+    // Status sinkronisasi awan lintas perangkat/user
+    let cloudSyncState = {
+      enabled: false,
+      db: null,
+      appId: 'default-app-id',
+      userId: null,
+      docRef: null,
+      unsubscribe: null
+    };
+
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
       if (!container) return;
@@ -1912,6 +1939,125 @@
       );
       state.sourceLabel = 'DATA KEPENDUDUKAN 2006 EXCEL (Jawaban)';
       saveStateToStorage();
+    }
+
+    // Menerapkan payload header bersama dari penyimpanan awan ke state lokal & UI
+    function applyRemoteHeaderBranding(remoteData) {
+      if (!remoteData || typeof remoteData !== 'object') return;
+      const incomingSlides = Array.isArray(remoteData.slides) && remoteData.slides.length > 0
+        ? remoteData.slides.map(s => ({
+            url: sanitizeHttpsUrl(s?.url, DEFAULT_HEADER_BRANDING.slides[0].url),
+            caption: String(s?.caption || 'Foto RT05/RW04 Jrebeng Wetan').trim()
+          }))
+        : state.headerBranding.slides;
+
+      state.headerBranding = {
+        title: String(remoteData.title || DEFAULT_HEADER_BRANDING.title).trim(),
+        subtitle: String(remoteData.subtitle || DEFAULT_HEADER_BRANDING.subtitle).trim(),
+        linkLabel: String(remoteData.linkLabel || DEFAULT_HEADER_BRANDING.linkLabel).trim(),
+        linkUrl: sanitizeHttpsUrl(remoteData.linkUrl, DEFAULT_GOOGLE_FORM_URL),
+        slides: incomingSlides
+      };
+      state.formUrl = state.headerBranding.linkUrl;
+      if (remoteData.csvUrl) {
+        state.csvUrl = normalizeGoogleSheetsCsvUrl(remoteData.csvUrl);
+      }
+      saveStateToStorage();
+      renderHeaderBrandingUi();
+      applyFormUrlToUi();
+      if (state.headerAdminUnlocked) {
+        syncHeaderAdminPanelState();
+      }
+    }
+
+    // Mengirim pembaruan header admin ke koleksi publik agar tampil di semua user
+    async function publishHeaderBrandingToAllUsers() {
+      if (!cloudSyncState.enabled || !cloudSyncState.docRef || !cloudSyncState.userId) {
+        return false;
+      }
+      try {
+        // Hindari data URL terlalu besar (>900KB) yang melebihi batas dokumen
+        const safeSlides = getActiveSlides()
+          .filter(s => !String(s.url || '').startsWith('data:image/') || String(s.url || '').length < 700000)
+          .map(s => ({
+            url: sanitizeHttpsUrl(s.url, DEFAULT_HEADER_BRANDING.slides[0].url),
+            caption: String(s.caption || 'Foto RT05/RW04 Jrebeng Wetan').trim()
+          }));
+
+        const payload = {
+          title: state.headerBranding.title,
+          subtitle: state.headerBranding.subtitle,
+          linkLabel: state.headerBranding.linkLabel,
+          linkUrl: sanitizeHttpsUrl(state.headerBranding.linkUrl, DEFAULT_GOOGLE_FORM_URL),
+          csvUrl: normalizeGoogleSheetsCsvUrl(state.csvUrl || DEFAULT_SPREADSHEET_CSV_URL),
+          slides: safeSlides.length > 0 ? safeSlides : DEFAULT_HEADER_BRANDING.slides.map(s => ({ ...s })),
+          updatedAt: Date.now(),
+          updatedBy: cloudSyncState.userId
+        };
+
+        await cloudSyncState.setDoc(cloudSyncState.docRef, payload, { merge: true });
+        return true;
+      } catch (err) {
+        console.error('Gagal menyinkronkan header ke semua user:', err);
+        return false;
+      }
+    }
+
+    // Menginisialisasi autentikasi dan pendengar real-time untuk seluruh pengguna
+    async function initRealtimeMultiUserSync() {
+      const mod = window.__CLOUD_SYNC_MODULE__;
+      if (!mod) return;
+      if (typeof __firebase_config === 'undefined' || !__firebase_config) return;
+
+      try {
+        const firebaseConfig = typeof __firebase_config === 'string'
+          ? JSON.parse(__firebase_config)
+          : __firebase_config;
+        if (!firebaseConfig || !firebaseConfig.apiKey) return;
+
+        const appId = typeof __app_id !== 'undefined' && __app_id
+          ? String(__app_id)
+          : 'rt05-rw04-jrebeng-wetan';
+
+        const app = mod.initializeApp(firebaseConfig);
+        const auth = mod.getAuth(app);
+        const db = mod.getFirestore(app);
+
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await mod.signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await mod.signInAnonymously(auth);
+        }
+
+        const currentUid = auth.currentUser?.uid;
+        if (!currentUid) return;
+
+        const docRef = mod.doc(db, 'artifacts', appId, 'public', 'data', 'header_config', 'main_header');
+        cloudSyncState = {
+          enabled: true,
+          db,
+          appId,
+          userId: currentUid,
+          docRef,
+          setDoc: mod.setDoc,
+          unsubscribe: null
+        };
+
+        cloudSyncState.unsubscribe = mod.onSnapshot(
+          docRef,
+          (snap) => {
+            if (!snap.exists()) return;
+            const data = snap.data();
+            if (!data) return;
+            applyRemoteHeaderBranding(data);
+          },
+          (err) => {
+            console.error('Kesalahan sinkronisasi real-time header:', err);
+          }
+        );
+      } catch (err) {
+        console.error('Gagal mengaktifkan sinkronisasi multi-user:', err);
+      }
     }
 
     // =========================================================================
@@ -3206,7 +3352,7 @@
       });
 
       // Simpan perubahan header & slide
-      document.getElementById('btnSaveHeaderAdmin')?.addEventListener('click', () => {
+      document.getElementById('btnSaveHeaderAdmin')?.addEventListener('click', async () => {
         const nextTitle = String(document.getElementById('adminHeaderTitleInput')?.value ?? '').trim() || DEFAULT_HEADER_BRANDING.title;
         const nextSubtitle = String(document.getElementById('adminHeaderSubtitleInput')?.value ?? '').trim() || DEFAULT_HEADER_BRANDING.subtitle;
         const nextLinkLabel = String(document.getElementById('adminHeaderLinkLabelInput')?.value ?? '').trim() || DEFAULT_HEADER_BRANDING.linkLabel;
@@ -3225,11 +3371,17 @@
         syncHeaderUrlQueryParam(hasUploadedDataUrl);
         renderHeaderBrandingUi();
         applyFormUrlToUi();
-        showToast('Perubahan header & slideshow berhasil disimpan.', 'success');
+
+        const syncedToAll = await publishHeaderBrandingToAllUsers();
+        if (syncedToAll) {
+          showToast('Perubahan disimpan & tampil otomatis di semua user.', 'success');
+        } else {
+          showToast('Perubahan header & slideshow berhasil disimpan.', 'success');
+        }
       });
 
       // Reset header ke default
-      document.getElementById('btnResetHeaderAdmin')?.addEventListener('click', () => {
+      document.getElementById('btnResetHeaderAdmin')?.addEventListener('click', async () => {
         state.headerBranding = {
           ...DEFAULT_HEADER_BRANDING,
           slides: DEFAULT_HEADER_BRANDING.slides.map(s => ({ ...s }))
@@ -3241,6 +3393,7 @@
         syncHeaderAdminPanelState();
         renderHeaderBrandingUi();
         applyFormUrlToUi();
+        await publishHeaderBrandingToAllUsers();
         showToast('Header & slideshow dikembalikan ke pengaturan default.', 'info');
       });
 
@@ -3575,6 +3728,7 @@
       renderAll();
       startSlideshowTimer();
       syncCsvFromUrl(true);
+      initRealtimeMultiUserSync();
     }
 
     if (document.readyState === 'loading') {
