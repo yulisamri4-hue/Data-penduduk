@@ -254,7 +254,7 @@
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
             <div>
               <span class="text-xs font-extrabold text-emerald-800 block">
-                Mode Admin Aktif · Tersimpan Otomatis ke Database Cloud &amp; Semua Perangkat
+                Mode Admin Aktif · Tersimpan Otomatis ke Firebase Cloud Firestore (dasbor-rt)
               </span>
               <span id="cloudDbStatusDetail" class="text-[11px] text-slate-600">
                 Status koneksi database cloud sedang diperiksa...
@@ -306,16 +306,16 @@
           <!-- Pengaturan Koneksi Database Cloud Kustom (Firebase / Apps Script / API) -->
           <div class="bg-sky-50/70 border border-sky-200 rounded-xl p-3 space-y-2.5">
             <div class="flex items-center justify-between gap-2">
-              <p class="text-xs font-extrabold text-sky-950">Konfigurasi Database Cloud Pribadi (Opsional — untuk Hosting Mandiri)</p>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-900">Firestore / Webhook URL</span>
+              <p class="text-xs font-extrabold text-sky-950">Konfigurasi Database Cloud Firebase (dasbor-rt)</p>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900">Terpasang Bawaan</span>
             </div>
             <p class="text-[11px] text-slate-600 leading-relaxed">
-              Secara otomatis aplikasi memakai <strong>Firebase Cloud Firestore</strong> bawaan lingkungan. Jika Anda meng-hosting file HTML ini di GitHub Pages / Netlify / hosting sendiri, Anda juga bisa menempelkan <strong>JSON Config Firebase</strong> atau <strong>URL Web App Google Apps Script</strong> di bawah agar data header &amp; link tersimpan permanen di cloud Anda sendiri:
+              Proyek Firebase <strong>dasbor-rt</strong> sudah tertanam otomatis di aplikasi ini sehingga langsung aktif saat diunggah ke GitHub Pages. Anda juga dapat menggantinya dengan JSON Firebase Config lain atau URL Google Apps Script bila diperlukan:
             </p>
             <textarea
               id="adminCustomCloudConfigInput"
               rows="2"
-              placeholder='Tempel URL Google Apps Script (https://script.google.com/macros/s/.../exec) ATAU JSON Firebase Config ({"apiKey":"...","projectId":"..."})'
+              placeholder='Opsional: Tempel JSON Firebase Config lain atau URL Google Apps Script (/exec)'
               class="w-full px-3 py-2 rounded-xl border border-sky-300 bg-white text-xs font-mono text-slate-800"
             ></textarea>
             <div class="flex flex-wrap items-center gap-2">
@@ -323,7 +323,7 @@
                 Hubungkan Database Cloud Ini
               </button>
               <button id="btnClearCustomCloudConfig" type="button" class="px-3 py-1.5 rounded-xl bg-white hover:bg-sky-100 text-sky-900 border border-sky-300 text-xs font-bold cursor-pointer">
-                Gunakan Cloud Bawaan
+                Gunakan Firebase dasbor-rt
               </button>
             </div>
           </div>
@@ -1070,6 +1070,17 @@
 
     const DEFAULT_MATRIX_PIN = '050426';
 
+    // Konfigurasi Firebase Cloud Firestore bawaan proyek dasbor-rt (siap GitHub Pages)
+    const BUILTIN_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyCUCLhC3F6GjXL9UACMC0KdgYemd0JkwR0",
+      authDomain: "dasbor-rt.firebaseapp.com",
+      projectId: "dasbor-rt",
+      storageBucket: "dasbor-rt.firebasestorage.app",
+      messagingSenderId: "641167078609",
+      appId: "1:641167078609:web:4fa7f261d8ad65782c41f0",
+      measurementId: "G-LR321V2TNJ"
+    };
+
     // Ruang penyimpanan cloud publik cadangan lintas perangkat/user apabila Firestore tidak terkonfigurasi
     const PUBLIC_SYNC_NAMESPACE = 'rt05_rw04_jrebeng_wetan_header_cloud_v2';
     const PUBLIC_KV_ENDPOINT = 'https://kvdb.io/api/v1';
@@ -1135,17 +1146,17 @@
     ];
 
     const STORAGE_KEYS = {
-      residents: 'rt05_rw04_jrebeng_wetan_residents_v13',
-      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v13',
-      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v13',
-      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v13',
-      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v13',
-      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v13',
-      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v13',
-      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v13',
-      matrixPin: 'rt05_rw04_jrebeng_wetan_matrix_pin_v13',
-      headerBranding: 'rt05_rw04_jrebeng_wetan_header_branding_v13',
-      customCloudConfig: 'rt05_rw04_jrebeng_wetan_custom_cloud_v13'
+      residents: 'rt05_rw04_jrebeng_wetan_residents_v14',
+      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v14',
+      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v14',
+      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v14',
+      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v14',
+      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v14',
+      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v14',
+      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v14',
+      matrixPin: 'rt05_rw04_jrebeng_wetan_matrix_pin_v14',
+      headerBranding: 'rt05_rw04_jrebeng_wetan_header_branding_v14',
+      customCloudConfig: 'rt05_rw04_jrebeng_wetan_custom_cloud_v14'
     };
 
     let state = {
@@ -1203,7 +1214,7 @@
       enabled: false,
       mode: 'menghubungkan',
       db: null,
-      appId: 'rt05-rw04-jrebeng-wetan',
+      appId: 'dasbor-rt',
       userId: null,
       docRef: null,
       setDoc: null,
@@ -2063,7 +2074,7 @@
     }
 
     // =========================================================================
-    // SINKRONISASI DATABASE CLOUD (FIRESTORE, WEBHOOK APPS SCRIPT & CLOUD KV)
+    // SINKRONISASI DATABASE CLOUD (FIRESTORE dasbor-rt, WEBHOOK & CLOUD KV)
     // =========================================================================
 
     function applyRemoteHeaderBranding(remoteData, sourceTag = 'Cloud DB') {
@@ -2164,7 +2175,7 @@
         try {
           const snap = await cloudSyncState.getDoc(cloudSyncState.docRef);
           if (snap.exists()) {
-            const applied = applyRemoteHeaderBranding(snap.data(), 'Firestore Real-Time');
+            const applied = applyRemoteHeaderBranding(snap.data(), 'Firestore (dasbor-rt)');
             if (applied) appliedAny = true;
           }
         } catch (err) {
@@ -2251,12 +2262,13 @@
           syncedFirestore = true;
         } catch (err) {
           console.error('Gagal menyimpan header ke Firestore:', err);
+          showToast(`Peringatan Firestore: ${err.message || 'Periksa Rules Firestore (allow read, write: if true;)'}`, 'warning');
         }
       }
 
       const syncedRemote = await publishToWebhookOrKv(payload);
       if (syncedFirestore) {
-        updateSyncBadgeText('Cloud DB: Firestore Aktif', 'Tersimpan di Firebase Cloud Firestore (Real-Time)');
+        updateSyncBadgeText('Cloud DB: Firestore Aktif', `Tersimpan di Firebase Cloud Firestore (${cloudSyncState.appId})`);
       } else if (cloudSyncState.webhookUrl && syncedRemote) {
         updateSyncBadgeText('Cloud DB: Apps Script Aktif', 'Tersimpan di Google Apps Script Cloud');
       } else if (syncedRemote) {
@@ -2268,28 +2280,53 @@
       return syncedFirestore || syncedRemote;
     }
 
-    function resolveFirebaseConfigObject() {
-      // 1. Cek konfigurasi kustom yang diisi admin
-      const rawCustom = String(state.customCloudConfig || '').trim();
-      if (rawCustom.startsWith('{')) {
+    function parseLooseJsOrJsonObject(rawStr) {
+      const cleaned = String(rawStr || '').trim();
+      if (!cleaned) return null;
+      try {
+        const direct = JSON.parse(cleaned);
+        if (direct && direct.apiKey) return direct;
+      } catch (_) {
+        // Coba konversi object JS seperti `const firebaseConfig = { apiKey: "..." };` ke JSON valid
         try {
-          const parsed = JSON.parse(rawCustom);
-          if (parsed && parsed.apiKey) return parsed;
+          const braceStart = cleaned.indexOf('{');
+          const braceEnd = cleaned.lastIndexOf('}');
+          if (braceStart !== -1 && braceEnd > braceStart) {
+            const objBody = cleaned.slice(braceStart, braceEnd + 1);
+            const jsonified = objBody
+              .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+              .replace(/,\s*}/g, '}');
+            const parsed = JSON.parse(jsonified);
+            if (parsed && parsed.apiKey) return parsed;
+          }
         } catch (_) {
-          // Abaikan JSON tidak valid
+          // Abaikan jika gagal parse
         }
       }
+      return null;
+    }
 
-      // 2. Cek variabel global Firebase bawaan lingkungan
+    function resolveFirebaseConfigObject() {
+      // 1. Cek konfigurasi kustom yang diisi admin jika ada
+      const rawCustom = String(state.customCloudConfig || '').trim();
+      if (rawCustom) {
+        const parsedCustom = parseLooseJsOrJsonObject(rawCustom);
+        if (parsedCustom && parsedCustom.apiKey) return parsedCustom;
+      }
+
+      // 2. Gunakan konfigurasi Firebase bawaan proyek dasbor-rt
+      if (BUILTIN_FIREBASE_CONFIG && BUILTIN_FIREBASE_CONFIG.apiKey) {
+        return BUILTIN_FIREBASE_CONFIG;
+      }
+
+      // 3. Fallback ke variabel global jika ada
       if (typeof __firebase_config !== 'undefined' && __firebase_config) {
         try {
           const cfg = typeof __firebase_config === 'string'
             ? JSON.parse(__firebase_config)
             : __firebase_config;
           if (cfg && cfg.apiKey) return cfg;
-        } catch (_) {
-          // Abaikan
-        }
+        } catch (_) {}
       }
 
       return null;
@@ -2310,23 +2347,22 @@
 
       if (mod && firebaseConfig) {
         try {
-          const appId = typeof __app_id !== 'undefined' && __app_id
-            ? String(__app_id)
-            : (firebaseConfig.projectId || 'rt05-rw04-jrebeng-wetan');
-
+          const appId = firebaseConfig.projectId || 'dasbor-rt';
           const existingApps = mod.getApps ? mod.getApps() : [];
           const app = existingApps.length > 0 ? existingApps[0] : mod.initializeApp(firebaseConfig);
           const auth = mod.getAuth(app);
           const db = mod.getFirestore(app);
 
-          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token && !state.customCloudConfig) {
-            await mod.signInWithCustomToken(auth, __initial_auth_token);
-          } else {
+          let currentUid = 'public-user';
+          try {
             await mod.signInAnonymously(auth);
+            currentUid = auth.currentUser?.uid || 'anon-user';
+          } catch (_) {
+            // Tetap lanjutkan akses Firestore meskipun Anonymous Auth belum diaktifkan di console
+            currentUid = 'public-guest';
           }
 
-          const currentUid = auth.currentUser?.uid || 'anon-user';
-          const docRef = mod.doc(db, 'artifacts', appId, 'public', 'data', 'header_config', 'main_header');
+          const docRef = mod.doc(db, 'rt05_rw04_jrebeng_wetan', 'main_header');
 
           cloudSyncState = {
             enabled: true,
@@ -2347,16 +2383,20 @@
               if (!snap.exists()) return;
               const data = snap.data();
               if (!data) return;
-              applyRemoteHeaderBranding(data, 'Firestore Real-Time');
+              applyRemoteHeaderBranding(data, `Firestore (${appId})`);
             },
             (err) => {
               console.error('Kesalahan listener Firestore:', err);
+              updateSyncBadgeText(
+                'Cloud DB: Cek Rules Firestore',
+                `Firestore (${appId}) perlu izin baca/tulis pada Rules`
+              );
             }
           );
 
           updateSyncBadgeText(
-            'Cloud DB: Firestore Aktif',
-            `Terhubung ke Firebase Cloud Firestore (${appId}) — sinkron otomatis ke semua user`
+            `Cloud DB: Firestore (${appId})`,
+            `Terhubung ke Firebase Cloud Firestore (${appId}) — sinkron real-time ke semua HP/laptop`
           );
           return;
         } catch (err) {
@@ -2368,7 +2408,7 @@
         enabled: false,
         mode: webhookUrl ? 'webhook' : 'public-kv',
         db: null,
-        appId: 'rt05-rw04-jrebeng-wetan',
+        appId: 'dasbor-rt',
         userId: 'web-client',
         docRef: null,
         setDoc: null,
@@ -2381,7 +2421,7 @@
         webhookUrl ? 'Cloud DB: Apps Script' : 'Cloud DB: Cloud Sync',
         webhookUrl
           ? 'Terhubung ke Google Apps Script Webhook Cloud'
-          : 'Terhubung ke Cloud Sync Lintas Perangkat (atau isi Firebase/Apps Script Config untuk cloud pribadi)'
+          : 'Terhubung ke Cloud Sync Lintas Perangkat'
       );
 
       await pullFromCloudSources(false);
@@ -3657,7 +3697,7 @@
         copyTextToClipboard(
           shareUrl,
           cloudSyncState.enabled
-            ? 'Link aplikasi berhasil disalin (tautan header otomatis tersinkron via Cloud DB).'
+            ? 'Link aplikasi berhasil disalin (tautan header otomatis tersinkron via Firestore dasbor-rt).'
             : 'Link bagikan header (?h=...) berhasil disalin.'
         );
       });
@@ -3745,7 +3785,7 @@
         if (cfgInp) cfgInp.value = '';
         saveStateToStorage();
         await initRealtimeMultiUserSync();
-        showToast('Kembali menggunakan koneksi Cloud bawaan.', 'info');
+        showToast('Menggunakan Firebase bawaan dasbor-rt.', 'info');
       });
 
       // Tambah foto slide dari URL
