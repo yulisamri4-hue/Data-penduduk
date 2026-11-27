@@ -44,6 +44,13 @@
   <style>
     :root {
       color-scheme: light;
+      --app-accent: #4f46e5;
+      --app-accent-hover: #4338ca;
+      --app-accent-soft: #eef2ff;
+      --app-accent-border: #c7d2fe;
+      --app-accent-text: #312e81;
+      --app-bg-tint: #f8fafc;
+      --app-header-bg: #ffffff;
     }
 
     html {
@@ -54,7 +61,7 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f8fafc;
+      background-color: var(--app-bg-tint);
       color: #0f172a;
       margin: 0;
       padding: 0;
@@ -62,6 +69,25 @@
       overflow-x: hidden;
       overflow-y: auto;
       touch-action: pan-y pinch-zoom;
+    }
+
+    .theme-header-surface {
+      background-color: var(--app-header-bg);
+    }
+
+    .theme-primary-btn {
+      background-color: var(--app-accent) !important;
+      color: #ffffff !important;
+    }
+
+    .theme-primary-btn:hover {
+      background-color: var(--app-accent-hover) !important;
+    }
+
+    .theme-soft-badge {
+      background-color: var(--app-accent-soft) !important;
+      color: var(--app-accent-text) !important;
+      border-color: var(--app-accent-border) !important;
     }
 
     .table-scroll-wrap {
@@ -94,18 +120,21 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-  <!-- Header Atas Responsif dengan Slideshow Foto, Tulisan, Link URL Cloud & Kontrol Admin -->
-  <header class="relative z-30 bg-white border-b border-slate-200 shadow-2xs">
+<body class="min-h-screen flex flex-col text-slate-900">
+  <!-- Header Atas Responsif dengan Slideshow Foto yang Ukurannya Bisa Diatur Admin -->
+  <header class="relative z-30 theme-header-surface border-b border-slate-200 shadow-2xs transition-colors duration-300">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 space-y-4">
-      <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-        <!-- Bingkai Slideshow Foto -->
-        <div class="relative w-full sm:w-64 md:w-72 h-44 rounded-2xl overflow-hidden border border-slate-200 bg-indigo-950 shrink-0 shadow-xs">
+      <div id="headerMainLayout" class="flex flex-col lg:flex-row lg:items-center gap-4">
+        <!-- Bingkai Slideshow Foto (Lebar & Tinggi Dinamis Diatur Admin) -->
+        <div
+          id="headerSlideshowFrame"
+          class="relative w-full lg:w-72 h-44 rounded-2xl overflow-hidden border border-slate-200 bg-indigo-950 shrink-0 shadow-xs transition-all duration-300"
+        >
           <img
             id="headerSlideshowImage"
             src=""
             alt="Foto Kegiatan & Wilayah RT05/RW04 Jrebeng Wetan"
-            class="w-full h-full object-cover transition-opacity duration-300"
+            class="w-full h-full object-cover transition-all duration-300"
           />
           <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent p-2.5 flex items-center justify-between gap-2">
             <span id="headerSlideCaption" class="text-[11px] font-semibold text-white truncate">
@@ -137,7 +166,7 @@
         <!-- Informasi Tulisan, Badge, Link URL Cloud & Tombol Aksi -->
         <div class="flex-1 min-w-0 space-y-2">
           <div class="flex flex-wrap items-center gap-2">
-            <span id="headerRegionBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
+            <span id="headerRegionBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold theme-soft-badge border">
               RT05 / RW04 · Jrebeng Wetan
             </span>
             <span id="headerStatsBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -166,7 +195,7 @@
               href="https://docs.google.com/forms/d/e/1FAIpQLSfGcxo5y3Ky7uCPzy4qJIHMZbAZ9zKExsDeUOlueK-fPmWeWw/viewform?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-2xs"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl theme-primary-btn text-xs font-bold transition shadow-2xs"
             >
               <span id="headerUrlLinkLabel">Buka Formulir Pendataan (URL)</span>
               <span>↗</span>
@@ -195,7 +224,7 @@
               type="button"
               class="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold transition cursor-pointer"
             >
-              🔒 Admin Header &amp; Cloud Link
+              🔒 Admin Header &amp; Slideshow
             </button>
           </div>
         </div>
@@ -204,36 +233,36 @@
       <!-- Indikator Titik Slideshow -->
       <div id="headerSlideDots" class="flex flex-wrap items-center gap-1.5"></div>
 
-      <!-- Navigasi Bagian -->
-      <nav aria-label="Navigasi Bagian Utama" class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
-        <a href="#kpiSection" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
+      <!-- Navigasi Bagian (Visibilitas Tiap Menu Diatur Admin) -->
+      <nav id="topMainNavBar" aria-label="Navigasi Bagian Utama" class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
+        <a id="topNavItem_kpi" data-menu-key="kpi" href="#kpiSection" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
           Ringkasan
         </a>
-        <a href="#googleFormSyncSection" class="px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold transition">
+        <a id="topNavItem_sync" data-menu-key="sync" href="#googleFormSyncSection" class="px-3 py-1.5 rounded-xl theme-primary-btn text-xs font-bold transition">
           Sinkron CSV &amp; Form
         </a>
-        <a href="#ageBracketsSection" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold transition">
+        <a id="topNavItem_age" data-menu-key="age" href="#ageBracketsSection" class="px-3 py-1.5 rounded-xl theme-soft-badge border text-xs font-bold transition">
           Rentang Umur
         </a>
-        <a href="#addressGroupSection" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition">
+        <a id="topNavItem_address" data-menu-key="address" href="#addressGroupSection" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition">
           Per Alamat
         </a>
-        <a href="#umkmClassificationSection" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 text-xs font-bold transition">
+        <a id="topNavItem_umkm" data-menu-key="umkm" href="#umkmClassificationSection" class="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 text-xs font-bold transition">
           Klasifikasi UMKM
         </a>
-        <a href="#residentMatrixSection" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition">
+        <a id="topNavItem_matrix" data-menu-key="matrix" href="#residentMatrixSection" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition">
           Matrik Warga
         </a>
-        <button id="btnOpenInstallGuide" type="button" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition cursor-pointer">
+        <button id="btnOpenInstallGuide" data-menu-key="pwa" type="button" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition cursor-pointer">
           Pasang PWA
         </button>
       </nav>
 
-      <!-- Panel Admin Header, Link Cloud & Slideshow (Diproteksi PIN) -->
+      <!-- Panel Admin Header, Menu, Warna & Slideshow (Diproteksi PIN) -->
       <div id="headerAdminPanel" class="hidden bg-slate-50 border border-amber-200 rounded-2xl p-4 space-y-4">
         <div id="headerAdminPinGate" class="max-w-md space-y-2.5">
           <p class="text-xs font-extrabold text-amber-950">
-            Verifikasi PIN Admin untuk Mengelola Header, Link Cloud &amp; Slideshow (Default: 050426)
+            Verifikasi PIN Admin untuk Mengelola Header, Ukuran Slideshow &amp; Link Cloud (Default: 050426)
           </p>
           <form id="headerAdminPinForm" class="flex flex-col sm:flex-row gap-2">
             <input
@@ -254,7 +283,7 @@
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
             <div>
               <span class="text-xs font-extrabold text-emerald-800 block">
-                Mode Admin Aktif · Tersimpan Otomatis ke Firebase Cloud Firestore (dasbor-rt)
+                Mode Admin Aktif · Tersimpan Otomatis ke Database Cloud &amp; Semua Perangkat
               </span>
               <span id="cloudDbStatusDetail" class="text-[11px] text-slate-600">
                 Status koneksi database cloud sedang diperiksa...
@@ -285,6 +314,222 @@
             </div>
           </div>
 
+          <!-- Pengaturan Ukuran & Tata Letak Bingkai Slideshow (Khusus Admin) -->
+          <div class="bg-white border border-emerald-200 rounded-xl p-3.5 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p class="text-xs font-extrabold text-emerald-950">Pengaturan Ukuran &amp; Tampilan Slideshow (Akses Admin)</p>
+                <p class="text-[11px] text-slate-500">Sesuaikan lebar bingkai, tinggi slide, dan mode tampilan foto secara langsung.</p>
+              </div>
+              <span id="adminSlideDimensionBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                Standar · Tinggi 176px
+              </span>
+            </div>
+
+            <!-- Preset Cepat Ukuran Slideshow -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-[11px] font-bold text-slate-600">Preset Cepat:</span>
+              <button type="button" data-slide-preset="compact" class="btn-slide-preset px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-800 text-[11px] font-bold cursor-pointer transition">
+                Kecil (240px × 140px)
+              </button>
+              <button type="button" data-slide-preset="standard" class="btn-slide-preset px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-800 text-[11px] font-bold cursor-pointer transition">
+                Standar (288px × 176px)
+              </button>
+              <button type="button" data-slide-preset="wide" class="btn-slide-preset px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-800 text-[11px] font-bold cursor-pointer transition">
+                Lebar (440px × 240px)
+              </button>
+              <button type="button" data-slide-preset="banner" class="btn-slide-preset px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-800 text-[11px] font-bold cursor-pointer transition">
+                Banner Penuh (100% × 300px)
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label for="adminSlideWidthSelect" class="block text-xs font-bold text-slate-700 mb-1">Lebar Bingkai Slideshow</label>
+                <select id="adminSlideWidthSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-800">
+                  <option value="240px">Kecil (240px di Desktop)</option>
+                  <option value="288px">Standar (288px di Desktop)</option>
+                  <option value="380px">Sedang (380px di Desktop)</option>
+                  <option value="480px">Lebar (480px di Desktop)</option>
+                  <option value="100%">Lebar Penuh / Banner Atas (100%)</option>
+                </select>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="adminSlideHeightRange" class="block text-xs font-bold text-slate-700">Tinggi Slideshow</label>
+                  <span id="adminSlideHeightValueLabel" class="text-xs font-extrabold text-emerald-700">176 px</span>
+                </div>
+                <input
+                  id="adminSlideHeightRange"
+                  type="range"
+                  min="120"
+                  max="480"
+                  step="8"
+                  value="176"
+                  class="w-full accent-emerald-600 cursor-pointer"
+                />
+                <div class="flex justify-between text-[10px] text-slate-400">
+                  <span>120px</span>
+                  <span>300px</span>
+                  <span>480px</span>
+                </div>
+              </div>
+
+              <div>
+                <label for="adminSlideFitSelect" class="block text-xs font-bold text-slate-700 mb-1">Mode Penyesuaian Gambar</label>
+                <select id="adminSlideFitSelect" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-800">
+                  <option value="cover">Penuhi Bingkai (Crop Proporsional)</option>
+                  <option value="contain">Tampilkan Utuh Tanpa Terpotong</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Pengaturan Waktu / Interval Slideshow (Khusus Admin) -->
+            <div class="pt-2.5 border-t border-emerald-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="adminSlideIntervalRange" class="block text-xs font-bold text-slate-700">Waktu Pergantian Slide (Detik)</label>
+                  <span id="adminSlideIntervalValueLabel" class="text-xs font-extrabold text-emerald-700">4,5 dtk</span>
+                </div>
+                <input
+                  id="adminSlideIntervalRange"
+                  type="range"
+                  min="1"
+                  max="30"
+                  step="0.5"
+                  value="4.5"
+                  class="w-full accent-emerald-600 cursor-pointer"
+                />
+                <div class="flex justify-between text-[10px] text-slate-400">
+                  <span>1 dtk</span>
+                  <span>15 dtk</span>
+                  <span>30 dtk</span>
+                </div>
+              </div>
+
+              <div class="flex flex-col justify-between gap-1.5">
+                <span class="block text-xs font-bold text-slate-700">Putar Otomatis Slideshow</span>
+                <label class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer">
+                  <input
+                    id="adminSlideAutoplayCheckbox"
+                    type="checkbox"
+                    class="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                    checked
+                  />
+                  <span class="text-xs font-bold text-slate-800">Aktifkan transisi otomatis antar foto</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pengaturan Pilihan Warna Tema (Khusus Admin) -->
+          <div class="bg-white border border-purple-200 rounded-xl p-3.5 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p class="text-xs font-extrabold text-purple-950">Pilihan Warna Tema Dashboard (Akses Admin)</p>
+                <p class="text-[11px] text-slate-500">Pilih palet warna utama header, tombol, aksen, dan latar halaman.</p>
+              </div>
+              <span id="adminActiveColorBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold theme-soft-badge border">
+                Indigo Klasik
+              </span>
+            </div>
+
+            <div id="adminColorThemeGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              <button type="button" data-theme-id="indigo" class="btn-theme-swatch flex items-center gap-2 p-2 rounded-xl border border-slate-200 hover:border-indigo-500 bg-white text-left cursor-pointer transition">
+                <span class="w-5 h-5 rounded-full bg-indigo-600 shrink-0 border border-white shadow-2xs"></span>
+                <span class="text-xs font-bold text-slate-800 truncate">Indigo</span>
+              </button>
+              <button type="button" data-theme-id="emerald" class="btn-theme-swatch flex items-center gap-2 p-2 rounded-xl border border-slate-200 hover:border-emerald-500 bg-white text-left cursor-pointer transition">
+                <span class="w-5 h-5 rounded-full bg-emerald-600 shrink-0 border border-white shadow-2xs"></span>
+                <span class="text-xs font-bold text-slate-800 truncate">Emerald</span>
+              </button>
+              <button type="button" data-theme-id="sky" class="btn-theme-swatch flex items-center gap-2 p-2 rounded-xl border border-slate-200 hover:border-sky-500 bg-white text-left cursor-pointer transition">
+                <span class="w-5 h-5 rounded-full bg-sky-600 shrink-0 border border-white shadow-2xs"></span>
+                <span class="text-xs font-bold text-slate-800 truncate">Biru Langit</span>
+              </button>
+              <button type="button" data-theme-id="amber" class="btn-theme-swatch flex items-center gap-2 p-2 rounded-xl border border-slate-200 hover:border-amber-500 bg-white text-left cursor-pointer transition">
+                <span class="w-5 h-5 rounded-full bg-amber-600 shrink-0 border border-white shadow-2xs"></span>
+                <span class="text-xs font-bold text-slate-800 truncate">Emas Hangat</span>
+              </button>
+              <button type="button" data-theme-id="rose" class="btn-theme-swatch flex items-center gap-2 p-2 rounded-xl border border-slate-200 hover:border-rose-500 bg-white text-left cursor-pointer transition">
+                <span class="w-5 h-5 rounded-full bg-rose-600 shrink-0 border border-white shadow-2xs"></span>
+                <span class="text-xs font-bold text-slate-800 truncate">Merah Ruby</span>
+              </button>
+              <button type="button" data-theme-id="teal" class="btn-theme-swatch flex items-center gap-2 p-2 rounded-xl border border-slate-200 hover:border-teal-500 bg-white text-left cursor-pointer transition">
+                <span class="w-5 h-5 rounded-full bg-teal-600 shrink-0 border border-white shadow-2xs"></span>
+                <span class="text-xs font-bold text-slate-800 truncate">Tosca Desa</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-slate-100">
+              <div class="flex items-center justify-between gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                <label for="adminCustomAccentColorInput" class="text-xs font-bold text-slate-700">Warna Aksen Kustom:</label>
+                <div class="flex items-center gap-2">
+                  <input id="adminCustomAccentColorInput" type="color" value="#4f46e5" class="w-8 h-7 rounded cursor-pointer border border-slate-300 bg-white" />
+                  <span id="adminCustomAccentHexLabel" class="text-[11px] font-mono font-bold text-slate-600">#4F46E5</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                <label for="adminHeaderTintSelect" class="text-xs font-bold text-slate-700">Nuansa Latar Header:</label>
+                <select id="adminHeaderTintSelect" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-800">
+                  <option value="white">Putih Bersih</option>
+                  <option value="tinted">Bernuansa Warna Tema</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pengaturan Visibilitas Menu Tampil / Sembunyi (Khusus Admin) -->
+          <div class="bg-white border border-sky-200 rounded-xl p-3.5 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p class="text-xs font-extrabold text-sky-950">Pengaturan Tampil / Sembunyikan Menu (Akses Admin)</p>
+                <p class="text-[11px] text-slate-500">Centang menu &amp; bagian yang ingin ditampilkan kepada pengunjung, atau hapus centang untuk menyembunyikannya.</p>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnShowAllMenus" type="button" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 text-[11px] font-bold cursor-pointer">
+                  Tampilkan Semua
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer">
+                <input type="checkbox" data-menu-toggle="kpi" class="admin-menu-checkbox w-4 h-4 accent-indigo-600 rounded cursor-pointer" checked />
+                <span class="font-bold text-slate-800">Menu Ringkasan KPI</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer">
+                <input type="checkbox" data-menu-toggle="sync" class="admin-menu-checkbox w-4 h-4 accent-indigo-600 rounded cursor-pointer" checked />
+                <span class="font-bold text-slate-800">Menu Sinkron CSV &amp; Form</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer">
+                <input type="checkbox" data-menu-toggle="age" class="admin-menu-checkbox w-4 h-4 accent-indigo-600 rounded cursor-pointer" checked />
+                <span class="font-bold text-slate-800">Menu Rentang Umur</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer">
+                <input type="checkbox" data-menu-toggle="address" class="admin-menu-checkbox w-4 h-4 accent-indigo-600 rounded cursor-pointer" checked />
+                <span class="font-bold text-slate-800">Menu Per Alamat</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer">
+                <input type="checkbox" data-menu-toggle="umkm" class="admin-menu-checkbox w-4 h-4 accent-indigo-600 rounded cursor-pointer" checked />
+                <span class="font-bold text-slate-800">Menu Klasifikasi UMKM</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer">
+                <input type="checkbox" data-menu-toggle="matrix" class="admin-menu-checkbox w-4 h-4 accent-indigo-600 rounded cursor-pointer" checked />
+                <span class="font-bold text-slate-800">Menu Matrik Warga</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer">
+                <input type="checkbox" data-menu-toggle="pwa" class="admin-menu-checkbox w-4 h-4 accent-indigo-600 rounded cursor-pointer" checked />
+                <span class="font-bold text-slate-800">Menu &amp; Banner PWA</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer">
+                <input type="checkbox" data-menu-toggle="bottomNav" class="admin-menu-checkbox w-4 h-4 accent-indigo-600 rounded cursor-pointer" checked />
+                <span class="font-bold text-slate-800">Bilah Navigasi Bawah</span>
+              </label>
+            </div>
+          </div>
+
           <!-- Kelola Tautan Tambahan di Header (Tersimpan di Cloud) -->
           <div class="bg-white border border-indigo-200 rounded-xl p-3 space-y-3">
             <div class="flex items-center justify-between gap-2">
@@ -306,16 +551,16 @@
           <!-- Pengaturan Koneksi Database Cloud Kustom (Firebase / Apps Script / API) -->
           <div class="bg-sky-50/70 border border-sky-200 rounded-xl p-3 space-y-2.5">
             <div class="flex items-center justify-between gap-2">
-              <p class="text-xs font-extrabold text-sky-950">Konfigurasi Database Cloud Firebase (dasbor-rt)</p>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900">Terpasang Bawaan</span>
+              <p class="text-xs font-extrabold text-sky-950">Konfigurasi Database Cloud Pribadi (Opsional — untuk Hosting Mandiri)</p>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-900">Firestore / Webhook URL</span>
             </div>
             <p class="text-[11px] text-slate-600 leading-relaxed">
-              Proyek Firebase <strong>dasbor-rt</strong> sudah tertanam otomatis di aplikasi ini sehingga langsung aktif saat diunggah ke GitHub Pages. Anda juga dapat menggantinya dengan JSON Firebase Config lain atau URL Google Apps Script bila diperlukan:
+              Secara otomatis aplikasi memakai <strong>Firebase Cloud Firestore</strong> bawaan lingkungan. Jika Anda meng-hosting file HTML ini di GitHub Pages / Netlify / hosting sendiri, Anda juga bisa menempelkan <strong>JSON Config Firebase</strong> atau <strong>URL Web App Google Apps Script</strong> di bawah agar data header &amp; link tersimpan permanen di cloud Anda sendiri:
             </p>
             <textarea
               id="adminCustomCloudConfigInput"
               rows="2"
-              placeholder='Opsional: Tempel JSON Firebase Config lain atau URL Google Apps Script (/exec)'
+              placeholder='Tempel URL Google Apps Script (https://script.google.com/macros/s/.../exec) ATAU JSON Firebase Config ({"apiKey":"...","projectId":"..."})'
               class="w-full px-3 py-2 rounded-xl border border-sky-300 bg-white text-xs font-mono text-slate-800"
             ></textarea>
             <div class="flex flex-wrap items-center gap-2">
@@ -323,7 +568,7 @@
                 Hubungkan Database Cloud Ini
               </button>
               <button id="btnClearCustomCloudConfig" type="button" class="px-3 py-1.5 rounded-xl bg-white hover:bg-sky-100 text-sky-900 border border-sky-300 text-xs font-bold cursor-pointer">
-                Gunakan Firebase dasbor-rt
+                Gunakan Cloud Bawaan
               </button>
             </div>
           </div>
@@ -1007,12 +1252,12 @@
   </footer>
 
   <!-- Bottom Navigation Bar -->
-  <nav aria-label="Navigasi Bawah" class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200">
-    <div class="max-w-3xl mx-auto px-2 py-1.5 grid grid-cols-4 gap-1 text-center">
-      <a href="#kpiSection" class="py-1.5 px-1 rounded-xl hover:bg-slate-100 text-[11px] font-bold text-slate-700">Ringkasan</a>
-      <a href="#googleFormSyncSection" class="py-1.5 px-1 rounded-xl hover:bg-violet-50 text-[11px] font-bold text-violet-700">Sinkron CSV</a>
-      <a href="#ageBracketsSection" class="py-1.5 px-1 rounded-xl hover:bg-indigo-50 text-[11px] font-bold text-indigo-700">Rentang Umur</a>
-      <a href="#residentMatrixSection" class="py-1.5 px-1 rounded-xl hover:bg-emerald-50 text-[11px] font-bold text-emerald-700">Matrik Warga</a>
+  <nav id="bottomMainNavBar" aria-label="Navigasi Bawah" class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200">
+    <div id="bottomMainNavGrid" class="max-w-3xl mx-auto px-2 py-1.5 grid grid-cols-4 gap-1 text-center">
+      <a data-menu-key="kpi" href="#kpiSection" class="py-1.5 px-1 rounded-xl hover:bg-slate-100 text-[11px] font-bold text-slate-700">Ringkasan</a>
+      <a data-menu-key="sync" href="#googleFormSyncSection" class="py-1.5 px-1 rounded-xl hover:bg-violet-50 text-[11px] font-bold text-violet-700">Sinkron CSV</a>
+      <a data-menu-key="age" href="#ageBracketsSection" class="py-1.5 px-1 rounded-xl hover:bg-indigo-50 text-[11px] font-bold text-indigo-700">Rentang Umur</a>
+      <a data-menu-key="matrix" href="#residentMatrixSection" class="py-1.5 px-1 rounded-xl hover:bg-emerald-50 text-[11px] font-bold text-emerald-700">Matrik Warga</a>
     </div>
   </nav>
 
@@ -1070,26 +1315,98 @@
 
     const DEFAULT_MATRIX_PIN = '050426';
 
-    // Konfigurasi Firebase Cloud Firestore bawaan proyek dasbor-rt (siap GitHub Pages)
-    const BUILTIN_FIREBASE_CONFIG = {
-      apiKey: "AIzaSyCUCLhC3F6GjXL9UACMC0KdgYemd0JkwR0",
-      authDomain: "dasbor-rt.firebaseapp.com",
-      projectId: "dasbor-rt",
-      storageBucket: "dasbor-rt.firebasestorage.app",
-      messagingSenderId: "641167078609",
-      appId: "1:641167078609:web:4fa7f261d8ad65782c41f0",
-      measurementId: "G-LR321V2TNJ"
-    };
-
     // Ruang penyimpanan cloud publik cadangan lintas perangkat/user apabila Firestore tidak terkonfigurasi
     const PUBLIC_SYNC_NAMESPACE = 'rt05_rw04_jrebeng_wetan_header_cloud_v2';
     const PUBLIC_KV_ENDPOINT = 'https://kvdb.io/api/v1';
+
+    const THEME_PRESETS = {
+      indigo: {
+        name: 'Indigo Klasik',
+        accent: '#4f46e5',
+        hover: '#4338ca',
+        soft: '#eef2ff',
+        border: '#c7d2fe',
+        text: '#312e81',
+        bgTint: '#f8fafc',
+        headerTint: '#f5f7ff'
+      },
+      emerald: {
+        name: 'Hijau Emerald',
+        accent: '#059669',
+        hover: '#047857',
+        soft: '#ecfdf5',
+        border: '#a7f3d0',
+        text: '#065f46',
+        bgTint: '#f4fbf8',
+        headerTint: '#effcf6'
+      },
+      sky: {
+        name: 'Biru Langit',
+        accent: '#0284c7',
+        hover: '#0369a1',
+        soft: '#f0f9ff',
+        border: '#bae6fd',
+        text: '#075985',
+        bgTint: '#f5faff',
+        headerTint: '#eef8ff'
+      },
+      amber: {
+        name: 'Emas Hangat',
+        accent: '#d97706',
+        hover: '#b45309',
+        soft: '#fffbeb',
+        border: '#fde68a',
+        text: '#92400e',
+        bgTint: '#fdfbf7',
+        headerTint: '#fff9eb'
+      },
+      rose: {
+        name: 'Merah Ruby',
+        accent: '#e11d48',
+        hover: '#be123c',
+        soft: '#fff1f2',
+        border: '#fecdd3',
+        text: '#9f1239',
+        bgTint: '#fdf8f9',
+        headerTint: '#fff2f4'
+      },
+      teal: {
+        name: 'Tosca Desa',
+        accent: '#0d9488',
+        hover: '#0f766e',
+        soft: '#f0fdfa',
+        border: '#99f6e4',
+        text: '#115e59',
+        bgTint: '#f4fbfa',
+        headerTint: '#edfcfb'
+      }
+    };
+
+    const DEFAULT_MENU_VISIBILITY = {
+      kpi: true,
+      sync: true,
+      age: true,
+      address: true,
+      umkm: true,
+      matrix: true,
+      pwa: true,
+      bottomNav: true
+    };
 
     const DEFAULT_HEADER_BRANDING = {
       title: 'Dashboard Kependudukan RT05/RW04 Jrebeng Wetan',
       subtitle: 'Portal data kependudukan, rentang umur, pengelompokan alamat, klasifikasi UMKM, dan formulir pendataan warga RT05/RW04 Jrebeng Wetan.',
       linkLabel: 'Buka Formulir Pendataan (URL)',
       linkUrl: DEFAULT_GOOGLE_FORM_URL,
+      slideWidth: '288px',
+      slideHeight: 176,
+      slideFit: 'cover',
+      slideIntervalMs: 4500,
+      slideAutoplay: true,
+      themeId: 'indigo',
+      customAccentColor: '#4f46e5',
+      headerTintMode: 'white',
+      menuVisibility: { ...DEFAULT_MENU_VISIBILITY },
       extraLinks: [],
       slides: [
         {
@@ -1146,17 +1463,17 @@
     ];
 
     const STORAGE_KEYS = {
-      residents: 'rt05_rw04_jrebeng_wetan_residents_v14',
-      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v14',
-      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v14',
-      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v14',
-      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v14',
-      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v14',
-      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v14',
-      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v14',
-      matrixPin: 'rt05_rw04_jrebeng_wetan_matrix_pin_v14',
-      headerBranding: 'rt05_rw04_jrebeng_wetan_header_branding_v14',
-      customCloudConfig: 'rt05_rw04_jrebeng_wetan_custom_cloud_v14'
+      residents: 'rt05_rw04_jrebeng_wetan_residents_v13',
+      kkStatusMap: 'rt05_rw04_jrebeng_wetan_kk_status_v13',
+      residentStatusMap: 'rt05_rw04_jrebeng_wetan_resident_status_v13',
+      umkmMetaMap: 'rt05_rw04_jrebeng_wetan_umkm_meta_v13',
+      ranges: 'rt05_rw04_jrebeng_wetan_ranges_v13',
+      csvUrl: 'rt05_rw04_jrebeng_wetan_csv_url_v13',
+      formUrl: 'rt05_rw04_jrebeng_wetan_form_url_v13',
+      sourceLabel: 'rt05_rw04_jrebeng_wetan_source_v13',
+      matrixPin: 'rt05_rw04_jrebeng_wetan_matrix_pin_v13',
+      headerBranding: 'rt05_rw04_jrebeng_wetan_header_branding_v13',
+      customCloudConfig: 'rt05_rw04_jrebeng_wetan_custom_cloud_v13'
     };
 
     let state = {
@@ -1169,6 +1486,7 @@
       formUrl: DEFAULT_GOOGLE_FORM_URL,
       headerBranding: {
         ...DEFAULT_HEADER_BRANDING,
+        menuVisibility: { ...DEFAULT_MENU_VISIBILITY },
         extraLinks: [],
         slides: DEFAULT_HEADER_BRANDING.slides.map(s => ({ ...s })),
         updatedAt: 0
@@ -1214,7 +1532,7 @@
       enabled: false,
       mode: 'menghubungkan',
       db: null,
-      appId: 'dasbor-rt',
+      appId: 'rt05-rw04-jrebeng-wetan',
       userId: null,
       docRef: null,
       setDoc: null,
@@ -1272,6 +1590,151 @@
         }
       }
       return fallbackUrl;
+    }
+
+    function normalizeSlideDimensions(rawObj) {
+      const allowedWidths = ['240px', '288px', '380px', '480px', '100%'];
+      const width = allowedWidths.includes(rawObj?.slideWidth) ? rawObj.slideWidth : DEFAULT_HEADER_BRANDING.slideWidth;
+      const parsedHeight = parseInt(rawObj?.slideHeight, 10);
+      const height = Number.isFinite(parsedHeight) ? Math.min(480, Math.max(120, parsedHeight)) : DEFAULT_HEADER_BRANDING.slideHeight;
+      const fit = rawObj?.slideFit === 'contain' ? 'contain' : 'cover';
+      return { slideWidth: width, slideHeight: height, slideFit: fit };
+    }
+
+    function normalizeSlideTiming(rawObj) {
+      const rawMs = Number(rawObj?.slideIntervalMs);
+      const intervalMs = Number.isFinite(rawMs)
+        ? Math.min(30000, Math.max(1000, Math.round(rawMs)))
+        : DEFAULT_HEADER_BRANDING.slideIntervalMs;
+      const autoplay = rawObj?.slideAutoplay !== false;
+      return { slideIntervalMs: intervalMs, slideAutoplay: autoplay };
+    }
+
+    function formatSlideIntervalSeconds(intervalMs) {
+      const sec = (Math.max(1000, Number(intervalMs) || 4500) / 1000);
+      const formatted = Number.isInteger(sec) ? String(sec) : sec.toFixed(1).replace('.', ',');
+      return `${formatted} dtk`;
+    }
+
+    function normalizeMenuVisibility(rawVis) {
+      const src = rawVis && typeof rawVis === 'object' ? rawVis : {};
+      return {
+        kpi: src.kpi !== false,
+        sync: src.sync !== false,
+        age: src.age !== false,
+        address: src.address !== false,
+        umkm: src.umkm !== false,
+        matrix: src.matrix !== false,
+        pwa: src.pwa !== false,
+        bottomNav: src.bottomNav !== false
+      };
+    }
+
+    function sanitizeHexColor(rawHex, fallbackHex = '#4f46e5') {
+      const str = String(rawHex ?? '').trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(str)) return str.toLowerCase();
+      return fallbackHex;
+    }
+
+    function hexToRgba(hex, alpha) {
+      const clean = sanitizeHexColor(hex, '#4f46e5').replace('#', '');
+      const r = parseInt(clean.slice(0, 2), 16);
+      const g = parseInt(clean.slice(2, 4), 16);
+      const b = parseInt(clean.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function darkenHexColor(hex, amount = 24) {
+      const clean = sanitizeHexColor(hex, '#4f46e5').replace('#', '');
+      const clamp = (v) => Math.max(0, Math.min(255, v));
+      const r = clamp(parseInt(clean.slice(0, 2), 16) - amount).toString(16).padStart(2, '0');
+      const g = clamp(parseInt(clean.slice(2, 4), 16) - amount).toString(16).padStart(2, '0');
+      const b = clamp(parseInt(clean.slice(4, 6), 16) - amount).toString(16).padStart(2, '0');
+      return `#${r}${g}${b}`;
+    }
+
+    function applyThemeAndMenuVisibilityToDom() {
+      const hb = state.headerBranding || DEFAULT_HEADER_BRANDING;
+      const themeId = hb.themeId && (THEME_PRESETS[hb.themeId] || hb.themeId === 'custom') ? hb.themeId : 'indigo';
+      const preset = THEME_PRESETS[themeId] || THEME_PRESETS.indigo;
+      const accentHex = themeId === 'custom'
+        ? sanitizeHexColor(hb.customAccentColor, preset.accent)
+        : preset.accent;
+      const hoverHex = themeId === 'custom' ? darkenHexColor(accentHex, 22) : preset.hover;
+      const softBg = themeId === 'custom' ? hexToRgba(accentHex, 0.1) : preset.soft;
+      const borderCol = themeId === 'custom' ? hexToRgba(accentHex, 0.32) : preset.border;
+      const textCol = themeId === 'custom' ? darkenHexColor(accentHex, 45) : preset.text;
+      const headerBg = hb.headerTintMode === 'tinted'
+        ? (themeId === 'custom' ? hexToRgba(accentHex, 0.06) : preset.headerTint)
+        : '#ffffff';
+      const pageBg = hb.headerTintMode === 'tinted'
+        ? (themeId === 'custom' ? '#f8fafc' : preset.bgTint)
+        : '#f8fafc';
+
+      const rootStyle = document.documentElement.style;
+      rootStyle.setProperty('--app-accent', accentHex);
+      rootStyle.setProperty('--app-accent-hover', hoverHex);
+      rootStyle.setProperty('--app-accent-soft', softBg);
+      rootStyle.setProperty('--app-accent-border', borderCol);
+      rootStyle.setProperty('--app-accent-text', textCol);
+      rootStyle.setProperty('--app-header-bg', headerBg);
+      rootStyle.setProperty('--app-bg-tint', pageBg);
+
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute('content', accentHex);
+
+      const activeBadge = document.getElementById('adminActiveColorBadge');
+      if (activeBadge) {
+        activeBadge.textContent = themeId === 'custom' ? `Kustom (${accentHex.toUpperCase()})` : preset.name;
+      }
+
+      document.querySelectorAll('.btn-theme-swatch').forEach((btn) => {
+        const id = btn.getAttribute('data-theme-id');
+        if (id === themeId) {
+          btn.classList.add('ring-2', 'ring-offset-1', 'ring-slate-900', 'bg-slate-50');
+        } else {
+          btn.classList.remove('ring-2', 'ring-offset-1', 'ring-slate-900', 'bg-slate-50');
+        }
+      });
+
+      const vis = normalizeMenuVisibility(hb.menuVisibility);
+      const sectionMap = {
+        kpi: 'kpiSection',
+        sync: 'googleFormSyncSection',
+        age: 'ageBracketsSection',
+        address: 'addressGroupSection',
+        umkm: 'umkmClassificationSection',
+        matrix: 'residentMatrixSection',
+        pwa: 'pwaInstallBanner'
+      };
+
+      Object.entries(sectionMap).forEach(([key, sectionId]) => {
+        const secEl = document.getElementById(sectionId);
+        if (secEl) secEl.classList.toggle('hidden', !vis[key]);
+      });
+
+      document.querySelectorAll('[data-menu-key]').forEach((itemEl) => {
+        const key = itemEl.getAttribute('data-menu-key');
+        if (key && Object.prototype.hasOwnProperty.call(vis, key)) {
+          itemEl.classList.toggle('hidden', !vis[key]);
+        }
+      });
+
+      const topNav = document.getElementById('topMainNavBar');
+      if (topNav) {
+        const hasVisibleTopItems = ['kpi', 'sync', 'age', 'address', 'umkm', 'matrix', 'pwa'].some(k => vis[k]);
+        topNav.classList.toggle('hidden', !hasVisibleTopItems);
+      }
+
+      const bottomNav = document.getElementById('bottomMainNavBar');
+      const bottomGrid = document.getElementById('bottomMainNavGrid');
+      if (bottomNav && bottomGrid) {
+        const bottomKeys = ['kpi', 'sync', 'age', 'matrix'];
+        const visibleBottomCount = bottomKeys.filter(k => vis[k]).length;
+        const showBottom = vis.bottomNav && visibleBottomCount > 0;
+        bottomNav.classList.toggle('hidden', !showBottom);
+        bottomGrid.style.gridTemplateColumns = `repeat(${Math.max(1, visibleBottomCount)}, minmax(0, 1fr))`;
+      }
     }
 
     function normalizeGoogleSheetsCsvUrl(rawUrl) {
@@ -1896,11 +2359,24 @@
             }))
           : DEFAULT_HEADER_BRANDING.slides.map(s => ({ ...s }));
 
+        const dims = normalizeSlideDimensions(parsed);
+        const timing = normalizeSlideTiming(parsed);
+        const menuVis = normalizeMenuVisibility(parsed.menuVisibility);
+
         return {
           title: String(parsed.title || DEFAULT_HEADER_BRANDING.title).trim(),
           subtitle: String(parsed.subtitle || DEFAULT_HEADER_BRANDING.subtitle).trim(),
           linkLabel: String(parsed.linkLabel || DEFAULT_HEADER_BRANDING.linkLabel).trim(),
           linkUrl: sanitizeHttpsUrl(parsed.linkUrl, DEFAULT_GOOGLE_FORM_URL),
+          slideWidth: dims.slideWidth,
+          slideHeight: dims.slideHeight,
+          slideFit: dims.slideFit,
+          slideIntervalMs: timing.slideIntervalMs,
+          slideAutoplay: timing.slideAutoplay,
+          themeId: parsed.themeId || 'indigo',
+          customAccentColor: sanitizeHexColor(parsed.customAccentColor, '#4f46e5'),
+          headerTintMode: parsed.headerTintMode === 'tinted' ? 'tinted' : 'white',
+          menuVisibility: menuVis,
           extraLinks: normalizeExtraLinks(parsed.extraLinks),
           slides,
           updatedAt: Number(parsed.updatedAt) || 0
@@ -1911,11 +2387,22 @@
     }
 
     function buildShareableHeaderUrl() {
+      const dims = normalizeSlideDimensions(state.headerBranding);
+      const timing = normalizeSlideTiming(state.headerBranding);
       const payload = {
         title: state.headerBranding.title,
         subtitle: state.headerBranding.subtitle,
         linkLabel: state.headerBranding.linkLabel,
         linkUrl: state.headerBranding.linkUrl,
+        slideWidth: dims.slideWidth,
+        slideHeight: dims.slideHeight,
+        slideFit: dims.slideFit,
+        slideIntervalMs: timing.slideIntervalMs,
+        slideAutoplay: timing.slideAutoplay,
+        themeId: state.headerBranding.themeId || 'indigo',
+        customAccentColor: sanitizeHexColor(state.headerBranding.customAccentColor, '#4f46e5'),
+        headerTintMode: state.headerBranding.headerTintMode === 'tinted' ? 'tinted' : 'white',
+        menuVisibility: normalizeMenuVisibility(state.headerBranding.menuVisibility),
         extraLinks: normalizeExtraLinks(state.headerBranding.extraLinks),
         slides: state.headerBranding.slides.filter(s => !String(s.url || '').startsWith('data:image/')),
         updatedAt: state.headerBranding.updatedAt || Date.now()
@@ -1941,11 +2428,21 @@
           window.history.replaceState({}, '', urlObj.toString());
           return;
         }
+        const dims = normalizeSlideDimensions(state.headerBranding);
         const payload = {
           title: state.headerBranding.title,
           subtitle: state.headerBranding.subtitle,
           linkLabel: state.headerBranding.linkLabel,
           linkUrl: state.headerBranding.linkUrl,
+          slideWidth: dims.slideWidth,
+          slideHeight: dims.slideHeight,
+          slideFit: dims.slideFit,
+          slideIntervalMs: normalizeSlideTiming(state.headerBranding).slideIntervalMs,
+          slideAutoplay: normalizeSlideTiming(state.headerBranding).slideAutoplay,
+          themeId: state.headerBranding.themeId || 'indigo',
+          customAccentColor: sanitizeHexColor(state.headerBranding.customAccentColor, '#4f46e5'),
+          headerTintMode: state.headerBranding.headerTintMode === 'tinted' ? 'tinted' : 'white',
+          menuVisibility: normalizeMenuVisibility(state.headerBranding.menuVisibility),
           extraLinks: normalizeExtraLinks(state.headerBranding.extraLinks),
           slides: state.headerBranding.slides.filter(s => !String(s.url || '').startsWith('data:image/')),
           updatedAt: state.headerBranding.updatedAt || Date.now()
@@ -1985,11 +2482,23 @@
         if (savedBranding) {
           const parsedBrand = JSON.parse(savedBranding);
           if (parsedBrand && typeof parsedBrand === 'object') {
+            const dims = normalizeSlideDimensions(parsedBrand);
+            const timing = normalizeSlideTiming(parsedBrand);
+            const menuVis = normalizeMenuVisibility(parsedBrand.menuVisibility);
             state.headerBranding = {
               title: String(parsedBrand.title || DEFAULT_HEADER_BRANDING.title).trim(),
               subtitle: String(parsedBrand.subtitle || DEFAULT_HEADER_BRANDING.subtitle).trim(),
               linkLabel: String(parsedBrand.linkLabel || DEFAULT_HEADER_BRANDING.linkLabel).trim(),
               linkUrl: sanitizeHttpsUrl(parsedBrand.linkUrl, state.formUrl),
+              slideWidth: dims.slideWidth,
+              slideHeight: dims.slideHeight,
+              slideFit: dims.slideFit,
+              slideIntervalMs: timing.slideIntervalMs,
+              slideAutoplay: timing.slideAutoplay,
+              themeId: parsedBrand.themeId || 'indigo',
+              customAccentColor: sanitizeHexColor(parsedBrand.customAccentColor, '#4f46e5'),
+              headerTintMode: parsedBrand.headerTintMode === 'tinted' ? 'tinted' : 'white',
+              menuVisibility: menuVis,
               extraLinks: normalizeExtraLinks(parsedBrand.extraLinks),
               slides: Array.isArray(parsedBrand.slides) && parsedBrand.slides.length > 0
                 ? parsedBrand.slides
@@ -2074,7 +2583,7 @@
     }
 
     // =========================================================================
-    // SINKRONISASI DATABASE CLOUD (FIRESTORE dasbor-rt, WEBHOOK & CLOUD KV)
+    // SINKRONISASI DATABASE CLOUD (FIRESTORE, WEBHOOK APPS SCRIPT & CLOUD KV)
     // =========================================================================
 
     function applyRemoteHeaderBranding(remoteData, sourceTag = 'Cloud DB') {
@@ -2090,12 +2599,24 @@
         : state.headerBranding.slides;
 
       const incomingExtraLinks = normalizeExtraLinks(remoteData.extraLinks);
+      const dims = normalizeSlideDimensions(remoteData);
+      const timing = normalizeSlideTiming(remoteData);
+      const menuVis = normalizeMenuVisibility(remoteData.menuVisibility);
 
       const candidate = {
         title: String(remoteData.title || DEFAULT_HEADER_BRANDING.title).trim(),
         subtitle: String(remoteData.subtitle || DEFAULT_HEADER_BRANDING.subtitle).trim(),
         linkLabel: String(remoteData.linkLabel || DEFAULT_HEADER_BRANDING.linkLabel).trim(),
         linkUrl: sanitizeHttpsUrl(remoteData.linkUrl, DEFAULT_GOOGLE_FORM_URL),
+        slideWidth: dims.slideWidth,
+        slideHeight: dims.slideHeight,
+        slideFit: dims.slideFit,
+        slideIntervalMs: timing.slideIntervalMs,
+        slideAutoplay: timing.slideAutoplay,
+        themeId: remoteData.themeId || 'indigo',
+        customAccentColor: sanitizeHexColor(remoteData.customAccentColor, '#4f46e5'),
+        headerTintMode: remoteData.headerTintMode === 'tinted' ? 'tinted' : 'white',
+        menuVisibility: menuVis,
         extraLinks: incomingExtraLinks,
         slides: incomingSlides,
         updatedAt: remoteUpdatedAt || currentUpdatedAt
@@ -2106,6 +2627,15 @@
         candidate.subtitle !== state.headerBranding.subtitle ||
         candidate.linkLabel !== state.headerBranding.linkLabel ||
         candidate.linkUrl !== state.headerBranding.linkUrl ||
+        candidate.slideWidth !== state.headerBranding.slideWidth ||
+        candidate.slideHeight !== state.headerBranding.slideHeight ||
+        candidate.slideFit !== state.headerBranding.slideFit ||
+        candidate.slideIntervalMs !== normalizeSlideTiming(state.headerBranding).slideIntervalMs ||
+        candidate.slideAutoplay !== normalizeSlideTiming(state.headerBranding).slideAutoplay ||
+        candidate.themeId !== (state.headerBranding.themeId || 'indigo') ||
+        candidate.customAccentColor !== sanitizeHexColor(state.headerBranding.customAccentColor, '#4f46e5') ||
+        candidate.headerTintMode !== (state.headerBranding.headerTintMode || 'white') ||
+        JSON.stringify(candidate.menuVisibility) !== JSON.stringify(normalizeMenuVisibility(state.headerBranding.menuVisibility)) ||
         JSON.stringify(candidate.extraLinks) !== JSON.stringify(state.headerBranding.extraLinks || []) ||
         JSON.stringify(candidate.slides) !== JSON.stringify(state.headerBranding.slides);
 
@@ -2170,12 +2700,11 @@
     async function pullFromCloudSources(showFeedback = false) {
       let appliedAny = false;
 
-      // 1. Cek Firestore jika aktif
       if (cloudSyncState.enabled && cloudSyncState.docRef && cloudSyncState.getDoc) {
         try {
           const snap = await cloudSyncState.getDoc(cloudSyncState.docRef);
           if (snap.exists()) {
-            const applied = applyRemoteHeaderBranding(snap.data(), 'Firestore (dasbor-rt)');
+            const applied = applyRemoteHeaderBranding(snap.data(), 'Firestore Real-Time');
             if (applied) appliedAny = true;
           }
         } catch (err) {
@@ -2183,7 +2712,6 @@
         }
       }
 
-      // 2. Cek Webhook Apps Script jika dikonfigurasi
       if (!appliedAny && cloudSyncState.webhookUrl) {
         try {
           const sep = cloudSyncState.webhookUrl.includes('?') ? '&' : '?';
@@ -2203,7 +2731,6 @@
         }
       }
 
-      // 3. Cek Cloud KV Publik
       if (!appliedAny) {
         try {
           const endpoint = `${PUBLIC_KV_ENDPOINT}/${encodeURIComponent(PUBLIC_SYNC_NAMESPACE)}?_t=${Date.now()}`;
@@ -2222,7 +2749,7 @@
 
       if (showFeedback) {
         showToast(
-          appliedAny ? 'Link & header terbaru berhasil ditarik dari database cloud.' : 'Data header & link sudah sesuai dengan versi cloud terbaru.',
+          appliedAny ? 'Pengaturan header & slideshow terbaru berhasil ditarik dari cloud.' : 'Data header & slideshow sudah sesuai dengan versi cloud terbaru.',
           appliedAny ? 'success' : 'info'
         );
       }
@@ -2237,17 +2764,28 @@
           caption: String(s.caption || 'Foto RT05/RW04 Jrebeng Wetan').trim()
         }));
 
+      const dims = normalizeSlideDimensions(state.headerBranding);
       const stamp = Date.now();
       state.headerBranding.updatedAt = stamp;
       saveStateToStorage();
       const hasDataUrl = state.headerBranding.slides.some(s => String(s.url || '').startsWith('data:image/'));
       syncHeaderUrlQueryParam(hasDataUrl);
 
+      const timing = normalizeSlideTiming(state.headerBranding);
       const payload = {
         title: state.headerBranding.title,
         subtitle: state.headerBranding.subtitle,
         linkLabel: state.headerBranding.linkLabel,
         linkUrl: sanitizeHttpsUrl(state.headerBranding.linkUrl, DEFAULT_GOOGLE_FORM_URL),
+        slideWidth: dims.slideWidth,
+        slideHeight: dims.slideHeight,
+        slideFit: dims.slideFit,
+        slideIntervalMs: timing.slideIntervalMs,
+        slideAutoplay: timing.slideAutoplay,
+        themeId: state.headerBranding.themeId || 'indigo',
+        customAccentColor: sanitizeHexColor(state.headerBranding.customAccentColor, '#4f46e5'),
+        headerTintMode: state.headerBranding.headerTintMode === 'tinted' ? 'tinted' : 'white',
+        menuVisibility: normalizeMenuVisibility(state.headerBranding.menuVisibility),
         extraLinks: normalizeExtraLinks(state.headerBranding.extraLinks),
         csvUrl: normalizeGoogleSheetsCsvUrl(state.csvUrl || DEFAULT_SPREADSHEET_CSV_URL),
         slides: safeSlides.length > 0 ? safeSlides : DEFAULT_HEADER_BRANDING.slides.map(s => ({ ...s })),
@@ -2262,13 +2800,12 @@
           syncedFirestore = true;
         } catch (err) {
           console.error('Gagal menyimpan header ke Firestore:', err);
-          showToast(`Peringatan Firestore: ${err.message || 'Periksa Rules Firestore (allow read, write: if true;)'}`, 'warning');
         }
       }
 
       const syncedRemote = await publishToWebhookOrKv(payload);
       if (syncedFirestore) {
-        updateSyncBadgeText('Cloud DB: Firestore Aktif', `Tersimpan di Firebase Cloud Firestore (${cloudSyncState.appId})`);
+        updateSyncBadgeText('Cloud DB: Firestore Aktif', 'Tersimpan di Firebase Cloud Firestore (Real-Time)');
       } else if (cloudSyncState.webhookUrl && syncedRemote) {
         updateSyncBadgeText('Cloud DB: Apps Script Aktif', 'Tersimpan di Google Apps Script Cloud');
       } else if (syncedRemote) {
@@ -2280,53 +2817,26 @@
       return syncedFirestore || syncedRemote;
     }
 
-    function parseLooseJsOrJsonObject(rawStr) {
-      const cleaned = String(rawStr || '').trim();
-      if (!cleaned) return null;
-      try {
-        const direct = JSON.parse(cleaned);
-        if (direct && direct.apiKey) return direct;
-      } catch (_) {
-        // Coba konversi object JS seperti `const firebaseConfig = { apiKey: "..." };` ke JSON valid
+    function resolveFirebaseConfigObject() {
+      const rawCustom = String(state.customCloudConfig || '').trim();
+      if (rawCustom.startsWith('{')) {
         try {
-          const braceStart = cleaned.indexOf('{');
-          const braceEnd = cleaned.lastIndexOf('}');
-          if (braceStart !== -1 && braceEnd > braceStart) {
-            const objBody = cleaned.slice(braceStart, braceEnd + 1);
-            const jsonified = objBody
-              .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
-              .replace(/,\s*}/g, '}');
-            const parsed = JSON.parse(jsonified);
-            if (parsed && parsed.apiKey) return parsed;
-          }
+          const parsed = JSON.parse(rawCustom);
+          if (parsed && parsed.apiKey) return parsed;
         } catch (_) {
-          // Abaikan jika gagal parse
+          // Abaikan JSON tidak valid
         }
       }
-      return null;
-    }
 
-    function resolveFirebaseConfigObject() {
-      // 1. Cek konfigurasi kustom yang diisi admin jika ada
-      const rawCustom = String(state.customCloudConfig || '').trim();
-      if (rawCustom) {
-        const parsedCustom = parseLooseJsOrJsonObject(rawCustom);
-        if (parsedCustom && parsedCustom.apiKey) return parsedCustom;
-      }
-
-      // 2. Gunakan konfigurasi Firebase bawaan proyek dasbor-rt
-      if (BUILTIN_FIREBASE_CONFIG && BUILTIN_FIREBASE_CONFIG.apiKey) {
-        return BUILTIN_FIREBASE_CONFIG;
-      }
-
-      // 3. Fallback ke variabel global jika ada
       if (typeof __firebase_config !== 'undefined' && __firebase_config) {
         try {
           const cfg = typeof __firebase_config === 'string'
             ? JSON.parse(__firebase_config)
             : __firebase_config;
           if (cfg && cfg.apiKey) return cfg;
-        } catch (_) {}
+        } catch (_) {
+          // Abaikan
+        }
       }
 
       return null;
@@ -2347,22 +2857,23 @@
 
       if (mod && firebaseConfig) {
         try {
-          const appId = firebaseConfig.projectId || 'dasbor-rt';
+          const appId = typeof __app_id !== 'undefined' && __app_id
+            ? String(__app_id)
+            : (firebaseConfig.projectId || 'rt05-rw04-jrebeng-wetan');
+
           const existingApps = mod.getApps ? mod.getApps() : [];
           const app = existingApps.length > 0 ? existingApps[0] : mod.initializeApp(firebaseConfig);
           const auth = mod.getAuth(app);
           const db = mod.getFirestore(app);
 
-          let currentUid = 'public-user';
-          try {
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token && !state.customCloudConfig) {
+            await mod.signInWithCustomToken(auth, __initial_auth_token);
+          } else {
             await mod.signInAnonymously(auth);
-            currentUid = auth.currentUser?.uid || 'anon-user';
-          } catch (_) {
-            // Tetap lanjutkan akses Firestore meskipun Anonymous Auth belum diaktifkan di console
-            currentUid = 'public-guest';
           }
 
-          const docRef = mod.doc(db, 'rt05_rw04_jrebeng_wetan', 'main_header');
+          const currentUid = auth.currentUser?.uid || 'anon-user';
+          const docRef = mod.doc(db, 'artifacts', appId, 'public', 'data', 'header_config', 'main_header');
 
           cloudSyncState = {
             enabled: true,
@@ -2383,20 +2894,16 @@
               if (!snap.exists()) return;
               const data = snap.data();
               if (!data) return;
-              applyRemoteHeaderBranding(data, `Firestore (${appId})`);
+              applyRemoteHeaderBranding(data, 'Firestore Real-Time');
             },
             (err) => {
               console.error('Kesalahan listener Firestore:', err);
-              updateSyncBadgeText(
-                'Cloud DB: Cek Rules Firestore',
-                `Firestore (${appId}) perlu izin baca/tulis pada Rules`
-              );
             }
           );
 
           updateSyncBadgeText(
-            `Cloud DB: Firestore (${appId})`,
-            `Terhubung ke Firebase Cloud Firestore (${appId}) — sinkron real-time ke semua HP/laptop`
+            'Cloud DB: Firestore Aktif',
+            `Terhubung ke Firebase Cloud Firestore (${appId}) — sinkron otomatis ke semua user`
           );
           return;
         } catch (err) {
@@ -2408,7 +2915,7 @@
         enabled: false,
         mode: webhookUrl ? 'webhook' : 'public-kv',
         db: null,
-        appId: 'dasbor-rt',
+        appId: 'rt05-rw04-jrebeng-wetan',
         userId: 'web-client',
         docRef: null,
         setDoc: null,
@@ -2421,7 +2928,7 @@
         webhookUrl ? 'Cloud DB: Apps Script' : 'Cloud DB: Cloud Sync',
         webhookUrl
           ? 'Terhubung ke Google Apps Script Webhook Cloud'
-          : 'Terhubung ke Cloud Sync Lintas Perangkat'
+          : 'Terhubung ke Cloud Sync Lintas Perangkat (atau isi Firebase/Apps Script Config untuk cloud pribadi)'
       );
 
       await pullFromCloudSources(false);
@@ -2434,7 +2941,7 @@
     }
 
     // =========================================================================
-    // SLIDESHOW & ADMIN HEADER + LINK CLOUD
+    // SLIDESHOW & ADMIN HEADER + PENYESUAIAN UKURAN SLIDESHOW
     // =========================================================================
 
     function getActiveSlides() {
@@ -2443,7 +2950,49 @@
       return DEFAULT_HEADER_BRANDING.slides;
     }
 
+    function applySlideshowDimensionsToDom() {
+      const dims = normalizeSlideDimensions(state.headerBranding);
+      const frameEl = document.getElementById('headerSlideshowFrame');
+      const mainLayoutEl = document.getElementById('headerMainLayout');
+      const imgEl = document.getElementById('headerSlideshowImage');
+
+      if (frameEl) {
+        frameEl.style.height = `${dims.slideHeight}px`;
+        frameEl.style.maxWidth = '100%';
+        const isDesktop = window.innerWidth >= 1024;
+        if (dims.slideWidth === '100%') {
+          frameEl.style.width = '100%';
+          if (mainLayoutEl) {
+            mainLayoutEl.classList.remove('lg:flex-row', 'lg:items-center');
+            mainLayoutEl.classList.add('flex-col');
+          }
+        } else {
+          frameEl.style.width = isDesktop ? dims.slideWidth : '100%';
+          if (mainLayoutEl) {
+            mainLayoutEl.classList.add('lg:flex-row', 'lg:items-center');
+          }
+        }
+      }
+
+      if (imgEl) {
+        imgEl.classList.remove('object-cover', 'object-contain');
+        imgEl.classList.add(dims.slideFit === 'contain' ? 'object-contain' : 'object-cover');
+      }
+
+      const dimBadge = document.getElementById('adminSlideDimensionBadge');
+      if (dimBadge) {
+        const widthText = dims.slideWidth === '100%' ? 'Lebar Penuh' : dims.slideWidth;
+        dimBadge.textContent = `${widthText} · Tinggi ${dims.slideHeight}px (${dims.slideFit === 'contain' ? 'Utuh' : 'Penuh'})`;
+      }
+
+      const heightLabel = document.getElementById('adminSlideHeightValueLabel');
+      if (heightLabel) {
+        heightLabel.textContent = `${dims.slideHeight} px`;
+      }
+    }
+
     function renderHeaderSlideViewOnly() {
+      applySlideshowDimensionsToDom();
       const slides = getActiveSlides();
       if (state.currentSlideIndex >= slides.length) state.currentSlideIndex = 0;
       if (state.currentSlideIndex < 0) state.currentSlideIndex = 0;
@@ -2484,16 +3033,19 @@
 
     function startSlideshowTimer() {
       if (headerSlideTimer) clearInterval(headerSlideTimer);
+      const timing = normalizeSlideTiming(state.headerBranding);
+      if (!timing.slideAutoplay) return;
       headerSlideTimer = setInterval(() => {
         const slides = getActiveSlides();
         if (slides.length > 1) {
           goToHeaderSlide(state.currentSlideIndex + 1);
         }
-      }, 4500);
+      }, timing.slideIntervalMs);
     }
 
     function renderHeaderBrandingUi() {
       const hb = state.headerBranding || DEFAULT_HEADER_BRANDING;
+      applyThemeAndMenuVisibilityToDom();
       document.getElementById('headerMainTitle').textContent = hb.title || DEFAULT_HEADER_BRANDING.title;
       document.title = hb.title || DEFAULT_HEADER_BRANDING.title;
       document.getElementById('headerSubtitleText').textContent = hb.subtitle || DEFAULT_HEADER_BRANDING.subtitle;
@@ -2503,7 +3055,6 @@
       const safeUrl = sanitizeHttpsUrl(hb.linkUrl || state.formUrl, DEFAULT_GOOGLE_FORM_URL);
       urlLink.href = safeUrl;
 
-      // Render tombol link tambahan yang tersimpan di cloud
       const extraContainer = document.getElementById('headerExtraLinksContainer');
       if (extraContainer) {
         const extraLinks = normalizeExtraLinks(hb.extraLinks);
@@ -2523,6 +3074,7 @@
       renderHeaderSlideViewOnly();
       renderAdminSlidesList();
       renderAdminExtraLinksList();
+      startSlideshowTimer();
     }
 
     function renderAdminExtraLinksList() {
@@ -2589,10 +3141,38 @@
       if (state.headerAdminUnlocked) {
         pinGate.classList.add('hidden');
         editorForm.classList.remove('hidden');
+        const dims = normalizeSlideDimensions(state.headerBranding);
+        const timing = normalizeSlideTiming(state.headerBranding);
+        const menuVis = normalizeMenuVisibility(state.headerBranding.menuVisibility);
+        const themeId = state.headerBranding.themeId || 'indigo';
+        const customHex = sanitizeHexColor(state.headerBranding.customAccentColor, '#4f46e5');
         document.getElementById('adminHeaderTitleInput').value = state.headerBranding.title;
         document.getElementById('adminHeaderSubtitleInput').value = state.headerBranding.subtitle;
         document.getElementById('adminHeaderLinkLabelInput').value = state.headerBranding.linkLabel;
         document.getElementById('adminHeaderUrlInput').value = state.headerBranding.linkUrl;
+        document.getElementById('adminSlideWidthSelect').value = dims.slideWidth;
+        document.getElementById('adminSlideHeightRange').value = String(dims.slideHeight);
+        document.getElementById('adminSlideFitSelect').value = dims.slideFit;
+        const intervalRange = document.getElementById('adminSlideIntervalRange');
+        const intervalLbl = document.getElementById('adminSlideIntervalValueLabel');
+        const autoplayChk = document.getElementById('adminSlideAutoplayCheckbox');
+        if (intervalRange) intervalRange.value = String(timing.slideIntervalMs / 1000);
+        if (intervalLbl) intervalLbl.textContent = formatSlideIntervalSeconds(timing.slideIntervalMs);
+        if (autoplayChk) autoplayChk.checked = timing.slideAutoplay;
+        const colorInput = document.getElementById('adminCustomAccentColorInput');
+        if (colorInput) colorInput.value = customHex;
+        const hexLbl = document.getElementById('adminCustomAccentHexLabel');
+        if (hexLbl) hexLbl.textContent = customHex.toUpperCase();
+        const tintSel = document.getElementById('adminHeaderTintSelect');
+        if (tintSel) tintSel.value = state.headerBranding.headerTintMode === 'tinted' ? 'tinted' : 'white';
+        document.querySelectorAll('.admin-menu-checkbox').forEach((chk) => {
+          const key = chk.getAttribute('data-menu-toggle');
+          if (key && Object.prototype.hasOwnProperty.call(menuVis, key)) {
+            chk.checked = Boolean(menuVis[key]);
+          }
+        });
+        applyThemeAndMenuVisibilityToDom();
+        applySlideshowDimensionsToDom();
         const customCfgInput = document.getElementById('adminCustomCloudConfigInput');
         if (customCfgInput) customCfgInput.value = state.customCloudConfig || '';
         renderAdminSlidesList();
@@ -3681,6 +4261,11 @@
     }
 
     function bindUiEvents() {
+      // Sesuaikan lebar responsif slideshow saat ukuran layar berubah
+      window.addEventListener('resize', () => {
+        applySlideshowDimensionsToDom();
+      });
+
       // Kontrol tombol slideshow kiri & kanan
       document.getElementById('btnPrevSlide')?.addEventListener('click', () => {
         goToHeaderSlide(state.currentSlideIndex - 1);
@@ -3697,7 +4282,7 @@
         copyTextToClipboard(
           shareUrl,
           cloudSyncState.enabled
-            ? 'Link aplikasi berhasil disalin (tautan header otomatis tersinkron via Firestore dasbor-rt).'
+            ? 'Link aplikasi berhasil disalin (tautan header otomatis tersinkron via Cloud DB).'
             : 'Link bagikan header (?h=...) berhasil disalin.'
         );
       });
@@ -3710,7 +4295,7 @@
         await pullFromCloudSources(true);
       });
 
-      // Buka/tutup panel Admin Header & Cloud Link
+      // Buka/tutup panel Admin Header & Slideshow
       document.getElementById('btnToggleHeaderAdmin')?.addEventListener('click', () => {
         const panel = document.getElementById('headerAdminPanel');
         if (!panel) return;
@@ -3730,13 +4315,127 @@
         if (pinInput) pinInput.value = '';
         state.headerAdminUnlocked = true;
         syncHeaderAdminPanelState();
-        showToast('Mode Admin Header & Cloud Link aktif.', 'success');
+        showToast('Mode Admin Header & Slideshow aktif.', 'success');
       });
 
       document.getElementById('btnLockHeaderAdmin')?.addEventListener('click', () => {
         state.headerAdminUnlocked = false;
         syncHeaderAdminPanelState();
         showToast('Mode Admin dikunci.', 'info');
+      });
+
+      // Kontrol Ukuran & Tampilan Slideshow (Live Preview di Admin)
+      document.getElementById('adminSlideWidthSelect')?.addEventListener('change', (e) => {
+        if (!state.headerAdminUnlocked) return;
+        state.headerBranding.slideWidth = e.target.value;
+        applySlideshowDimensionsToDom();
+      });
+
+      document.getElementById('adminSlideHeightRange')?.addEventListener('input', (e) => {
+        if (!state.headerAdminUnlocked) return;
+        const val = parseInt(e.target.value, 10) || 176;
+        state.headerBranding.slideHeight = Math.min(480, Math.max(120, val));
+        applySlideshowDimensionsToDom();
+      });
+
+      document.getElementById('adminSlideFitSelect')?.addEventListener('change', (e) => {
+        if (!state.headerAdminUnlocked) return;
+        state.headerBranding.slideFit = e.target.value === 'contain' ? 'contain' : 'cover';
+        applySlideshowDimensionsToDom();
+      });
+
+      // Kontrol Waktu / Interval & Putar Otomatis Slideshow (Khusus Admin)
+      document.getElementById('adminSlideIntervalRange')?.addEventListener('input', (e) => {
+        if (!state.headerAdminUnlocked) return;
+        const secVal = parseFloat(e.target.value);
+        const intervalMs = Number.isFinite(secVal)
+          ? Math.min(30000, Math.max(1000, Math.round(secVal * 1000)))
+          : DEFAULT_HEADER_BRANDING.slideIntervalMs;
+        state.headerBranding.slideIntervalMs = intervalMs;
+        const lbl = document.getElementById('adminSlideIntervalValueLabel');
+        if (lbl) lbl.textContent = formatSlideIntervalSeconds(intervalMs);
+        startSlideshowTimer();
+      });
+
+      document.getElementById('adminSlideAutoplayCheckbox')?.addEventListener('change', (e) => {
+        if (!state.headerAdminUnlocked) return;
+        state.headerBranding.slideAutoplay = Boolean(e.target.checked);
+        startSlideshowTimer();
+      });
+
+      // Tombol Preset Cepat Ukuran Slideshow
+      document.querySelectorAll('.btn-slide-preset').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (!state.headerAdminUnlocked) return;
+          const preset = btn.getAttribute('data-slide-preset');
+          const presets = {
+            compact: { slideWidth: '240px', slideHeight: 140 },
+            standard: { slideWidth: '288px', slideHeight: 176 },
+            wide: { slideWidth: '480px', slideHeight: 248 },
+            banner: { slideWidth: '100%', slideHeight: 304 }
+          };
+          const chosen = presets[preset] || presets.standard;
+          state.headerBranding.slideWidth = chosen.slideWidth;
+          state.headerBranding.slideHeight = chosen.slideHeight;
+          document.getElementById('adminSlideWidthSelect').value = chosen.slideWidth;
+          document.getElementById('adminSlideHeightRange').value = String(chosen.slideHeight);
+          applySlideshowDimensionsToDom();
+          showToast('Ukuran slideshow disesuaikan. Klik "Simpan ke Database Cloud" untuk menyimpan permanen.', 'info');
+        });
+      });
+
+      // Pilihan Warna Tema & Warna Kustom (Khusus Admin)
+      document.querySelectorAll('.btn-theme-swatch').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (!state.headerAdminUnlocked) return;
+          const themeId = btn.getAttribute('data-theme-id') || 'indigo';
+          const preset = THEME_PRESETS[themeId] || THEME_PRESETS.indigo;
+          state.headerBranding.themeId = themeId;
+          state.headerBranding.customAccentColor = preset.accent;
+          const colorInput = document.getElementById('adminCustomAccentColorInput');
+          if (colorInput) colorInput.value = preset.accent;
+          const hexLbl = document.getElementById('adminCustomAccentHexLabel');
+          if (hexLbl) hexLbl.textContent = preset.accent.toUpperCase();
+          applyThemeAndMenuVisibilityToDom();
+        });
+      });
+
+      document.getElementById('adminCustomAccentColorInput')?.addEventListener('input', (e) => {
+        if (!state.headerAdminUnlocked) return;
+        const hex = sanitizeHexColor(e.target.value, '#4f46e5');
+        state.headerBranding.themeId = 'custom';
+        state.headerBranding.customAccentColor = hex;
+        const hexLbl = document.getElementById('adminCustomAccentHexLabel');
+        if (hexLbl) hexLbl.textContent = hex.toUpperCase();
+        applyThemeAndMenuVisibilityToDom();
+      });
+
+      document.getElementById('adminHeaderTintSelect')?.addEventListener('change', (e) => {
+        if (!state.headerAdminUnlocked) return;
+        state.headerBranding.headerTintMode = e.target.value === 'tinted' ? 'tinted' : 'white';
+        applyThemeAndMenuVisibilityToDom();
+      });
+
+      // Pengaturan Tampil / Sembunyikan Menu (Khusus Admin)
+      document.querySelectorAll('.admin-menu-checkbox').forEach((chk) => {
+        chk.addEventListener('change', (e) => {
+          if (!state.headerAdminUnlocked) return;
+          const key = e.target.getAttribute('data-menu-toggle');
+          if (!key) return;
+          state.headerBranding.menuVisibility = normalizeMenuVisibility(state.headerBranding.menuVisibility);
+          state.headerBranding.menuVisibility[key] = Boolean(e.target.checked);
+          applyThemeAndMenuVisibilityToDom();
+        });
+      });
+
+      document.getElementById('btnShowAllMenus')?.addEventListener('click', () => {
+        if (!state.headerAdminUnlocked) return;
+        state.headerBranding.menuVisibility = { ...DEFAULT_MENU_VISIBILITY };
+        document.querySelectorAll('.admin-menu-checkbox').forEach((chk) => {
+          chk.checked = true;
+        });
+        applyThemeAndMenuVisibilityToDom();
+        showToast('Semua menu ditampilkan kembali.', 'info');
       });
 
       // Tambah tautan tambahan di header
@@ -3785,7 +4484,7 @@
         if (cfgInp) cfgInp.value = '';
         saveStateToStorage();
         await initRealtimeMultiUserSync();
-        showToast('Menggunakan Firebase bawaan dasbor-rt.', 'info');
+        showToast('Kembali menggunakan koneksi Cloud bawaan.', 'info');
       });
 
       // Tambah foto slide dari URL
@@ -3837,18 +4536,44 @@
         showToast('Foto unggahan dimuat ke daftar slide.', 'success');
       });
 
-      // Simpan perubahan header, link & slide ke database cloud
+      // Simpan perubahan header, ukuran slideshow, link & slide ke database cloud
       document.getElementById('btnSaveHeaderAdmin')?.addEventListener('click', async () => {
         const nextTitle = String(document.getElementById('adminHeaderTitleInput')?.value ?? '').trim() || DEFAULT_HEADER_BRANDING.title;
         const nextSubtitle = String(document.getElementById('adminHeaderSubtitleInput')?.value ?? '').trim() || DEFAULT_HEADER_BRANDING.subtitle;
         const nextLinkLabel = String(document.getElementById('adminHeaderLinkLabelInput')?.value ?? '').trim() || DEFAULT_HEADER_BRANDING.linkLabel;
         const nextLinkUrl = sanitizeHttpsUrl(document.getElementById('adminHeaderUrlInput')?.value ?? '', state.formUrl);
+        const dims = normalizeSlideDimensions({
+          slideWidth: document.getElementById('adminSlideWidthSelect')?.value,
+          slideHeight: document.getElementById('adminSlideHeightRange')?.value,
+          slideFit: document.getElementById('adminSlideFitSelect')?.value
+        });
+        const secVal = parseFloat(document.getElementById('adminSlideIntervalRange')?.value);
+        const timing = normalizeSlideTiming({
+          slideIntervalMs: Number.isFinite(secVal) ? Math.round(secVal * 1000) : state.headerBranding.slideIntervalMs,
+          slideAutoplay: document.getElementById('adminSlideAutoplayCheckbox')?.checked
+        });
+        const menuVis = normalizeMenuVisibility(state.headerBranding.menuVisibility);
+        const themeId = state.headerBranding.themeId || 'indigo';
+        const customHex = sanitizeHexColor(
+          document.getElementById('adminCustomAccentColorInput')?.value,
+          state.headerBranding.customAccentColor || '#4f46e5'
+        );
+        const headerTintMode = document.getElementById('adminHeaderTintSelect')?.value === 'tinted' ? 'tinted' : 'white';
 
         state.headerBranding = {
           title: nextTitle,
           subtitle: nextSubtitle,
           linkLabel: nextLinkLabel,
           linkUrl: nextLinkUrl,
+          slideWidth: dims.slideWidth,
+          slideHeight: dims.slideHeight,
+          slideFit: dims.slideFit,
+          slideIntervalMs: timing.slideIntervalMs,
+          slideAutoplay: timing.slideAutoplay,
+          themeId,
+          customAccentColor: customHex,
+          headerTintMode,
+          menuVisibility: menuVis,
           extraLinks: normalizeExtraLinks(state.headerBranding.extraLinks),
           slides: getActiveSlides().map(s => ({ ...s })),
           updatedAt: Date.now()
@@ -3862,9 +4587,9 @@
 
         const syncedToCloud = await publishHeaderBrandingToAllUsers();
         if (syncedToCloud) {
-          showToast('Header & Link URL berhasil disimpan ke Database Cloud dan otomatis tampil di semua perangkat!', 'success');
+          showToast('Ukuran slideshow, header & link berhasil disimpan ke Database Cloud!', 'success');
         } else {
-          showToast('Perubahan tersimpan di browser & URL (?h=...).', 'success');
+          showToast('Ukuran slideshow & header tersimpan di browser & URL (?h=...).', 'success');
         }
       });
 
@@ -3872,6 +4597,7 @@
       document.getElementById('btnResetHeaderAdmin')?.addEventListener('click', async () => {
         state.headerBranding = {
           ...DEFAULT_HEADER_BRANDING,
+          menuVisibility: { ...DEFAULT_MENU_VISIBILITY },
           extraLinks: [],
           slides: DEFAULT_HEADER_BRANDING.slides.map(s => ({ ...s })),
           updatedAt: Date.now()
@@ -3884,7 +4610,7 @@
         renderHeaderBrandingUi();
         applyFormUrlToUi();
         await publishHeaderBrandingToAllUsers();
-        showToast('Header & link dikembalikan ke pengaturan default dan disinkronkan ke cloud.', 'info');
+        showToast('Header & ukuran slideshow dikembalikan ke pengaturan default.', 'info');
       });
 
       // Tombol form & sinkronisasi CSV
@@ -4186,7 +4912,6 @@
         if (e.target === modal) closeGuide();
       });
 
-      // Sinkronisasi otomatis saat tab/link dibuka atau difokuskan kembali
       window.addEventListener('storage', (e) => {
         if (Object.values(STORAGE_KEYS).includes(e.key)) {
           loadStateFromStorage();
